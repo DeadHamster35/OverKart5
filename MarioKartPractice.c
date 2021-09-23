@@ -1,20 +1,5 @@
-#include "../library/SubProgram.h"
-#include "../library/SharedFunctions.h"
-#include "../library/OKHeader.h"
-
-#include "../library/OKExternal.h"
-#include "../library/LibraryVariables.h"
-#include "../library/GameVariables/NTSC/OKassembly.h"
-#include "../library/GameVariables/NTSC/GameOffsets.h"
-#include "../RawAssets/ModelData/ModelData.h"
-#include "OverKartVariables.h"
-#include "../library/MarioKartMenu.h"
-#include "MarioKartAI.h"
-#include "../library/MarioKartObjects.h"
-#include "../library/PlayerEffects.h"
-#include "../Library/Struct.h"
-
-#include <stdbool.h>
+#include "../Library/MainInclude.h"
+#include "OKInclude.h"
 
 
 //practiceHack Variables//
@@ -149,7 +134,11 @@ void modCheck()
 	}
 	if (renderMode[4] > 0x00)
 	{
-		SystemType = 1;
+		TempoBool = 1;
+	}
+	else
+	{
+		TempoBool = 0;
 	}
 
 
@@ -399,10 +388,10 @@ void drawInputDisplay()
 
 
 
-void rotateCamera(int inputAngle)
+void rotateCamera(float inputAngle)
 {
 	
-	FlyCamDirection -= ((float)inputAngle / 360.0) * 65535.0;
+	FlyCamDirection -= (inputAngle / 360.0) * 65535.0;
 	FlyCamRadian = (((float)FlyCamDirection / 65535) * 360) * 0.0174533;
 
 	/*
@@ -624,13 +613,9 @@ void practiceHack()
 
 	if (modMode[1] == 1)
 	{
-		/*
-		asm_DisableEngineSound = 0x0100;
-		asm_DisableHUD = 0x2400;
-		g_GhostHUDID = 0;
-		g_playerSpriteSize = 0;
-		g_playerStatus = 0;
 		
+		
+		/*
 		if ((FlyCamPosition[0] == 0) && (FlyCamPosition[1] == 0))
 		{
 			FlyCamPosition[0] = g_player1LocationX;
@@ -648,110 +633,265 @@ void practiceHack()
 	
 			
 
-		if ((GlobalController[0]->ButtonHeld & BTN_R) == BTN_R)
+		if ((GlobalController[0]->ButtonPressed & BTN_R) == BTN_R)
 		{
+			
+			dataLength = 0x20;
+			if (FlyCamToggle == 0)
+			{
+				*sourceAddress = (int)&ok_FreeCamBackup;
+				g_mapY -= 150;
+				g_mapX += 95;
+				
+				FlyCamToggle = 1;
+			}
+			else if (FlyCamToggle == 1)
+			{
+				FlyCamToggle = 2;
+			}
+			else if (FlyCamToggle == 2)
+			{
+				*sourceAddress = (int)0x8018CAB0;
+				*targetAddress = (int)&ok_FreeCamBackup;
+				runRAM();
+				*sourceAddress = (int)&ok_FreeCam;
+				g_mapY += 150;
+				g_mapX -= 75;
+
+				FlyCamToggle = 0;
+			}
+			*targetAddress = (int)0x8018CAB0;
+			runRAM();
+			
+		}
+
+
+		if (FlyCamToggle == 0)
+		{
+			if (FlyCamCheck != 0)
+			{
+				FlyCamCheck = 0;				
+			}
+			*(int*)(0x8001EE98) = 0x27BDFFC8;
+			*(int*)(0x80291154) = 0x01E72021;
+			*(int*)(0x80291164) = 0x2484FFFC;
+
+			*(int*)(0x800382DC) = 0x3C02800E;
+			*(int*)(0x800382E0) = 0x8C42C52C;
+
+			FlyCamDirection = GlobalCamera[0]->camera_direction[1];
+			FlyCamSectionCheck = g_player1Section;
+			FlyCamViewCheck = g_player1View;
+		}
+		else if (FlyCamToggle == 1)
+		{
+			FlyCamCheck = 1;
 			*(int*)(0x8001EE98) = 0x03E00008;
-			
-			if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
-			{
-				moveCamera(FlyCamSpeed);
-			}
-			if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
-			{
-				moveCamera(-1 * FlyCamSpeed);
-			}
-			if ((GlobalController[0]->ButtonPressed & BTN_CRIGHT) == BTN_CRIGHT)
-			{
-				moveCameraTilt(FlyCamSpeed,90);
-			}
-			if ((GlobalController[0]->ButtonPressed & BTN_CLEFT) == BTN_CLEFT)
-			{
-				moveCameraTilt(FlyCamSpeed,-90);
-			}
+			*(uint*)(0x80291154) = 0x3C040000 | ((uint)(&FlyCamSection) >> 16);
+			*(uint*)(0x80291164) = 0x84840000 | ((uint)(&FlyCamSection) & 0xFFFF);
 
-			
-			if ((GlobalController[0]->AnalogHeld & BTN_DRIGHT) == BTN_DRIGHT)
-			{
-				rotateCamera(5);
-			}
-			if ((GlobalController[0]->AnalogHeld & BTN_DLEFT) == BTN_DLEFT)
-			{
-				rotateCamera(-5);
-			}
-			if ((GlobalController[0]->AnalogHeld & BTN_DDOWN) == BTN_DDOWN)
-			{
-				GlobalCamera[0]->camera_pos[1] -= FlyCamSpeed * .6;
-				GlobalCamera[0]->lookat_pos[1] -= FlyCamSpeed * .6;
-			}
-			if ((GlobalController[0]->AnalogHeld & BTN_DUP) == BTN_DUP)
-			{
-				GlobalCamera[0]->camera_pos[1] += FlyCamSpeed * .6;
-				GlobalCamera[0]->lookat_pos[1] += FlyCamSpeed * .6;
-			}
+			*(int*)(0x800382DC) = 0x3C02800E;
+			*(int*)(0x800382E0) = 0x8C42C52C;
+		}
+		else if (FlyCamToggle == 2)
+		{
+			FlyCamCheck = 2;
+			*(int*)(0x8001EE98) = 0x03E00008;
+			*(uint*)(0x80291154) = 0x3C040000 | ((uint)(&FlyCamSection) >> 16);
+			*(uint*)(0x80291164) = 0x84840000 | ((uint)(&FlyCamSection) & 0xFFFF);
 
-			GraphPtr = FillRect1ColorF(GraphPtr, 23, 43, 120, 63, 0, 0,0, 175);
-			loadFont();
-			printStringNumber(5,25, "SECTION-", g_player1Section);
-			printStringNumber(5,35, "SPEED-", FlyCamSpeed);
-			printStringNumber(5,45, "CAM1", FlyCamDirection);
-			printStringNumber(5,55, "CAM1", GlobalCamera[0]->camera_direction[1]);
-			switch(GlobalController[0]->ButtonPressed)
-			{
 
-				case BTN_DRIGHT:
+			*(int*)(0x800382DC) = 0x03E00008;
+			*(int*)(0x800382E0) = 0;
+		}
+
+		if (FlyCamToggle > 0)
+		{
+			if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
+			{
+				loadFont();
+				printStringNumber(5,25, "SECTION-", FlyCamSectionCheck);
+				printStringNumber(5,35, "VIEW-", FlyCamViewCheck);
+				printStringNumber(5,45, "SPEED-", FlyCamSpeed);
+				printStringNumber(5,55,"StickX-", GlobalController[0]->AnalogX);
+				printStringNumber(5,65,"StickY-", GlobalController[0]->AnalogY);
+				printFloat(0,75,(float)(FlyCamSpeed * (float)((float)GlobalController[0]->AnalogY / 100)));
+				
+				switch(GlobalController[0]->ButtonPressed)
 				{
-					g_player1Section = g_player1Section + 1;
-					ButtonHeld = 1;
-					break;
-				}
-				case BTN_DLEFT:
-				{
-					if (g_player1Section > 1)
+					
+					case BTN_DDOWN:
 					{
-						g_player1Section = g_player1Section - 1;
+						if (FlyCamSpeed > 5)
+						{
+							FlyCamSpeed = FlyCamSpeed - 5;
+						}
+						else
+						{
+							if (FlyCamSpeed > 1)
+							{
+								FlyCamSpeed = FlyCamSpeed - 1;
+							}
+						}
+						
+						ButtonHeld = 1;
+						break;
 					}
-					ButtonHeld = 1;
-					break;
-				}
-				case BTN_DDOWN:
-				{
-					if (FlyCamSpeed > 5)
+
+					case BTN_DUP:
 					{
-						FlyCamSpeed = FlyCamSpeed - 5;
+						if (FlyCamSpeed < 5)
+						{
+							FlyCamSpeed = FlyCamSpeed + 1;
+						}
+						else
+						{							
+							FlyCamSpeed = FlyCamSpeed + 5;							
+						}
+						ButtonHeld = 1;
+						break;
+					}
+				}
+
+				if (((GlobalController[0]->AnalogHeld & BTN_DDOWN) == BTN_DDOWN) || ((GlobalController[0]->AnalogHeld & BTN_DUP) == BTN_DUP))
+				{
+					
+				}
+
+			}	
+			else
+			{	
+				switch(GlobalController[0]->ButtonPressed)
+				{
+					case BTN_DLEFT:
+					{
+						if (FlyCamSectionCheck > 1)
+						{
+							FlyCamSectionCheck--;
+						}
+						break;
+					}
+					case BTN_DRIGHT:
+					{
+						FlyCamSectionCheck++;
+						break;
+					}
+					case BTN_CLEFT:
+					{
+						if (FlyCamPilot == 0)
+						{
+							FlyCamPilot = 1;
+						}
+						else
+						{
+							FlyCamPilot = 0;
+						}
+						break;
+					}
+				
+				}
+				switch(GlobalController[0]->ButtonHeld)
+				{
+					case BTN_DUP:
+					{
+						GlobalCamera[0]->lookat_pos[1] += (FlyCamSpeed / 2);
+						break;
+					}
+					case BTN_DDOWN:
+					{
+						GlobalCamera[0]->lookat_pos[1] -= (FlyCamSpeed / 2);
+						break;
+					}
+				}
+				if ((GlobalController[0]->AnalogHeld & BTN_DRIGHT) == BTN_DRIGHT)
+				{
+					rotateCamera((float)(FlyCamSpeed / 2 * (float)((float)GlobalController[0]->AnalogX / 100)));
+
+					if (FlyCamPilot == 1)
+					{
+						moveCamera(FlyCamSpeed);
 					}
 					else
 					{
-						if (FlyCamSpeed > 1)
+						if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
 						{
-							FlyCamSpeed = FlyCamSpeed - 1;
+							moveCamera(FlyCamSpeed);
+						}
+						if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
+						{
+							moveCamera(-1 * FlyCamSpeed);
+						}
+					}
+				}
+				else if ((GlobalController[0]->AnalogHeld & BTN_DLEFT) == BTN_DLEFT)
+				{
+					rotateCamera((float)(FlyCamSpeed / 2 * (float)((float)GlobalController[0]->AnalogX / 100)));
+
+					if (FlyCamPilot == 1)
+					{
+						moveCamera(FlyCamSpeed);
+					}
+					else
+					{
+						if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
+						{
+							moveCamera(FlyCamSpeed);
+						}
+						if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
+						{
+							moveCamera(-1 * FlyCamSpeed);
+						}
+					}
+				}
+				else
+				{
+					if (FlyCamPilot == 1)
+					{
+						moveCamera(FlyCamSpeed);
+					}
+					else
+					{
+						if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
+						{
+							moveCamera(2 * FlyCamSpeed);
+						}
+						if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
+						{
+							moveCamera(-2 * FlyCamSpeed);
 						}
 					}
 					
-					ButtonHeld = 1;
-					break;
 				}
-
-				case BTN_DUP:
+				
+				if (((GlobalController[0]->AnalogHeld & BTN_DDOWN) == BTN_DDOWN) || ((GlobalController[0]->AnalogHeld & BTN_DUP) == BTN_DUP))
 				{
-					if (FlyCamSpeed < 5)
-					{
-						FlyCamSpeed = FlyCamSpeed + 1;
-					}
-					else
-					{							
-						FlyCamSpeed = FlyCamSpeed + 5;							
-					}
-					ButtonHeld = 1;
-					break;
+					GlobalCamera[0]->camera_pos[1] += (float)(FlyCamSpeed / 3 * (float)((float)GlobalController[0]->AnalogY / 100));
+					GlobalCamera[0]->lookat_pos[1] += (float)(FlyCamSpeed / 3 * (float)((float)GlobalController[0]->AnalogY / 100));
 				}
 			}
+		}
 
-		}		
+		if(g_mirrorMode == 1)
+		{
+			GlobalUShortA=(ushort)FlyCamDirection;
+			if(GlobalUShortA< DEG1 * 45)     FlyCamViewCheck=2;          
+			else if(GlobalUShortA<DEG1 * 135)     FlyCamViewCheck=3;          
+			else if(GlobalUShortA<DEG1 * 225)     FlyCamViewCheck=0;          
+			else if(GlobalUShortA<DEG1 * 315)     FlyCamViewCheck=1;          
+			else      FlyCamViewCheck=2;          
+		}
 		else
 		{
-			*(int*)(0x8001EE98) = 0x27BDFFC8;
-			FlyCamDirection = GlobalCamera[0]->camera_direction[1];
+			GlobalUShortA=(ushort)FlyCamDirection;
+			if(GlobalUShortA<DEG1 * 45)     FlyCamViewCheck=2;          
+			else if(GlobalUShortA<DEG1 * 135)     FlyCamViewCheck=1;          
+			else if(GlobalUShortA<DEG1 * 225)     FlyCamViewCheck=0;          
+			else if(GlobalUShortA<DEG1 * 315)     FlyCamViewCheck=3;          
+			else      FlyCamViewCheck=2;          
 		}
+
+		FlyCamSection = ((FlyCamSectionCheck - 1) * 4) + FlyCamViewCheck;
+		
 
 	
 	}
@@ -903,4 +1043,13 @@ void practiceHack()
 		}
 	}
 
+}
+
+
+void FlycamInit()
+{
+	for (int Pass = 0; Pass < 20; Pass++)
+	{
+		*(uint*)(&ok_FreeCam + Pass) = 0xFF00FF00;
+	}
 }

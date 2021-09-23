@@ -9,10 +9,10 @@
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel DMA_FUNC,    		0x80001158
 .definelabel RAM_END,           org(EndRAMData)
+
 .definelabel DMA_MAX_LENGTH,       org(EndRAMData) - org(StartRAMData)
 .definelabel Printf, 			0x800D6420
 .definelabel ok_ModelDataRawSize,     filesize("data\NewLogo\logo.raw")
-
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
 
@@ -23,8 +23,8 @@
 .include "data\ModelData\ModelData.asm"
 .include "data\NewLogo\logo.asm"
 
-.org 0xBFFFFC
-.word 0x1002004
+//.org 0xBFFFFC
+//.word 0x100000
 
 .org 0x113FBA
 .halfword 0x8080
@@ -38,12 +38,14 @@ NOP
 
 
 
+.org 0x111D4C
+LB t2, -1(v0)
+// fixes Alpha loading for level data vert color
+
 .org 0x10C7E2
 .halfword hi(DisplayHopTable)
 .org 0x10C7EA
 .halfword lo(DisplayHopTable)
-.org 0x10C7D4
-.word 0
 
 
 .org 0x10CB44
@@ -55,8 +57,6 @@ J FreeDraw
 .halfword hi(CollisionHopTable)
 .org 0x109AB2
 .halfword lo(CollisionHopTable)
-.org 0x109A90
-.word 0
 
 
 
@@ -170,6 +170,9 @@ NOP
 
 
 StartRAMData:
+
+
+
 
 .align 0x10
 bannerN:
@@ -310,10 +313,13 @@ NOP
 
 .align 0x10
 PrintMenuHook:
+LW ra, 0x14 (sp)
+SW ra, 0x001C (sp)
 JAL PrintMenuFunction
 NOP
 J 0x80001F64
-LW ra, 0x14 (sp)
+LW ra, 0x001C(sp)
+
 
 .align 0x10
 SnowHook:
@@ -437,8 +443,6 @@ CollisionHopTable:
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0 //99
 .align 0x10
 
-
-
 EndRAMData:
 
 
@@ -455,6 +459,10 @@ previewU:
 LogoROM:
 .import "data\\logo.bin" ;; 0xD388
 .align 0x10
+Pirate:
+.import "Data\test\512x240"
+.align 0x10
+PirateEnd:
 ModelDataStart:
 .import "data\\ModelData\\ModelData.bin"
 .align 0x10
@@ -479,6 +487,9 @@ JP_Audio:
 .import "data\\JP_Audio.bin"
 .align 0x10
 
-.org 0x1002000
+
+
+
+.org 0xFFFFFC
 .word 35
 .close

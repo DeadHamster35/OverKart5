@@ -1,11 +1,5 @@
-#include "../library/SubProgram.h"
-#include "../library/SharedFunctions.h"
-#include "../library/OKHeader.h"
-
-#include "../library/LibraryVariables.h"
-#include "../library/GameVariables/NTSC/OKassembly.h"
-#include "../library/GameVariables/NTSC/GameOffsets.h"
-#include "OverKartVariables.h"
+#include "../Library/MainInclude.h"
+#include "OKInclude.h"
 
 /*
 char GlobalCharA; CPU STY

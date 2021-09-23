@@ -1,5 +1,7 @@
-#include "..\Library\OKStruct.h"
-#include "OverKartStruct.h"
+#ifndef OverKartVariablesH
+#define OverKartVariablesH
+#include "..\Library\MainInclude.h"
+#include "OKInclude.h"
 //Menu
 
 
@@ -39,8 +41,13 @@ extern float AnalogInput[2];
 
 extern int FlyCamPosition[];
 extern float FlyCamRadian;
+extern float FlyCamHeight;
+extern short FlyCamSection, FlyCamSectionCheck;
+extern short FlyViewSection, FlyCamViewCheck;
+extern char FlyCamToggle, FlyCamCheck;
+extern short FlyCamPilot;
 extern short FlyCamDirection;
-extern int FlyCamLook[2][2];
+extern float FlyCamLook[2][2];
 extern int LocalInput[2];
 extern int InputColor[4];
 extern char GenericInput, MapMode;
@@ -69,3 +76,4 @@ extern char EndPoint;
 
 
 
+#endif

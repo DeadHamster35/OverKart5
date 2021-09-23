@@ -1,8 +1,5 @@
-#include <stdbool.h>
-#include "..\Library\OKStruct.h"
-#include "..\Library\Struct.h"
-#include "OverKartStruct.h"
-
+#include "../Library/MainInclude.h"
+#include "OKInclude.h"
 
 
 //Menu
@@ -55,6 +52,10 @@ int ItemChance[8];
 int FlyCamPosition[3];
 short FlyCamDirection;
 
+char FlyCamToggle, FlyCamCheck;
+short FlyCamSection, FlyCamSectionCheck;
+short FlyCamView, FlyCamViewCheck;
+short FlyCamPilot;
 float FlyCamRadian;
 float FlyCamLook[2][2];
 int LocalInput[2];

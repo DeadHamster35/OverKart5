@@ -18,9 +18,10 @@ typedef struct RenderOptions{
 typedef struct SaveData{
      GameOptions    GameSettings;
      ModOptions     ModSettings;
-     RenderOptions  RenderSettings;
+     RenderOptions  RenderSettings;     
+     bool           TENNES;
      char           SaveVersion;
-     char           PAD[487];
+     char           PAD[478];
 } SaveData;
 
 #endif

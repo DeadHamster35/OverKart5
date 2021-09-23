@@ -1,20 +1,6 @@
-#include "../Library/SubProgram.h"
-#include "../Library/SharedFunctions.h"
-#include "../Library/OKHeader.h"
-
-#include "../Library/OKExternal.h"
-#include "../Library/OKCustomObjects.h"
-#include "../Library/LibraryVariables.h"
-#include "../Library/PlayerEffects.h"
-#include "../Library/MarioKartObjects.h"
-#include "../Library/MarioKart3D.h"
-#include "../Library/Struct.h"
-#include "../Library/OKStruct.h"
-#include "../Library/OKBehaviors.h"
-#include "../Library/GameVariables/NTSC/OKassembly.h"
-#include "../Library/GameVariables/NTSC/GameOffsets.h"
-#include "../RawAssets/ModelData/ModelData.h"
-
+#include "../Library/MainInclude.h"
+#include "OKInclude.h"
+#include "data/ModelData/ModelData.h"
 struct OKCollisionSphere CoinCollision[2];
 
 
@@ -93,7 +79,7 @@ int RedCoinCollide(void *Car, void *Coin)
 }
 
 
-void CollideObject(void *Camera, void *Object)
+int CollideObject(void *Camera, void *Object)
 {
 	
 	objectIndex = (short)((*(long*)(*(long*)(&Object)) >> 16) & 0x0000FFFF);
@@ -101,15 +87,17 @@ void CollideObject(void *Camera, void *Object)
 	{
 		case 47:
 		{
-			RedCoinCollide(Camera,Object);
+			return RedCoinCollide(Camera,Object);
 
 			break;
 		}
 		default:
 		{
+			return 0;
 			break;
 		}
 	}
+	return -1;
 	
 }
 void RedCoinChallenge(long PathOffset)

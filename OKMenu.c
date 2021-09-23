@@ -1,23 +1,5 @@
-#include <stdbool.h>
-#include <math.h>
-#include "../library/SubProgram.h"
-#include "../library/SharedFunctions.h"
-#include "../library/OKHeader.h"
-
-#include "../library/LibraryVariables.h"
-#include "../library/GameVariables/NTSC/OKassembly.h"
-#include "../library/GameVariables/NTSC/GameOffsets.h"
-#include "../library/MarioKartObjects.h"
-#include "../library/MarioKartMenu.h"
-#include "../library/MarioKartStats.h"
-#include "MarioKartAI.h"
-#include "../RawAssets/ModelData/ModelData.h"
-#include "OverKartVariables.h"
-#include "../library/CustomLevels.h"
-#include "../library/OKCustomObjects.h"
-#include "LitroFunc.h"
-#include "MarioKartPractice.h"
-
+#include "../Library/MainInclude.h"
+#include "OKInclude.h"
 
 void loadPosition()
 {
@@ -300,7 +282,7 @@ void printDetails()
 
 }
 
-void printAnticheat(bool Full)
+void printAnticheat()
 {
      loadPosition();
      
@@ -489,8 +471,6 @@ void swapParameter(int directionIndex)
           }
      }
 
-     saveEEPROM((uint)&SaveGame);
-
 
 }
 
@@ -567,26 +547,6 @@ void printMenu()
      SetFontColor(26,26,29,12,12,15);
      loadFont();
 
-
-     if (CheckPlatform())
-     {
-          printString(24,195,"N64");
-     }
-     else
-     {
-          if (CheckEmulator())
-          {               
-               printString(0,195,"PROJECT64");               
-          }
-          else
-          {
-               printString(16,195,"MUPEN");
-          }
-     }
-     
-
-     printString(0,205,"BUILD 5.0");
-
      LoopValue = 0;
      MenuPosition[0] = 138 - (menuChar[MenuIntA] * 4);
      
@@ -661,6 +621,36 @@ void printMenu()
                break;
           }
      }
+
+
+     
+     
+     if (ConsolePlatform)
+     {
+          GlobalIntA = 12;
+          GlobalIntB = 200;
+          printString(GlobalIntA*2,GlobalIntB - 5,"N64 ");
+     }
+     else
+     {
+          if (EmulatorPlatform)
+          {               
+               printString(0,195,"PROJECT64");               
+          }
+          else
+          {
+               printString(16,195,"MUPEN");
+          }
+     }
+        
+
+     printString(0,205,"BUILD 5.0");
+
+
+
+
+
+
      
      if (MenuIntA != 3)    //CurrentPage
      {
@@ -703,7 +693,6 @@ void printMenu()
      }
 
      
-     
      g_mlogoY = 0x00000075;
      g_mflagID = 0;
      g_mpressstartID = 0;
@@ -715,7 +704,7 @@ void printMenu()
 
 void titleMenu(void)
 {
-
+     
      if (!GlobalBoolA)
      {
           GlobalBoolA = true;
@@ -724,9 +713,7 @@ void titleMenu(void)
           loadNumberSprites();
 	     loadCoin();
      }
-
-
-     loadFont();
+     
      
 
 
