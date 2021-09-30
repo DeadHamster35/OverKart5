@@ -460,7 +460,7 @@ LogoROM:
 .import "data\\logo.bin" ;; 0xD388
 .align 0x10
 Pirate:
-.import "Data\test\512x240"
+.import "Data\test\512x240.bin"
 .align 0x10
 PirateEnd:
 ModelDataStart:

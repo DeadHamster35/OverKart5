@@ -290,6 +290,7 @@ void gameCode(void)
 				if ((gameMode[0] == 1) & (GlobalIntA != 0))
 				{
 					printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
+					printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
 				}			
 				if (g_gameMode == 0x00)
 				{
