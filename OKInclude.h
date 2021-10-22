@@ -13,5 +13,4 @@
 #include "OverKartObjectHandler.h"
 #include "OverKartVariables.h"
 #include "Protec.h"
-
 #endif

@@ -58,9 +58,9 @@ void splitFunc()
 
 void modCheck()
 {
-	if (gameMode[2] != AudioLanguage)
+	if (SaveGame.GameSettings.AudioMode != AudioLanguage)
 	{
-		AudioLanguage = gameMode[2];
+		AudioLanguage = SaveGame.GameSettings.AudioMode;
 		if (AudioLanguage == 0)
 		{
 			*(long*)(&g_RawAudio + 1) = *(long*)&ok_USAudio;
@@ -79,19 +79,19 @@ void modCheck()
 		}		
 		InitMKCode();
 	}
-	if (gameMode[3] > 0x00)
+	if ((SaveGame.GameSettings.MirrorMode > 0x00) && (SaveGame.GameSettings.GameMode != 1))
 	{
 			g_mirrorMode = 0x0001;
 	}
-	if (gameMode[6] > 0x00)
+	if ((SaveGame.GameSettings.AIMode > 0x00) && (SaveGame.GameSettings.GameMode != 1))
 	{
 		aiSetup();
 	}
 	//gameMode[1] handled in Menu
 
-	if (renderMode[0] > 0x00)
+	if (SaveGame.RenderSettings.ScreenMode > 0x00)
 	{
-		if ((g_playerCount == 0x02) & (renderMode[2] == 0x00))
+		if ((g_playerCount == 0x02) && (SaveGame.RenderSettings.SplitMode == 0x00))
 		{
 			g_aspectRatio = 3.5;
 		}
@@ -111,20 +111,19 @@ void modCheck()
 			g_aspectRatio = 1.333334;
 		}
 	}
-	/*
-	if (renderMode[1] > 0x00)
+	
+	if (SaveGame.RenderSettings.AliasMode > 0x00)
 	{
 		antialiasToggle = 0x00013016;
 		antialiasToggleB = 0x00013016;
 	}
 	else
 	{
-		antialiasToggle = 0;
-		antialiasToggleB = 0;
+		antialiasToggle = 0x00003216;
+		antialiasToggleB = 0x00003216;
 	}
-	*/
-	//renderMode[2] 3D racers;
-	if (renderMode[2] > 0x00)
+	//SaveGame.RenderSettings.SplitMode 3D racers;
+	if (SaveGame.RenderSettings.SplitMode > 0x00)
 	{
 		if (g_playerCount == 0x02)
 		{
@@ -132,7 +131,7 @@ void modCheck()
 			g_ScreenSplitB = 2;
 		}
 	}
-	if (renderMode[4] > 0x00)
+	if (SaveGame.RenderSettings.TempoMode > 0x00)
 	{
 		TempoBool = 1;
 	}
@@ -144,10 +143,10 @@ void modCheck()
 
 
 
-	//modMode[0] and modMode[2] handled in gameCode function.
-	if (modMode[4] > 0x00)
+
+	if (SaveGame.ModSettings.ItemMode > 0x00)
 	{
-		if (modMode[4] < 0x09)
+		if (SaveGame.ModSettings.ItemMode < 0x09)
 		{
 			asm_itemJump1B = (0x84A5 | (itemChanceLo + 2));
 			asm_itemJump2B = (0x84A5 | (itemChanceLo + 2));
@@ -161,7 +160,7 @@ void modCheck()
 			}
 			for (int currentPlayer = 0; currentPlayer < g_playerCount; g_playerCount++)
 			{
-				*(long*)(&GlobalAddressA) = 8 - modMode[4];
+				*(long*)(&GlobalAddressA) = 8 - SaveGame.ModSettings.ItemMode;
 				GlobalAddressA += 4;
 			}
 		}
@@ -445,14 +444,14 @@ void moveCameraTilt(int inputDistance, int tilt)
 	GlobalCamera[0]->lookat_pos[2] = (float)(GlobalCamera[0]->lookat_pos[2] + inputDistance * cosF(FlyCamRadian));
 }
 
-//modmode[0] is > 0 then
+//SaveGame.ModSettings.PracticeMode is > 0 then
 void practiceHack()
 {
 	GlobalCharA = (d_Input & 0x0F);	 //Dpad
 	GlobalCharB = (p_Input & 0xF0) >> 4;  //LR Trigger
 	GlobalCharC = (d_Input & 0xF0) >> 4;  //AB Button
 	GlobalCharD = (p_Input & 0x0F);  //Cpad
-	if (modMode[0] == 1)
+	if (SaveGame.ModSettings.PracticeMode == 1)
 	{
 		
 		if (SplitTimerToggle > 0x00)
@@ -460,11 +459,6 @@ void practiceHack()
 			splitFunc();
 
 		}
-		if (GlobalCharA == 0x00)
-		{
-			ButtonHeld = 0x00;
-		}
-		// D-Pad Hacks.
 		if (GlobalCharD == 0x02)
 		{
 			g_player1LocationY = g_player1LocationY + 3;
@@ -473,131 +467,36 @@ void practiceHack()
 	          loadFont();
 	          printString(5,25, "FLYING");
 		}
-		/*
-		if (ButtonHeld == 0x00)
-		{
-			if (GlobalCharB == 0x02)
-			{
-				switch(GlobalCharA)
-				{
-
-					// End Split hack.
-					case 0x01 :
-					{
-
-						ButtonHeld = 1;
-						SplitEndMarker = g_progressValue;
-
-						break;
-					}
-
-					//Start Split hack.
-					case 0x02 :
-					{
-
-						ButtonHeld = 1;
-						SplitStartMarker = g_progressValue;
-						break;
-					}
-
-					// Turn Off Split Timer
-					case 0x04 :
-					{
-						SplitTimerToggle = 0x00;
-
-						ButtonHeld = 1;
-						break;
-					}
-
-					// Turn on Split Timer
-					case 0x08 :
-					{
-						SplitTimerToggle = 0x01;
-
-						break;
-					}
-				}
-			}
-			else
-			{
-				switch(GlobalCharA)
-				{
-
-					// Load Position hack.
-					case 0x01 :
-					{
-						if (SaveStateCourseID == ((HotSwapID * 0x10) + g_courseID + 1))
-						{
-							ButtonHeld = 1;
-							loadState();
-						}
-						break;
-					}
-
-					// Save Position hack.
-
-					case 0x02 :
-					{
-
-						ButtonHeld = 1;
-						SaveStateCourseID = ((HotSwapID * 0x10) + g_courseID + 1);
-						saveState();
-						break;
-					}
-
-					// Reset Timer and Lap Hack
-					case 0x04 :
-					{
-						g_gameLapPlayer1 = 0x00;
-						g_lapCheckA = 0x00;
-						g_lapCheckB = 0x00;
-
-						g_gameTimer = 90;
-						//GIVE PLAYER TRIPLE MUSHROOM
-
-						ButtonHeld = 1;
-						break;
-					}
-
-					//FASTRESET Hack
-					case 0x08 :
-					{
-						
-						g_resetToggle = 0x01;
-						ButtonHeld = 1;
-
-						break;
-					}
-				}
-			}
-		}
-		*/
 		switch(GlobalController[0]->ButtonPressed)
 		{
 			case(BTN_DLEFT):
 			{
-				GlobalStat.SlipAngle[0][1] -= 0.1;
+				SaveStateCourseID = ((HotSwapID * 0x10) + g_courseID + 1);
+				saveState();
 				break;
 			}
 			case(BTN_DRIGHT):
 			{
-				GlobalStat.SlipAngle[0][1] += 0.1;
+				if (SaveStateCourseID == ((HotSwapID * 0x10) + g_courseID + 1))
+				{
+					loadState();
+				}
 				break;
 			}
 			case(BTN_DUP):
 			{
-
-				objectPosition[0] = GlobalPlayer[0].position[0];
-				objectPosition[1] = GlobalPlayer[0].position[1];
-				objectPosition[2] = GlobalPlayer[0].position[2];
-				objectAngle[0] = 0;
-				objectAngle[1] = 0;
-				objectAngle[2] = 0;
-				objectVelocity[0] = 0;
-				objectVelocity[1] = 0;
-				objectVelocity[2] = 0;
-				MakeAlignVector(objectVelocity, (GlobalPlayer[0].direction[1] + GlobalPlayer[0].slipang));
-				MasterCreateObject(objectPosition,objectAngle, objectVelocity,47,2);
+				*(int*)(0x8007AC54) = 0;
+				g_gameLapPlayer1 = 0x00;
+				GlobalHud[0]->finlineAnim2 = 0x00;
+				GlobalHud[0]->lapCount = 0x00;				
+				GlobalHud[0]->item1 = 0;
+				GlobalHud[0]->item2 = 0;
+				g_gameTimer = 90;
+				GlobalPlayer[0].item = 0;				
+				RouletteStart(0,14);
+				*(int*)(0x8007AC54) = 0x10400009;
+				ButtonHeld = 1;
+				break;
 			}
 			case(BTN_DDOWN):
 			{
@@ -605,104 +504,68 @@ void practiceHack()
 				GlobalPlayer[0].position[0] = (float)PositionArray[0];
 				GlobalPlayer[0].position[1] = (float)PositionArray[1];
 				GlobalPlayer[0].position[2] = (float)PositionArray[2];
+				GlobalPlayer[0].direction[1] = 0x8000;
+				break;
 			}
 	
 		}
 	}
 
 
-	if (modMode[1] == 1)
+	if (SaveGame.ModSettings.FlycamMode == 1)
 	{
 		
+
 		
-		/*
-		if ((FlyCamPosition[0] == 0) && (FlyCamPosition[1] == 0))
-		{
-			FlyCamPosition[0] = g_player1LocationX;
-			FlyCamPosition[1] = g_player1LocationY;
-			FlyCamPosition[2] = g_player1LocationZ;
-		}
-		else
-		{
-			g_player1LocationX = FlyCamPosition[0];
-			g_player1LocationY = FlyCamPosition[1];
-			g_player1LocationZ = FlyCamPosition[2];
-		}
-		*/
+		
 		
 	
 			
 
-		if ((GlobalController[0]->ButtonPressed & BTN_R) == BTN_R)
+		if ((GlobalController[0]->ButtonPressed & BTN_CLEFT) == BTN_CLEFT)
 		{
-			
+			FlyCamDirection = GlobalCamera[0]->camera_direction[1];
+			FlyCamSectionCheck = g_player1Section;
+			FlyCamViewCheck = g_player1View;
 			dataLength = 0x20;
 			if (FlyCamToggle == 0)
 			{
-				*sourceAddress = (int)&ok_FreeCamBackup;
-				g_mapY -= 150;
-				g_mapX += 95;
-				
 				FlyCamToggle = 1;
-			}
-			else if (FlyCamToggle == 1)
-			{
-				FlyCamToggle = 2;
-			}
-			else if (FlyCamToggle == 2)
-			{
+				
+				
+				*(uint*)(0x802A5C98) = 0;
+				*(uint*)(0x8001EE98) = 0x03E00008;
+				*(uint*)(0x80291154) = 0x3C040000 | ((uint)(&FlyCamSection) >> 16);
+				*(uint*)(0x80291164) = 0x84840000 | ((uint)(&FlyCamSection) & 0xFFFF);
+
+
+				*(uint*)(0x800382DC) = 0x03E00008;
+				*(uint*)(0x800382E0) = 0;
+				
 				*sourceAddress = (int)0x8018CAB0;
 				*targetAddress = (int)&ok_FreeCamBackup;
 				runRAM();
 				*sourceAddress = (int)&ok_FreeCam;
-				g_mapY += 150;
-				g_mapX -= 75;
-
+				
+			}
+			else
+			{
 				FlyCamToggle = 0;
+
+				//
+				*(uint*)(0x802A5C98) = 0x0C01636D;
+				*(uint*)(0x8001EE98) = 0x27BDFFC8;
+				*(uint*)(0x80291154) = 0x01E72021;
+				*(uint*)(0x80291164) = 0x2484FFFC;
+
+				*(uint*)(0x800382DC) = 0x3C02800E;
+				*(uint*)(0x800382E0) = 0x8C42C52C;
+
+				*sourceAddress = (int)&ok_FreeCamBackup;
 			}
 			*targetAddress = (int)0x8018CAB0;
 			runRAM();
 			
-		}
-
-
-		if (FlyCamToggle == 0)
-		{
-			if (FlyCamCheck != 0)
-			{
-				FlyCamCheck = 0;				
-			}
-			*(int*)(0x8001EE98) = 0x27BDFFC8;
-			*(int*)(0x80291154) = 0x01E72021;
-			*(int*)(0x80291164) = 0x2484FFFC;
-
-			*(int*)(0x800382DC) = 0x3C02800E;
-			*(int*)(0x800382E0) = 0x8C42C52C;
-
-			FlyCamDirection = GlobalCamera[0]->camera_direction[1];
-			FlyCamSectionCheck = g_player1Section;
-			FlyCamViewCheck = g_player1View;
-		}
-		else if (FlyCamToggle == 1)
-		{
-			FlyCamCheck = 1;
-			*(int*)(0x8001EE98) = 0x03E00008;
-			*(uint*)(0x80291154) = 0x3C040000 | ((uint)(&FlyCamSection) >> 16);
-			*(uint*)(0x80291164) = 0x84840000 | ((uint)(&FlyCamSection) & 0xFFFF);
-
-			*(int*)(0x800382DC) = 0x3C02800E;
-			*(int*)(0x800382E0) = 0x8C42C52C;
-		}
-		else if (FlyCamToggle == 2)
-		{
-			FlyCamCheck = 2;
-			*(int*)(0x8001EE98) = 0x03E00008;
-			*(uint*)(0x80291154) = 0x3C040000 | ((uint)(&FlyCamSection) >> 16);
-			*(uint*)(0x80291164) = 0x84840000 | ((uint)(&FlyCamSection) & 0xFFFF);
-
-
-			*(int*)(0x800382DC) = 0x03E00008;
-			*(int*)(0x800382E0) = 0;
 		}
 
 		if (FlyCamToggle > 0)
@@ -713,8 +576,6 @@ void practiceHack()
 				printStringNumber(5,25, "SECTION-", FlyCamSectionCheck);
 				printStringNumber(5,35, "VIEW-", FlyCamViewCheck);
 				printStringNumber(5,45, "SPEED-", FlyCamSpeed);
-				printStringNumber(5,55,"StickX-", GlobalController[0]->AnalogX);
-				printStringNumber(5,65,"StickY-", GlobalController[0]->AnalogY);
 				printFloat(0,75,(float)(FlyCamSpeed * (float)((float)GlobalController[0]->AnalogY / 100)));
 				
 				switch(GlobalController[0]->ButtonPressed)
@@ -753,11 +614,6 @@ void practiceHack()
 					}
 				}
 
-				if (((GlobalController[0]->AnalogHeld & BTN_DDOWN) == BTN_DDOWN) || ((GlobalController[0]->AnalogHeld & BTN_DUP) == BTN_DUP))
-				{
-					
-				}
-
 			}	
 			else
 			{	
@@ -776,98 +632,51 @@ void practiceHack()
 						FlyCamSectionCheck++;
 						break;
 					}
-					case BTN_CLEFT:
-					{
-						if (FlyCamPilot == 0)
-						{
-							FlyCamPilot = 1;
-						}
-						else
-						{
-							FlyCamPilot = 0;
-						}
-						break;
-					}
 				
 				}
 				switch(GlobalController[0]->ButtonHeld)
 				{
 					case BTN_DUP:
 					{
-						GlobalCamera[0]->lookat_pos[1] += (FlyCamSpeed / 2);
+						GlobalCamera[0]->lookat_pos[1] += (FlyCamSpeed);
 						break;
 					}
 					case BTN_DDOWN:
 					{
-						GlobalCamera[0]->lookat_pos[1] -= (FlyCamSpeed / 2);
+						GlobalCamera[0]->lookat_pos[1] -= (FlyCamSpeed);
 						break;
 					}
 				}
 				if ((GlobalController[0]->AnalogHeld & BTN_DRIGHT) == BTN_DRIGHT)
 				{
-					rotateCamera((float)(FlyCamSpeed / 2 * (float)((float)GlobalController[0]->AnalogX / 100)));
-
-					if (FlyCamPilot == 1)
-					{
-						moveCamera(FlyCamSpeed);
-					}
-					else
-					{
-						if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
-						{
-							moveCamera(FlyCamSpeed);
-						}
-						if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
-						{
-							moveCamera(-1 * FlyCamSpeed);
-						}
-					}
+					rotateCamera((float)(FlyCamSpeed * 0.5 * (float)((float)GlobalController[0]->AnalogX / 100)));
 				}
 				else if ((GlobalController[0]->AnalogHeld & BTN_DLEFT) == BTN_DLEFT)
 				{
-					rotateCamera((float)(FlyCamSpeed / 2 * (float)((float)GlobalController[0]->AnalogX / 100)));
-
-					if (FlyCamPilot == 1)
-					{
-						moveCamera(FlyCamSpeed);
-					}
-					else
-					{
-						if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
-						{
-							moveCamera(FlyCamSpeed);
-						}
-						if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
-						{
-							moveCamera(-1 * FlyCamSpeed);
-						}
-					}
+					rotateCamera((float)(FlyCamSpeed * 0.5 * (float)((float)GlobalController[0]->AnalogX / 100)));
+				}
+				
+				if (FlyCamPilot == 1)
+				{
+					moveCamera(FlyCamSpeed);
 				}
 				else
 				{
-					if (FlyCamPilot == 1)
+					if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
 					{
-						moveCamera(FlyCamSpeed);
+						moveCamera(2 * FlyCamSpeed);
 					}
-					else
+					if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
 					{
-						if ((GlobalController[0]->ButtonHeld & BTN_A) == BTN_A)
-						{
-							moveCamera(2 * FlyCamSpeed);
-						}
-						if ((GlobalController[0]->ButtonHeld & BTN_B) == BTN_B)
-						{
-							moveCamera(-2 * FlyCamSpeed);
-						}
+						moveCamera(-2 * FlyCamSpeed);
 					}
-					
-				}
-				
+				}				
 				if (((GlobalController[0]->AnalogHeld & BTN_DDOWN) == BTN_DDOWN) || ((GlobalController[0]->AnalogHeld & BTN_DUP) == BTN_DUP))
-				{
-					GlobalCamera[0]->camera_pos[1] += (float)(FlyCamSpeed / 3 * (float)((float)GlobalController[0]->AnalogY / 100));
-					GlobalCamera[0]->lookat_pos[1] += (float)(FlyCamSpeed / 3 * (float)((float)GlobalController[0]->AnalogY / 100));
+				{					
+					GlobalCamera[0]->lookat_pos[1] += (float)(FlyCamSpeed * 1 * (float)((float)GlobalController[0]->AnalogY / 100));
+					GlobalCamera[0]->camera_pos[1] += (float)(FlyCamSpeed * 1 * (float)((float)GlobalController[0]->AnalogY / 100));
 				}
+
 			}
 		}
 
@@ -903,7 +712,7 @@ void practiceHack()
 
 	//devmode
 
-	if (modMode[0] == 2)
+	if (SaveGame.ModSettings.PracticeMode == 2)
 	{
 		printMap(MapMode);
 		if (GlobalCharA == 0x00)

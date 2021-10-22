@@ -108,7 +108,7 @@ void checkAI()
 {
      if (GlobalCharB > 0x00)
 	{
-		switch (gameMode[6])
+		switch (SaveGame.GameSettings.AIMode)
 		{
 			case 0x01 :
 			{
@@ -163,7 +163,7 @@ void checkAI()
 
 void aiSetup()
 {
-     if (gameMode[6] > 0x00)
+     if (SaveGame.GameSettings.AIMode > 0x00)
 	{
 		player2OK = 0X01;
 		player3OK = 0x01;
@@ -176,7 +176,7 @@ void aiSetup()
 
 
 
-	if ((gameMode[6] > 0x00) && (g_startingIndicator >= 0x02))
+	if ((SaveGame.GameSettings.AIMode > 0x00) && (g_startingIndicator >= 0x02))
 	{
 		GlobalCharB = 0x01;
 	}
@@ -184,8 +184,12 @@ void aiSetup()
 	{
 		GlobalCharB = 0x00;
 	}
+     if ((g_loadedcourseFlag == 0xFF) || (g_startingIndicator > 3))
+     {
+          GlobalCharB = 0x00;
+     }
 
-     if (gameMode[6] == 0x02)
+     if (SaveGame.GameSettings.AIMode == 0x02)
      {
           fastAI();
      }

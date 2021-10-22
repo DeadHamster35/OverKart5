@@ -23,8 +23,8 @@
 .include "data\ModelData\ModelData.asm"
 .include "data\NewLogo\logo.asm"
 
-//.org 0xBFFFFC
-//.word 0x100000
+.org 0xBFFFFC
+.word 0xF00000
 
 .org 0x113FBA
 .halfword 0x8080
@@ -35,6 +35,25 @@
 J SnowHook
 NOP
 
+.org 0x0FBA68
+J DisplayMap2Hook
+NOP
+
+
+.org 0x123B0C
+JAL MapStartup
+.org 0x0036F4
+JAL MapStartup
+.org 0x12506C
+JAL MapStartup
+
+
+.org 0x0051E8
+JAL DisplayCrashScreen
+.org 0x5200
+NOP
+.org 0x5240
+NOP
 
 
 
@@ -46,10 +65,28 @@ LB t2, -1(v0)
 .halfword hi(DisplayHopTable)
 .org 0x10C7EA
 .halfword lo(DisplayHopTable)
+.org 0x10C7D6
+.halfword(100)
 
 
 .org 0x10CB44
 J FreeDraw
+
+
+//PlayStarMusicHook
+.org 0x90420
+JAL PlayStarMusicHook
+
+//StopStarMusicHook
+.org 0x904B4
+JAL StopStarMusicHook
+
+.org 0x902D8
+JAL StopStarMusicHook
+
+//PlayFinalLapMusicHook
+.org 0xF8954
+JAL PlayFinalLapMusicHook
 
 
 
@@ -57,6 +94,8 @@ J FreeDraw
 .halfword hi(CollisionHopTable)
 .org 0x109AB2
 .halfword lo(CollisionHopTable)
+.org 0x109A92
+.halfword(100)
 
 
 
@@ -314,7 +353,7 @@ NOP
 .align 0x10
 PrintMenuHook:
 LW ra, 0x14 (sp)
-SW ra, 0x001C (sp)
+SW ra, 0x1C (sp)
 JAL PrintMenuFunction
 NOP
 J 0x80001F64
@@ -331,6 +370,27 @@ NOP
 LW ra, 0x001C (sp) //pop ra from the stack
 ADDIU sp, sp, 0x20
 J 0x800786B8
+NOP
+
+.align 0x10
+DisplayMap2Hook:
+SW ra, 0x001C(sp)
+LW a0, 0x270(sp)
+JAL XLUDisplay
+NOP
+LW ra, 0x001C(sp)
+addiu sp, sp, 0x270
+JR ra
+NOP
+
+.align 0x10
+InitialMapHook:
+SW ra, 0x001C(sp)
+ADDIU sp, sp, -0x20
+JAL MapStartup
+LW ra, 0x001C(sp)
+ADDIU sp, sp, 0x20
+JR ra
 NOP
 
 .include "..\Library\LIBRARYBUILD.asm"
@@ -441,15 +501,20 @@ CollisionHopTable:
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0 //99
-.align 0x10
+
+
+
 
 EndRAMData:
 
 
 
 
+
 .headersize 0
-.align 0x10
+
+
+
 previewN:
 .import "textures\\preview_n.mio0.bin"       ;;  c10
 .align 0x10
@@ -460,15 +525,20 @@ LogoROM:
 .import "data\\logo.bin" ;; 0xD388
 .align 0x10
 Pirate:
-.import "Data\test\512x240.bin"
+.import "Data\test\Pirate512.MIO0"
 .align 0x10
 PirateEnd:
+
+Crash:
+.import "Data\test\Crash512.bin"
+.align 0x10
+CrashEnd:
+
 ModelDataStart:
 .import "data\\ModelData\\ModelData.bin"
 .align 0x10
 ModelDataEnd:
 
-.align 0x10
 RCSpriteROM:
 .import "data\\RedCoinSprite16.png.MIO0" ;; 0x4F0
 .align 0x10
@@ -480,6 +550,7 @@ TitleMenuFrameROM:
 .align 0x10
 NumbersSpriteROM:
 .import "data\\number_sprites.png.MIO0" ;; 0x1600
+.align 0x10
 JP_Bank:
 .import "data\\JP_Bank.bin"
 .align 0x10
@@ -490,6 +561,6 @@ JP_Audio:
 
 
 
-.org 0xFFFFFC
-.word 35
+.org 0xEFFFFC
+.word 0xFFFFFFFF
 .close

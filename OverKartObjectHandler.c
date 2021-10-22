@@ -14,8 +14,7 @@ void loadCoin()
 	*sourceAddress = (int)(&ok_FreeSpace);
 	*targetAddress = (int)(&ok_ModelData);
 	runMIO();
-	//
-	//
+	
 	*sourceAddress = (int)(&RCSpriteROM);
 	*targetAddress = (int)(&ok_FreeSpace);
 	dataLength = 0x204;
@@ -23,14 +22,13 @@ void loadCoin()
 	*sourceAddress = (int)(&ok_FreeSpace);
 	*targetAddress = (int)(&ok_RedCoinSprite);
 	runMIO();
+	
 }
 
 
 
 void DisplayObject(void *Car, Object *InputObject)
 {
-	//camera goes unused but is passed by the game's internal function
-
 	GlobalAddressA = *(long*)(&InputObject);
 	GlobalAddressB = (long)&RedCoin;
 	//UpdateObjectVelocity(Object);
@@ -81,7 +79,7 @@ int RedCoinCollide(void *Car, void *Coin)
 
 int CollideObject(void *Camera, void *Object)
 {
-	
+	return RedCoinCollide(Camera,Object);
 	objectIndex = (short)((*(long*)(*(long*)(&Object)) >> 16) & 0x0000FFFF);
 	switch (objectIndex)
 	{
@@ -102,37 +100,21 @@ int CollideObject(void *Camera, void *Object)
 }
 void RedCoinChallenge(long PathOffset)
 {
-	*tempPointer = PathOffset;
-	*sourceAddress = (long)&CoinPositions;
-	*targetAddress = (long)&objectPosition;
+	
+	*(uint*)(0x80650000) = PathOffset;
+	*(uint*)(0x80650004) = (uint)&CoinPositions;
+	GlobalShortA = 1;
+	if (g_mirrorMode == 1)
+	{
+		GlobalShortA = -1;
+	}
 	for (int currentCoin = 0; currentCoin < 8; currentCoin++)
 	{		
-		CoinPositions[currentCoin][0] = *(short*)(PathOffset);
-		CoinPositions[currentCoin][1] = *(short*)(PathOffset + 2);
-		CoinPositions[currentCoin][2] = *(short*)(PathOffset + 4);
-		
-		if (CoinPositions[currentCoin][0] == 0xFFFF8000)
-		{
-			if (currentCoin < 7)
-			{
-				return; //if there's not 8 coins don't run the function.
-			}
-			else
-			{
-				break;
-			}
-		}
-		PathOffset = PathOffset + 8;
-	}
-
-	//two loops for above return; ensure 8 coins.
-
-	for (int currentCoin = 0; currentCoin < 8; currentCoin++)
-	{
-		objectPosition[0] = (float)CoinPositions[currentCoin][0];		
-		objectPosition[1] = (float)CoinPositions[currentCoin][1];
-		objectPosition[2] = (float)CoinPositions[currentCoin][2];
+		objectPosition[0] = *(short*)(PathOffset);
+		objectPosition[1] = *(short*)(PathOffset + 2);
+		objectPosition[1] = objectPosition[1] * GlobalShortA;
+		objectPosition[2] = *(short*)(PathOffset + 4);
 		CreateObject(objectPosition,47);
+		PathOffset += 8;
 	}
-
 }

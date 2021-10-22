@@ -19,7 +19,7 @@ void loadCoinSprite()
 {
 	*sourceAddress = (int)(&RCSpriteROM);
 	*targetAddress = (int)(&ok_FreeSpace);
-	dataLength = 0x204;
+	dataLength = 0x100;
 	runDMA();
 	*sourceAddress = (int)(&ok_FreeSpace);
 	*targetAddress = (int)(&ok_menucoinsprite);
@@ -72,7 +72,7 @@ void loadTitleMenuFrame()
 
 void setAlwaysAdvance()
 {
-	if (gameMode[3] == 1)
+	if (SaveGame.GameSettings.GPMode == 1)
 	{
        	g_placedBadGPadvance = 0x00;
 	}

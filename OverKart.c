@@ -2,6 +2,7 @@
 #include "OKInclude.h"
 
 
+
 void loadLogo()
 {
 	SetSegment(8,(int)(&ok_Logo));
@@ -20,7 +21,6 @@ void loadLogo()
 void okSetup(void)
 {
 	
-	loadHeaderOffsets();
 
 	SaveFunc800B45E0 = 0x03E0000800000000;
 	SaveFunc800B4670 = 0x03E0000800000000;
@@ -31,6 +31,8 @@ void okSetup(void)
 	ConsolePlatform = CheckPlatform();
 	EmulatorPlatform = CheckEmulator();	
 	
+	loadHeaderOffsets();
+
 	if (SwopCheck == 0x11342067)
 	{
 		StopSwop = true;
@@ -50,8 +52,8 @@ void okSetup(void)
 	
 	if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
 	{
-		gameMode[0] = 2;
-		modMode[0] = 2;
+		SaveGame.GameSettings.GameMode = 2;
+		SaveGame.ModSettings.PracticeMode = 2;
 	}
 
 	
@@ -62,6 +64,11 @@ void okSetup(void)
 
 	*sourceAddress = (long)((long)(&g_InstrumentTable) + (3 * 8) + 4);
 	*targetAddress = (long)&ok_Instrument;
+	runRAM();
+
+	*sourceAddress = (int)&g_BombTable;
+	*targetAddress = (long)&ok_Bomb;	
+	dataLength = 0xA8;
 	runRAM();
 	
 	
@@ -119,7 +126,6 @@ void okSetup(void)
 	
 	FreeSpaceAddress = (int)&ok_Storage;
 	SaveGame.TENNES = false;
-	
 }
 
 bool checkEndGame()
@@ -130,7 +136,7 @@ bool checkEndGame()
 		{
 			return true;
 		}
-		else if (gameMode[4] == 1)
+		else if (SaveGame.GameSettings.GPMode == 1)
 		{
 			return true;
 		}
@@ -145,7 +151,7 @@ bool checkEndGame()
 		{
 			return true;
 		}
-		else if (gameMode[4] == 1)
+		else if (SaveGame.GameSettings.GPMode == 1)
 		{
 			return true;
 		}
@@ -164,19 +170,32 @@ void startRace()
 	
 	if (HotSwapID > 0)
 	{
-		setSky();
-		loadMinimap();		
-		scrollLock = true;		
-		if ((gameMode[0] == 2) && (g_menuMultiplayerSelection == 1))
+		if (g_gameMode != 0)
 		{
-        	
-			GlobalAddressA = GetRealAddress(ok_RedCoinList);
+			gpCourseIndex = 0;
+		}
+		
+		EmptyActionData();
+		setSky();
+		loadMinimap();				
+		if ((SaveGame.GameSettings.GameMode == 2))
+		{        	
+			GlobalAddressA = GetRealAddress(0x060009D8);
 			RedCoinChallenge(GlobalAddressA);
 			CoinCount = 0;
+		}		
+		if (VersionNumber > 4)
+		{
+			for (int This = 0; This < 100; This++)
+			{
+				ClearOKObject(This);
+			}
+			loadOKObjects();
+			setOKObjects();					
+			loadTextureScrollTranslucent();
 		}
-		GlobalBoolD = false;
 	}
-
+	
 
 }
 
@@ -187,18 +206,23 @@ void endRace()
 		if (checkEndGame())
 		{
 			scrollLock = false;
+		}
+		if (!scrollLock)
+		{				
 			g_loadedcourseFlag = 0xF0;
 			gpTotalTime += g_TrialTime;
 			gpCourseIndex++;
-			if (HotSwapID > 0)
-			{
-				courseValue++;
-				loadHotSwap(courseValue);
-			}
 		}
 	}
 }
 
+void MapStartup(short InputID)
+{
+	LoadCustomHeader(courseValue + gpCourseIndex);
+	SetCustomData();
+	LoadMapData(InputID);
+	
+}
 
 
 
@@ -210,41 +234,37 @@ void gameCode(void)
 	}
 	else
 	{
-		printAnticheat(true);
 		
-		if (modMode[0] > 0 || modMode[1] > 0)
+		
+		if (SaveGame.ModSettings.PracticeMode > 0 || SaveGame.ModSettings.FlycamMode > 0)
 		{
 			practiceHack();
 		}
-		if (modMode[2] > 0x00)
+		if (SaveGame.ModSettings.InputMode > 0x00)
 		{
 			drawInputDisplay();
 		}
 
-		if (modMode[3] > 0x00)
+		if (SaveGame.ModSettings.DetailMode > 0x00)
 		{
 			printDetails();
 		}
 
 		
-		if ((HotSwapID > 0) & (VersionNumber > 3))  //Version 4 Texture Scroll Function
-		{
-			if (scrollLock)
+		if (HotSwapID > 0)  //Version 4 Texture Scroll Function
+		{			
+			if ((g_gamePausedFlag == 0) && (scrollLock))
 			{
 				runTextureScroll();
-				
-			}	
-			if ((VersionNumber > 4) & (g_gamePausedFlag == 0))
-			{			
+				CheckOKObjects();		
 				runDisplayScreen();
 				CheckPaths();
-				CheckOKObjects();
 				GetSurfaceID();			
 			}	
 		}
 		
 
-		if ((HotSwapID > 0) || (renderMode[3] == 1))
+		if ((HotSwapID > 0) || (SaveGame.RenderSettings.DrawMode == 1))
 		{
 			g_farClip = 20000;
 		}
@@ -275,31 +295,36 @@ void gameCode(void)
 		if (g_startingIndicator == 0x02)
 		{
 			raceStatus = 0x02;
-
+			scrollLock = true;
 			
-			if ( (HotSwapID > 0) & (GlobalShortD < 60))
-			{			
-				loadFont();
-				GlobalIntA = *(long*)(&ok_Credits);
-				if (GlobalIntA != 0)
-				{		
-							
-					printString( (140 - (GlobalIntA * 4)), 150, (char*)(&ok_Credits + 1));
-				}
-				GlobalIntA = *(long*)(&ok_SerialKey);
-				if ((gameMode[0] == 1) & (GlobalIntA != 0))
+			if (GlobalShortD < 60)
+			{	
+				printAnticheat(true);		
+				if  (HotSwapID > 0)
 				{
-					printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
-					printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
-				}			
-				if (g_gameMode == 0x00)
-				{
-					printGPTime(gpTotalTime,0);
-					if (HotSwapID > 0)
+					loadFont();
+					GlobalIntA = *(long*)(&ok_Credits);
+					if (GlobalIntA != 0)
+					{		
+								
+						printString( (140 - (GlobalIntA * 4)), 150, (char*)(&ok_Credits + 1));
+					}
+					GlobalIntA = *(long*)(&ok_SerialKey);
+					if ((SaveGame.GameSettings.GameMode == 1) & (GlobalIntA != 0))
 					{
-						hsTableSet();
-					}				
+						printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
+						printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
+					}			
+					if (g_gameMode == 0x00)
+					{
+						printGPTime(gpTotalTime,0);
+						if (HotSwapID > 0)
+						{
+							hsTableSet();
+						}				
+					}
 				}
+				
 
 				GlobalShortD += 1;
 			}
@@ -317,7 +342,7 @@ void gameCode(void)
 		{
 			raceStatus = 0x03;
 
-			if ((gameMode[0] == 2) && (HotSwapID > 0) && (g_menuMultiplayerSelection == 1))
+			if ((SaveGame.GameSettings.GameMode == 2) && (HotSwapID > 0) && (g_menuMultiplayerSelection == 1))
 			{
 				DisplayCoinSprite();			
 			}
@@ -329,7 +354,6 @@ void gameCode(void)
 			if (raceStatus != 0x05)
 			{
 				raceStatus = 0x05;
-				endRace();
 			}
 			if (g_gameMode == 0x00)
 			{
@@ -340,7 +364,7 @@ void gameCode(void)
 		if (g_startingIndicator == 0x07)
 		{
 			raceStatus = 0x07;
-			
+			endRace();
 		}	
 		
 	}
@@ -373,10 +397,12 @@ void allRun(void)
 	
 	
 	
+	
+	
 
 
 
-	if (gameMode[5] > 0x00)
+	if (SaveGame.GameSettings.CupMode > 0x00)
 	{
 
 		asm_CupCount = 15;
@@ -396,13 +422,13 @@ void allRun(void)
 		}
 	}
 	
-	if (OverKartHeader.Version != 0xFFFFFFFF)
-	{
-		SetCloudType((char)OverKartHeader.SkyType);
-		SetWeatherType((char)OverKartHeader.WeatherType);
-		SetWeather3D(OverKartHeader.SkyType == 3);
-		SetWaterType((char)OverKartHeader.WaterType);
-	}
+	
+	
+	SetCloudType((char)OverKartHeader.SkyType);
+	SetWeatherType((char)OverKartHeader.WeatherType);
+	SetWeather3D(OverKartHeader.SkyType == 3);
+	SetWaterType((char)OverKartHeader.WaterType);
+	
 	
 	
 	if (SYSTEM_Region == 0x01)
@@ -428,11 +454,15 @@ void allRun(void)
 	switch(KBGNumber)
 	{
 		case 10:
-		{
+		{			
+			scrollLock = false;
+			g_startingIndicator = 0;
 			if (MenuChanged != 10)
 			{	
+				SetFontColor(26,26,29,12,12,15);
 				MenuChanged = 10;
-
+				SaveGame.TENNES = DPR();
+				DPRSave();
 				if ((SaveGame.SaveVersion != 3) && (SaveGame.SaveVersion != 99))
 				{
 					SaveGame.SaveVersion = 3;	
@@ -441,16 +471,14 @@ void allRun(void)
 						renderMode[This] = 0;
 						modMode[This] = 0;
 						gameMode[This] = 0;
-					}		
-					gameMode[4] = 1;
-					renderMode[1] = 1;
-					renderMode[2] = 0;
+					}
+					SaveGame.RenderSettings.AliasMode = 1;
 
 					if (!ConsolePlatform)
 					{
-						renderMode[4] = 1;
+						SaveGame.RenderSettings.TempoMode = 1;
 					}
-					SaveGame.TENNES = DPR();
+					
 					
 				}
 			}
@@ -458,6 +486,8 @@ void allRun(void)
 		}
 		case 11:
 		{
+			scrollLock = false;
+			g_startingIndicator = 0;
 			if (MenuChanged != 11)
 			{
 				MenuChanged = 11;
@@ -469,6 +499,7 @@ void allRun(void)
 		}
 		case 12:
 		{
+			scrollLock = false;
 			//PlayerSelectMenu((short)gameMode[1]);
 			//PlayerSelectMenuStart();
 			MenuChanged = 12;
@@ -477,6 +508,8 @@ void allRun(void)
 		}			
 		case 13:
 		{
+			scrollLock = false;
+			g_startingIndicator = 0;
 			if (MenuChanged != 13)
 			{
 				MenuChanged = 13;
@@ -535,25 +568,46 @@ void allRun(void)
 
 }
 void PrintMenuFunction()
-{		
+{	
 	if(SaveGame.TENNES)
-	{
+	{		
 		if (SaveGame.SaveVersion != 99)
 		{
 			SaveGame.SaveVersion = 99;
-			*sourceAddress = (int)(&LogoROM);
+			*sourceAddress = (int)(&Pirate);
 			*targetAddress = (int)(&ok_FreeSpace);
-			dataLength = PirateEnd - Pirate;
+			dataLength = (int)&PirateEnd - (int)&Pirate;
 			runDMA();
 			*sourceAddress = (int)(&ok_FreeSpace);
-			*targetAddress = (int)(&ok_Logo);
+			*targetAddress = (int)(&ok_Storage);
 			runMIO();
 		}
-		KWSpriteDiv(256,120,(ushort*)&ok_Logo,512,240,4);
+		KWSpriteDiv(256,120,(ushort*)&ok_Storage,512,240,4);
 	}
-
-	//loadFont();
-	//printStringUnsignedHex(0,10,"",(long)(&ok_FreeSpace));
 }
 
+void DisplayCrashScreen()
+{
+	/*
+	*sourceAddress = (uint)&Crash;
+	*targetAddress = *(uint*)0x80162D5C;
+	dataLength = (uint)&CrashEnd - (uint)&Crash;
+	runRAM();*/
+
+	*sourceAddress = (int)(&Crash);
+	*targetAddress = *(uint*)0x80162D5C;
+	dataLength = (int)&CrashEnd - (int)&Crash;
+	runDMA();
+	//KWSpriteDiv(256,120,(ushort*)&Crash,512,240,4);
+	//DrawBox(0,320,0,240,255,0,0,255);
+}
+
+
+void XLUDisplay(Screen* PlayerScreen)
+{	
+	if ((OverKartHeader.Version > 4) && (HotSwapID > 0))
+	{	
+		DisplayGroupmap(GetRealAddress(SegmentAddress(6,OverKartHeader.XLUSectionViewPosition)), PlayerScreen);
+	}
+}
 

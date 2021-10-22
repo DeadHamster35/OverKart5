@@ -31,7 +31,7 @@ extern char *renderOptions[];
 extern char *renderParameters[][2];
 extern int renderLimits[];
 extern int renderChar[][2];
-
+extern int SaveStateCourseID;
 extern int pageLimit[];
 
 extern float AnalogInput[2];
@@ -72,7 +72,6 @@ extern short baseTurn, addTurn;
 //OKCustom Objects
 
 
-extern char EndPoint;
 
 
 

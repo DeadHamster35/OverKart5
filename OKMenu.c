@@ -47,7 +47,7 @@ void printDetails()
           printString(MenuPosition[0],MenuPosition[1]+20,"Z:");
           printString(MenuPosition[0],MenuPosition[1]+30,"A:");
 
-          if (modMode[3] == 1)
+          if (SaveGame.ModSettings.DetailMode == 1)
           {
                printString(MenuPosition[0]+87,MenuPosition[1]," SX:");
                printString(MenuPosition[0]+87,MenuPosition[1]+10," SY:");
@@ -167,7 +167,7 @@ void printDetails()
                {
                     case 0x00:
                     {
-                         if (modMode[3] == 1)
+                         if (SaveGame.ModSettings.DetailMode == 1)
                          {
                               wholeNumber = (int) g_player1SpeedX;
                               decimalNumber = (int) ((g_player1SpeedX - wholeNumber) * 1000);
@@ -181,7 +181,7 @@ void printDetails()
                     }
                     case 0x01:
                     {
-                         if (modMode[3] == 1)
+                         if (SaveGame.ModSettings.DetailMode == 1)
                          {
                               wholeNumber = (int) g_player1SpeedY;
                               decimalNumber = (int) ((g_player1SpeedY - wholeNumber) * 1000);
@@ -195,7 +195,7 @@ void printDetails()
                     }
                     case 0x02:
                     {
-                         if (modMode[3] == 1)
+                         if (SaveGame.ModSettings.DetailMode == 1)
                          {
                               wholeNumber = (int) g_player1SpeedZ;
                               decimalNumber = (int) ((g_player1SpeedZ - wholeNumber) * 1000);
@@ -247,13 +247,13 @@ void printDetails()
                {
                     printOffsetB = printOffsetB + 8;
                }
-               if ((loop == 2) && (modMode[3] == 2))
+               if ((loop == 2) && (SaveGame.ModSettings.DetailMode == 2))
                {
                     printOffsetB = printOffsetB + 8;
                }
                printOffsetA = 48;
 
-               if ((modMode[3] == 1) | (loop == 3))
+               if ((SaveGame.ModSettings.DetailMode == 1) | (loop == 3))
                {
                     if (decimalNumber < 100)
                     {
@@ -267,7 +267,7 @@ void printDetails()
                }
 
                printStringNumber(MenuPosition[0]+printOffsetB,MenuPosition[1],"",wholeNumber);
-               if ((modMode[3] == 1) | (loop == 3))
+               if ((SaveGame.ModSettings.DetailMode == 1) | (loop == 3))
                {
                     printString(MenuPosition[0]+printOffsetA,MenuPosition[1],".");
                     printStringNumber(MenuPosition[0]+printOffsetA-4+printOffsetC,MenuPosition[1],"",decimalNumber);
@@ -286,7 +286,7 @@ void printAnticheat()
 {
      loadPosition();
      
-     if (modMode[0] == 0x01)
+     if (SaveGame.ModSettings.PracticeMode == 0x01)
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (12 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
@@ -294,17 +294,17 @@ void printAnticheat()
           printString(MenuPosition[0],MenuPosition[1], "Practice  ON");
 
      }     
-     if (modMode[4] > 0)
+     if (SaveGame.ModSettings.ItemMode > 0)
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (11 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
 
           printString(MenuPosition[0],MenuPosition[1], "Force Items");
      }
-     else if (gameMode[6] > 0x00)
+     else if (SaveGame.GameSettings.AIMode > 0x00)
      {
 
-          switch (gameMode[6])
+          switch (SaveGame.GameSettings.AIMode)
           {
                // PRACTICE BUILD overlay text.
                case 0x01 :
@@ -323,7 +323,7 @@ void printAnticheat()
                }
           }
      }
-     else if ((gameMode[1] == 1) & (gameMode[0] != 1))
+     else if ((SaveGame.GameSettings.StatsMode == 1) && ((SaveGame.GameSettings.GameMode != 1) || (HotSwapID == 0)) )
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (11 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
@@ -544,12 +544,13 @@ void printMenu()
           }
      }
      
-     SetFontColor(26,26,29,12,12,15);
-     loadFont();
 
      LoopValue = 0;
      MenuPosition[0] = 138 - (menuChar[MenuIntA] * 4);
      
+     
+     
+     loadFont();
      
      
      printString(MenuPosition[0],0,menuNames[MenuIntA]);
@@ -620,31 +621,12 @@ void printMenu()
           {
                break;
           }
+          
      }
 
 
      
      
-     if (ConsolePlatform)
-     {
-          GlobalIntA = 12;
-          GlobalIntB = 200;
-          printString(GlobalIntA*2,GlobalIntB - 5,"N64 ");
-     }
-     else
-     {
-          if (EmulatorPlatform)
-          {               
-               printString(0,195,"PROJECT64");               
-          }
-          else
-          {
-               printString(16,195,"MUPEN");
-          }
-     }
-        
-
-     printString(0,205,"BUILD 5.0");
 
 
 
@@ -698,12 +680,16 @@ void printMenu()
      g_mpressstartID = 0;
      g_mracewayTime = 0;
 
+
+     
+
 }
 
 
 
 void titleMenu(void)
 {
+     
      
      if (!GlobalBoolA)
      {
@@ -867,7 +853,7 @@ void titleMenu(void)
      
 
      // Now print the menu using the menuFlag and parameterFlag options above.
-     if ((gameMode[1] == 1) || (gameMode[0] == 1))
+     if ((SaveGame.GameSettings.StatsMode == 1) || (SaveGame.GameSettings.GameMode == 1))
      {
           checkStats(1);
      }
@@ -875,15 +861,28 @@ void titleMenu(void)
      {
           checkStats(0);
      }
+     loadFont();
+     if (ConsolePlatform)
+     {
+          printString(24,190,"N64 ");
+     }
+     else
+     {
+          if (EmulatorPlatform)
+          {               
+               printString(0,190,"PROJECT64  ");               
+          }
+          else
+          {
+               printString(16,190,"MUPEN   ");
+          }
+     }
+        
+
+     printString(0,200,"BUILD 5.1   ");
+
      printMenu();
 
-     
-     //
-     //
-     //
-     // End of TITLE MENU code
-
-     // This handles the FASTRESET hack in the Dpad Menu g_InGame
 
 
 

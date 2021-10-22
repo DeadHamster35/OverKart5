@@ -11,32 +11,19 @@ char* gameMode = (char*)&SaveGame.GameSettings;
 char* modMode = (char*)&SaveGame.ModSettings;
 char* renderMode = (char*)&SaveGame.RenderSettings;
 
-char *menuNames[] = {"Game Options", "Mod Options","Render Options","Cup Editor"};
 int menuChar[] = {12,11,14,10};
-char *cupNames[] = {"Mushroom Cup","Flower Cup","Star Cup","Special Cup"};
 int cupChar[] = {12,10,8,11};
-char *courseNames[] = {"Mario Raceway", "Choco Mountain", "Bowser Castle", "Banshee Boardwalk","Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway",
-"Luigi Raceway", "Moo Moo Farm", "Toad Turnpike","Kalimari Desert","Sherbet Land","Rainbow Road","Wario Stadium", "Block Fort", "Skyscraper", "Double Deck", "DK Jungle Parkway","Big Donut"};
 int courseChar[] = {13,14,13,17,12,15,18,13,13,12,13,15,11,12,13,10,10,11,17,9};
 
-
-char *gameOptions[] = {"Game Mode", "Racer Stats", "Audio Mode", "Mirror Mode", "GP Always Advance", "All Cup", "Multiplayer"};
-char *gameParameters[][3] = {{"Default", "Time Trial", "Coin Mode"}, {"Classic", "Equal"}, {"USA", "JP"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
 int gameLimits[] = {2,1,1,1,1,1,1};
 int gameChar[][3] = {{7,10,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {3,2}, {7,4}};
 
-char *modOptions[] = {"Practice Mode", "Flycam", "Input Display", "Details", "Force Items"};
-char *modParameters[][14] = {{"Off", "On", "Map", "Dev"}, {"Off" , "On"}, {"Off" , "On"}, {"Off","On","Shortcut"},
-{"Default","8th","7th","6th","5th","4th","3rd","2nd","1st","Banana","3 G. Shell", "3 R. Shell", "Star", "3 Shroom"}
-};
 int modLimits[] = {2,1,1,2};
 int modChar[][14] = {{3,2,3,3}, {3,2}, {3,2}, {3,2,8}, {7,3,3,3,3,3,3,3,3,6,10,10,4,8}};
 
-char *renderOptions[] = {"Widescreen", "Anti-Alias",  "Screen Split", "Draw Dist.", "Game Tempo"};
-char *renderParameters[][2] = { {"Off" , "On"}, {"Off" , "On"},  {"Horizontal", "Vertical"}, {"Default","Extended"}, {"Console","Emulator"}};
 int renderLimits[] = {1,1,1,1,1};
 int renderChar[][2] = { {3,2}, {3,2}, {10,8}, {7,8}, {7,8}};
-
+int SaveStateCourseID;
 int pageLimit[] = {7,4,5,5};  // GAME - MOD - RENDER - CUP EDITOR
 
 
@@ -65,15 +52,11 @@ short FlyCamSpeed = 5;
 
 
 
+char *menuNames[] = {"Game Options", "Mod Options","Render Options","Cup Editor"};
+char *cupNames[] = {"Mushroom Cup","Flower Cup","Star Cup","Special Cup"};
+char *courseNames[] = {"Mario Raceway", "Choco Mountain", "Bowser Castle", "Banshee Boardwalk","Yoshi Valley", "Frappe Snowland", "Koopa Troopa Beach", "Royal Raceway",
+"Luigi Raceway", "Moo Moo Farm", "Toad Turnpike","Kalimari Desert","Sherbet Land","Rainbow Road","Wario Stadium", "Block Fort", "Skyscraper", "Double Deck", "DK Jungle Parkway","Big Donut"};
 
-//InputDisplay Variables
-char *names[] = {
-	"A", "B", "Z", "S",
-	"U", "D", "L", "R", // draw d-pad
-	"", "", //unused bits
-	"L", "R",
-	"U", "D", "L", "R" //C buttons
-};
 char colors[][3] = {
 	{  0, 192, 255}, //A: blue
 	{  0, 255,   0}, //B: green
@@ -99,9 +82,6 @@ char coords[][2] = {
 	{5, 2}, //C down
 	{4, 1}, //C left
 	{6, 1}  //C right
-};
-char *stickNames[] = {
-	"U", "D", "L", "R","S"
 };
 char stickColor[][3] = {
 	{192, 192, 192},
@@ -131,11 +111,26 @@ short baseTurn, addTurn = 0;
 
 
 
+char *gameOptions[] = {"Game Mode", "Racer Stats", "Audio Mode", "Mirror Mode", "GP Always Advance", "All Cup", "Multiplayer"};
+char *gameParameters[][3] = {{"Default", "Time Trial", "Coin Mode"}, {"Classic", "Equal"}, {"USA", "JP"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
 
+char *modOptions[] = {"Practice Mode", "Flycam", "Input Display", "Details", "Force Items"};
+char *modParameters[][14] = {{"Off", "On", "Map", "Dev"}, {"Off" , "On"}, {"Off" , "On"}, {"Off","On","Shortcut"},
+{"Default","8th","7th","6th","5th","4th","3rd","2nd","1st","Banana","3 G. Shell", "3 R. Shell", "Star", "3 Shroom"}
+};
 
+char *renderOptions[] = {"Widescreen", "Anti-Alias",  "Screen Split", "Draw Dist.", "Game Tempo"};
+char *renderParameters[][2] = { {"Off" , "On"}, {"Off" , "On"},  {"Horizontal", "Vertical"}, {"Default","Extended"}, {"Console","Emulator"}};
 
+//InputDisplay Variables
+char *names[] = {
+	"A", "B", "Z", "S",
+	"U", "D", "L", "R", // draw d-pad
+	"", "", //unused bits
+	"L", "R",
+	"U", "D", "L", "R" //C buttons
+};
 
-
-//
-//
-char EndPoint;
+char *stickNames[] = {
+	"U", "D", "L", "R","S"
+};
