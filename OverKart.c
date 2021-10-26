@@ -167,7 +167,7 @@ bool checkEndGame()
 void startRace()
 {
 	setZoomLevel(1); //Just for Amped Up (All races start zoomed out)
-	
+	g_loadedcourseFlag = 0xF0;
 	if (HotSwapID > 0)
 	{
 		if (g_gameMode != 0)
@@ -177,6 +177,7 @@ void startRace()
 		
 		EmptyActionData();
 		setSky();
+		setWater();
 		loadMinimap();				
 		if ((SaveGame.GameSettings.GameMode == 2))
 		{        	
@@ -208,8 +209,7 @@ void endRace()
 			scrollLock = false;
 		}
 		if (!scrollLock)
-		{				
-			g_loadedcourseFlag = 0xF0;
+		{	
 			gpTotalTime += g_TrialTime;
 			gpCourseIndex++;
 		}
@@ -568,7 +568,7 @@ void allRun(void)
 
 }
 void PrintMenuFunction()
-{	
+{
 	if(SaveGame.TENNES)
 	{		
 		if (SaveGame.SaveVersion != 99)
