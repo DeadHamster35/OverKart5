@@ -175,10 +175,14 @@ void startRace()
 			gpCourseIndex = 0;
 		}
 		
-		EmptyActionData();
-		setSky();
-		setWater();
-		loadMinimap();				
+		if (g_gameMode != 3)
+		{
+			EmptyActionData();
+		
+			setSky();
+			setWater();
+			loadMinimap();				
+		}
 		if ((SaveGame.GameSettings.GameMode == 2))
 		{        	
 			GlobalAddressA = GetRealAddress(0x060009D8);
@@ -221,9 +225,17 @@ void MapStartup(short InputID)
 	LoadCustomHeader(courseValue + gpCourseIndex);
 	SetCustomData();
 	LoadMapData(InputID);
-	
 }
-
+void InitialMapCode()
+{
+	
+	InitialMap();
+	if ((HotSwapID > 0) && (g_gameMode == 3))
+	{
+		SearchListFile(0x06000000 | OverKartHeader.SurfaceMapPosition);
+		MakeCollision();
+	}
+}
 
 
 void gameCode(void)
@@ -251,12 +263,12 @@ void gameCode(void)
 		}
 
 		
-		if (HotSwapID > 0)  //Version 4 Texture Scroll Function
+		if (HotSwapID > 0)   //Version 4 Texture Scroll Function
 		{			
 			if ((g_gamePausedFlag == 0) && (scrollLock))
 			{
 				runTextureScroll();
-				CheckOKObjects();		
+				CheckOKObjects();
 				runDisplayScreen();
 				CheckPaths();
 				GetSurfaceID();			
@@ -607,7 +619,17 @@ void XLUDisplay(Screen* PlayerScreen)
 {	
 	if ((OverKartHeader.Version > 4) && (HotSwapID > 0))
 	{	
-		DisplayGroupmap(GetRealAddress(SegmentAddress(6,OverKartHeader.XLUSectionViewPosition)), PlayerScreen);
+		if (g_gameMode != 3)
+		{
+			DisplayGroupmap(GetRealAddress(SegmentAddress(6,OverKartHeader.XLUSectionViewPosition)), PlayerScreen);
+		}
+		else
+		{
+			*(long*)*graphPointer = (long)(0x06000000);
+			*graphPointer = *graphPointer + 4;
+			*(long*)*graphPointer = (long)(SegmentAddress(6,OverKartHeader.XLUSectionViewPosition));
+			*graphPointer = *graphPointer + 4;
+		}
 	}
 }
 

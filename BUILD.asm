@@ -47,6 +47,8 @@ JAL MapStartup
 .org 0x12506C
 JAL MapStartup
 
+.org 0x0036FC
+JAL InitialMapCode
 
 .org 0x0051E8
 JAL DisplayCrashScreen
@@ -383,15 +385,6 @@ addiu sp, sp, 0x270
 JR ra
 NOP
 
-.align 0x10
-InitialMapHook:
-SW ra, 0x001C(sp)
-ADDIU sp, sp, -0x20
-JAL MapStartup
-LW ra, 0x001C(sp)
-ADDIU sp, sp, 0x20
-JR ra
-NOP
 
 .include "..\Library\LIBRARYBUILD.asm"
 
