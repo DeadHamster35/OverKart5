@@ -27,6 +27,42 @@ void loadCoin()
 
 
 
+
+void Draw3DRacer(uint ModelAddress, uint Player)
+{
+	
+	if (SaveGame.RenderSettings.SplitMode == 0)
+	{
+		spriteKillA = 0x27BDFFA0;
+		spriteKillB = 0xAFBF;
+		spriteKillC = 0x27BDFFE8;
+		spriteKillD = 0xAFBF;
+	}
+	else
+	{
+		
+		spriteKillA = 0x03E00008;
+		spriteKillB = 0x2400;
+		spriteKillC = 0x03E00008;
+		spriteKillD = 0x2400;
+		
+
+		GlobalUIntA = (uint)(&g_PlayerStructTable);
+		objectPosition[0] = GlobalPlayer[Player].direction[0];
+		objectPosition[1] =  GlobalPlayer[Player].direction[1] +  GlobalPlayer[Player].sterrangle;
+		objectPosition[2] = GlobalPlayer[Player].direction[2];
+		objectAngle[2] = baseTurn + addTurn;
+		objectAngle[0] = 0x3FFF - *(short*)(GlobalUIntA + 518) * 2;
+		objectAngle[1] = *(short*)(GlobalUIntA + 80) * -2;
+
+		DrawGeometryScale(GlobalPlayer[Player].position,objectAngle,ModelAddress, 0.08);
+	}
+	
+	
+}
+
+
+
 void DisplayObject(void *Car, Object *InputObject)
 {
 	GlobalAddressA = *(long*)(&InputObject);
@@ -103,17 +139,18 @@ void RedCoinChallenge(long PathOffset)
 	
 	*(uint*)(0x80650000) = PathOffset;
 	*(uint*)(0x80650004) = (uint)&CoinPositions;
-	GlobalShortA = 1;
+	GlobalShortD = 1;
 	if (g_mirrorMode == 1)
 	{
-		GlobalShortA = -1;
+		GlobalShortD = -1;
 	}
 	for (int currentCoin = 0; currentCoin < 8; currentCoin++)
 	{		
-		objectPosition[0] = *(short*)(PathOffset);
-		objectPosition[1] = *(short*)(PathOffset + 2);
-		objectPosition[1] = objectPosition[1] * GlobalShortA;
-		objectPosition[2] = *(short*)(PathOffset + 4);
+		objectPosition[0] = (float)*(short*)(PathOffset);
+		objectPosition[1] = (float)*(short*)(PathOffset + 2);		
+		objectPosition[2] = (float)*(short*)(PathOffset + 4);
+
+		objectPosition[0] = objectPosition[0] * GlobalShortD;
 		CreateObject(objectPosition,47);
 		PathOffset += 8;
 	}

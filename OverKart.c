@@ -1,8 +1,7 @@
 #include "../Library/MainInclude.h"
 #include "OKInclude.h"
 
-
-
+#if OverKartBuild
 void loadLogo()
 {
 	SetSegment(8,(int)(&ok_Logo));
@@ -15,12 +14,14 @@ void loadLogo()
 	runMIO();
 	g_NintendoLogoOffset = 0x080059E8;
 	g_NintendoLogoBorder = 0x256B9478;
-}
 
+	
+	
+}
+#endif
 
 void okSetup(void)
 {
-	
 
 	SaveFunc800B45E0 = 0x03E0000800000000;
 	SaveFunc800B4670 = 0x03E0000800000000;
@@ -42,7 +43,6 @@ void okSetup(void)
 		StopSwop = false;		
 	}
 	SwopCheck = 0x11342067;
-	
 	
 	
 	*(short*)(0x800DC6FE) = 0xFFFF;
@@ -71,12 +71,13 @@ void okSetup(void)
 	dataLength = 0xA8;
 	runRAM();
 	
-	
+	#if OverKartBuild
 	loadLogo();
+	#endif
 	copyCourseTable(1);
 	NopSplashCheckCode();
 	FlyCamInit();
-	startupSwitch = 35;
+	startupSwitch = 1;
 	nopASM = 0;
 	HotSwapID = 0;
 	asm_SongA = 0x240E0001;
@@ -225,11 +226,14 @@ void MapStartup(short InputID)
 	LoadCustomHeader(courseValue + gpCourseIndex);
 	SetCustomData();
 	LoadMapData(InputID);
+	
+	setPath();
 }
 void InitialMapCode()
 {
 	
 	InitialMap();
+	
 	if ((HotSwapID > 0) && (g_gameMode == 3))
 	{
 		SearchListFile(0x06000000 | OverKartHeader.SurfaceMapPosition);
@@ -237,9 +241,9 @@ void InitialMapCode()
 	}
 }
 
-
 void gameCode(void)
 {	
+	
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -250,7 +254,7 @@ void gameCode(void)
 		
 		if (SaveGame.ModSettings.PracticeMode > 0 || SaveGame.ModSettings.FlycamMode > 0)
 		{
-			practiceHack();
+			//practiceHack();		
 		}
 		if (SaveGame.ModSettings.InputMode > 0x00)
 		{
@@ -271,7 +275,9 @@ void gameCode(void)
 				CheckOKObjects();
 				runDisplayScreen();
 				CheckPaths();
-				GetSurfaceID();			
+				GetSurfaceID();	
+				
+				
 			}	
 		}
 		
@@ -394,18 +400,22 @@ void resetMap()
 //
 void allRun(void)
 {
-
-    
-
-
 	
-	if (startupSwitch != 35)
+	switch (startupSwitch)
 	{
+		case 0:
 		okSetup();
+		break;
+
+		case 1:
+		break;
+		
+		case 2:
+		modCheck();
+		break;
 	}
 	
 	
-	modCheck();
 	
 	
 	
@@ -462,7 +472,7 @@ void allRun(void)
 			g_player1ScreenWidth = 0x0240;
 		}
 	}
-
+	
 	switch(KBGNumber)
 	{
 		case 10:
@@ -471,10 +481,47 @@ void allRun(void)
 			g_startingIndicator = 0;
 			if (MenuChanged != 10)
 			{	
+				loadCoinSprite();
+				loadArrows();
+				loadNumberSprites();
+				loadCoin();
 				SetFontColor(26,26,29,12,12,15);
+
+				MenuAngle[2] = -30;
+				MenuAngle[3] = 30;
+				*sourceAddress = (int)(&StartLogo);
+				*targetAddress = (int)(&ok_FreeSpace);
+				dataLength = (int)&StartEnd - (int)&StartLogo;
+				runDMA();
+				*sourceAddress = (int)(&ok_FreeSpace);
+				*targetAddress = (int)(&ok_Storage);
+				runMIO();
+
+				*sourceAddress = (int)(&BackDrop);
+				*targetAddress = (int)(&ok_FreeSpace);
+				dataLength = (int)&BackDropEnd - (int)&BackDrop;
+				runDMA();
+				*sourceAddress = (int)(&ok_FreeSpace);
+				*targetAddress = (int)(&ok_Storage) + 0x5000;
+				runMIO();
+				
+				*sourceAddress = (int)(&Splash3D);
+				*targetAddress = (int)(&ok_FreeSpace);
+				dataLength = (int)&Splash3DEnd - (int)&Splash3D;
+				runDMA();
+				*sourceAddress = (int)(&ok_FreeSpace);
+				*targetAddress = (int)(&ok_Storage) + 0x25000;
+				runMIO();
+				SetSegment(0xA, *targetAddress);
+
 				MenuChanged = 10;
-				SaveGame.TENNES = DPR();
-				DPRSave();
+				startupSwitch = 2;
+
+				#if ProtectMode
+					SaveGame.TENNES = DPR();
+					DPRSave();
+				#endif
+
 				if ((SaveGame.SaveVersion != 3) && (SaveGame.SaveVersion != 99))
 				{
 					SaveGame.SaveVersion = 3;	
@@ -496,6 +543,7 @@ void allRun(void)
 			}
 			break;
 		}
+		
 		case 11:
 		{
 			scrollLock = false;
@@ -576,12 +624,16 @@ void allRun(void)
 			break;
 			
 		}
+		
 	}
 
 }
 void PrintMenuFunction()
 {
-	if(SaveGame.TENNES)
+	
+
+	#if ProtectMode
+	if(SaveGame.TENNES == 1)
 	{		
 		if (SaveGame.SaveVersion != 99)
 		{
@@ -596,22 +648,15 @@ void PrintMenuFunction()
 		}
 		KWSpriteDiv(256,120,(ushort*)&ok_Storage,512,240,4);
 	}
+	#endif
 }
 
 void DisplayCrashScreen()
 {
-	/*
-	*sourceAddress = (uint)&Crash;
-	*targetAddress = *(uint*)0x80162D5C;
-	dataLength = (uint)&CrashEnd - (uint)&Crash;
-	runRAM();*/
-
 	*sourceAddress = (int)(&Crash);
 	*targetAddress = *(uint*)0x80162D5C;
 	dataLength = (int)&CrashEnd - (int)&Crash;
 	runDMA();
-	//KWSpriteDiv(256,120,(ushort*)&Crash,512,240,4);
-	//DrawBox(0,320,0,240,255,0,0,255);
 }
 
 

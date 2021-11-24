@@ -10,6 +10,8 @@ extern char* gameMode;
 extern char* modMode;
 extern char* renderMode;
 
+extern int LoadedProgress;
+
 extern char *menuNames[];
 extern int menuChar[];
 extern char *cupNames[];
@@ -35,7 +37,6 @@ extern int SaveStateCourseID;
 extern int pageLimit[];
 
 extern float AnalogInput[2];
-
 
 //PracticeHack
 

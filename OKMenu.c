@@ -342,50 +342,50 @@ void swapParameter(int directionIndex)
      //if directionIndex == 1, swap up;
      if (directionIndex == 0)
      {
-          switch(MenuIntA)  //CurrentPage
+          switch(MenuType)  //CurrentPage
           {
                case 0:
                {
-                    if (gameMode[MenuIntB-1 + GlobalCharC] > 0) //currentParameter  //menuOverflowIndex
+                    if (gameMode[MenuIndex-1 + GlobalCharC] > 0) //currentParameter  //menuOverflowIndex
                     {
-                         gameMode[MenuIntB-1 + GlobalCharC]--;
+                         gameMode[MenuIndex-1 + GlobalCharC]--;
                     }
                     break;
                }
                case 1:
                {
-                    if (modMode[MenuIntB-1 + GlobalCharC] > 0) //currentParameter  //menuOverflowIndex
+                    if (modMode[MenuIndex-1 + GlobalCharC] > 0) //currentParameter  //menuOverflowIndex
                     {
-                         modMode[MenuIntB-1 + GlobalCharC]--;
+                         modMode[MenuIndex-1 + GlobalCharC]--;
                     }
                     break;
                }
                case 2:
                {
-                    if (renderMode[MenuIntB-1 + GlobalCharC] > 0) //currentParameter  //menuOverflowIndex
+                    if (renderMode[MenuIndex-1 + GlobalCharC] > 0) //currentParameter  //menuOverflowIndex
                     {
-                         renderMode[MenuIntB-1 + GlobalCharC]--;
+                         renderMode[MenuIndex-1 + GlobalCharC]--;
                     }
                     break;
                }
                case 3:
                {
-                    if (MenuIntB == 1) //currentParameter
+                    if (MenuIndex == 1) //currentParameter
                     {
-                         if (MenuIntC > 0)  //cupSelect
+                         if (MenuCup > 0)  //cupSelect
                          {
-                              MenuIntC--;
+                              MenuCup--;
                          }
                     }
-                    if (MenuIntB > 1) //currentParameter
+                    if (MenuIndex > 1) //currentParameter
                     {
                          if (SYSTEM_Region == 0x00)
                          {
-                              GlobalAddressA = (cup_PAL + (MenuIntC * 8) + ((MenuIntB - 2) * 2));
+                              GlobalAddressA = (cup_PAL + (MenuCup * 8) + ((MenuIndex - 2) * 2));
                          }
                          else
                          {
-                              GlobalAddressA = (cup_NTSC + (MenuIntC * 8) + ((MenuIntB - 2) * 2));
+                              GlobalAddressA = (cup_NTSC + (MenuCup * 8) + ((MenuIndex - 2) * 2));
                          }
                          short *l_courseID = (short *)GlobalAddressA;
                          if (*l_courseID > 0)
@@ -408,50 +408,50 @@ void swapParameter(int directionIndex)
      }
      else
      {
-          switch(MenuIntA)  //CurrentPage
+          switch(MenuType)  //CurrentPage
           {
                case 0:
                {
-                    if (gameMode[MenuIntB-1 + GlobalCharC] < gameLimits[MenuIntB-1 + GlobalCharC]) //currentParameter  //menuOverflowIndex
+                    if (gameMode[MenuIndex-1 + GlobalCharC] < gameLimits[MenuIndex-1 + GlobalCharC]) //currentParameter  //menuOverflowIndex
                     {
-                         gameMode[MenuIntB-1 + GlobalCharC]++;
+                         gameMode[MenuIndex-1 + GlobalCharC]++;
                     }
                     break;
                }
                case 1:
                {
-                    if (modMode[MenuIntB-1 + GlobalCharC] < modLimits[MenuIntB-1 + GlobalCharC]) //currentParameter  //menuOverflowIndex
+                    if (modMode[MenuIndex-1 + GlobalCharC] < modLimits[MenuIndex-1 + GlobalCharC]) //currentParameter  //menuOverflowIndex
                     {
-                         modMode[MenuIntB-1 + GlobalCharC]++;
+                         modMode[MenuIndex-1 + GlobalCharC]++;
                     }
                     break;
                }
                case 2:
                {
-                    if (renderMode[MenuIntB-1 + GlobalCharC] < renderLimits[MenuIntB-1 + GlobalCharC]) //currentParameter  //menuOverflowIndex
+                    if (renderMode[MenuIndex-1 + GlobalCharC] < renderLimits[MenuIndex-1 + GlobalCharC]) //currentParameter  //menuOverflowIndex
                     {
-                         renderMode[MenuIntB-1 + GlobalCharC]++;
+                         renderMode[MenuIndex-1 + GlobalCharC]++;
                     }
                     break;
                }
                case 3:
                {
-                    if (MenuIntB == 1) //currentParameter
+                    if (MenuIndex == 1) //currentParameter
                     {
-                         if (MenuIntC < 3)  //cupSelect
+                         if (MenuCup < 3)  //cupSelect
                          {
-                              MenuIntC++;
+                              MenuCup++;
                          }
                     }
-                    if (MenuIntB > 1) //currentParameter
+                    if (MenuIndex > 1) //currentParameter
                     {
                          if (SYSTEM_Region == 0x00)
                          {
-                              GlobalAddressA = (cup_PAL + (MenuIntC * 8) + ((MenuIntB - 2) * 2));
+                              GlobalAddressA = (cup_PAL + (MenuCup * 8) + ((MenuIndex - 2) * 2));
                          }
                          else
                          {
-                              GlobalAddressA = (cup_NTSC + (MenuIntC * 8) + ((MenuIntB - 2) * 2));
+                              GlobalAddressA = (cup_NTSC + (MenuCup * 8) + ((MenuIndex - 2) * 2));
                          }
 
                          short *l_courseID = (short *)GlobalAddressA;
@@ -475,69 +475,60 @@ void swapParameter(int directionIndex)
 }
 
 
-void printMenu()
+void OptionsMenu()
 {
 
      
 
      
      DrawBox(50,10,220,116,0,0,0,175);
-//     GraphPtr = FillRect1ColorF(GraphPtr, 50, 10, 270, 126, 0, 0,0, 175);
      
      DrawBox(48,8,2,119,255,0,0,255);
      DrawBox(270,8,2,119,255,0,0,255);
      DrawBox(50,8,220,2,255,0,0,255);
      DrawBox(50,125,220,2,255,0,0,255);
-     /*
-     GraphPtr = FillRect1ColorF(GraphPtr, 48, 8, 50, 127, 255, 0,0, 255);
-     GraphPtr = FillRect1ColorF(GraphPtr, 270, 8, 272, 127, 255, 0,0, 255);
-     GraphPtr = FillRect1ColorF(GraphPtr, 50, 8, 270, 10, 255, 0,0, 255);
-     GraphPtr = FillRect1ColorF(GraphPtr, 50, 125, 270, 127, 255, 0,0, 255);
-     */
-    DrawBox(60,32,200,1,0,0,0,255);
-     //GraphPtr = FillRect1ColorF(GraphPtr, 60, 32, 260, 33, 0, 0,0, 255);
+     DrawBox(60,32,200,1,0,0,0,255);
 
 
-
-     if (MenuIntA == 3)   //CurrentPage
+     if (MenuType == 3)   //CurrentPage
      {
-          if (MenuIntB == 0) //currentParameter
+          if (MenuIndex == 0) //currentParameter
           {
-               MenuPosition[0] = 157 - ((menuChar[MenuIntA]) * 4);
-               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 19, MenuPosition[0] + (menuChar[MenuIntA] * 8), 29, 200, 0, 0, 200);
+               MenuPosition[0] = 157 - ((menuChar[MenuType]) * 4);
+               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 19, MenuPosition[0] + (menuChar[MenuType] * 8), 29, 200, 0, 0, 200);
           }
-          else if (MenuIntB == 1) //currentParameter
+          else if (MenuIndex == 1) //currentParameter
           {
-               MenuPosition[0] = 155 - ((cupChar[MenuIntC]) * 4);
-               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 41, MenuPosition[0] + (cupChar[MenuIntC] * 8), 51, 0, 200, 0, 200);
+               MenuPosition[0] = 155 - ((cupChar[MenuCup]) * 4);
+               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 41, MenuPosition[0] + (cupChar[MenuCup] * 8), 51, 0, 200, 0, 200);
           }
           else
           {
                if (SYSTEM_Region == 0x00)
                {
-                    GlobalAddressA = (cup_PAL + (MenuIntC * 8) + ((MenuIntB - 2) * 2));
+                    GlobalAddressA = (cup_PAL + (MenuCup * 8) + ((MenuIndex - 2) * 2));
                }
                else
                {
-                    GlobalAddressA = (cup_NTSC + (MenuIntC * 8) + ((MenuIntB - 2) * 2));
+                    GlobalAddressA = (cup_NTSC + (MenuCup * 8) + ((MenuIndex - 2) * 2));
                }
                short *l_courseID = (short *)GlobalAddressA;
                MenuPosition[0] = 157 - ((courseChar[(long)*l_courseID]) * 4);
-               MenuPosition[1] = ((MenuIntB - 1) * 14) + 44;
+               MenuPosition[1] = ((MenuIndex - 1) * 14) + 44;
                GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], MenuPosition[1], MenuPosition[0] + (courseChar[(long)*l_courseID] * 8), MenuPosition[1]+11, 0, 0, 200, 200);
           }
      }
      else
      {
-          if (MenuIntB == 0) //currentParameter
+          if (MenuIndex == 0) //currentParameter
           {
-               MenuPosition[0] = 157 - ((menuChar[MenuIntA]) * 4);
-               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 19, MenuPosition[0] + (menuChar[MenuIntA] * 8), 29, 200, 0, 0, 200);
+               MenuPosition[0] = 157 - ((menuChar[MenuType]) * 4);
+               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 19, MenuPosition[0] + (menuChar[MenuType] * 8), 29, 200, 0, 0, 200);
           }
           else
           {
-               MenuPosition[1] = MenuIntB * 18 + 33;
-              if (GlobalCharB < 29)  
+               MenuPosition[1] = MenuIndex * 18 + 33;
+              if (MenuBlink < 29)  
                {
                     KWSprite(57,MenuPosition[1]+2,16,16,(ushort*)&lit_red_selecter);
                }
@@ -546,20 +537,20 @@ void printMenu()
      
 
      LoopValue = 0;
-     MenuPosition[0] = 138 - (menuChar[MenuIntA] * 4);
+     MenuPosition[0] = 138 - (menuChar[MenuType] * 4);
      
      
      
      loadFont();
      
      
-     printString(MenuPosition[0],0,menuNames[MenuIntA]);
+     printString(MenuPosition[0],0,menuNames[MenuType]);
      
      MenuPosition[1] = 30;
      
      
      
-     switch(MenuIntA)    //CurrentPage
+     switch(MenuType)    //CurrentPage
      {
           case 0:
           {
@@ -597,17 +588,17 @@ void printMenu()
           }
           case 3:
           {
-               MenuPosition[0] = 135 - (cupChar[MenuIntC] * 4);
-               printString(MenuPosition[0],22,cupNames[MenuIntC]);
+               MenuPosition[0] = 135 - (cupChar[MenuCup] * 4);
+               printString(MenuPosition[0],22,cupNames[MenuCup]);
                MenuPosition[1] = 40;
                do{
                     if (SYSTEM_Region == 0x00)
                     {
-                         GlobalAddressA = (cup_PAL + (MenuIntC * 8) + LoopValue * 2);
+                         GlobalAddressA = (cup_PAL + (MenuCup * 8) + LoopValue * 2);
                     }
                     else
                     {
-                         GlobalAddressA = (cup_NTSC + (MenuIntC * 8) + LoopValue * 2);
+                         GlobalAddressA = (cup_NTSC + (MenuCup * 8) + LoopValue * 2);
                     }
                     short *l_courseID = (short *)GlobalAddressA;
                     MenuPosition[0] = 138 - (courseChar[(long)*l_courseID] * 4);
@@ -634,52 +625,48 @@ void printMenu()
 
 
      
-     if (MenuIntA != 3)    //CurrentPage
+     if (MenuType != 3)    //CurrentPage
      {
-          if (pageLimit[MenuIntA] > 4)
+          if (pageLimit[MenuType] > 4)
           {
                if (GlobalCharC == 0)  //menuOverflowIndex
                {
-                    if (GlobalCharB < 15)  //used for blinking down arrow
+                    if (MenuBlink < 15)  //used for blinking down arrow
                     {
                          KWSprite(161,117,16,16,(ushort*)&lit_arrowsprite_d);
                     }
                }
                else
                {
-                    if (GlobalCharB < 15)  //used for blinking up arrow
+                    if (MenuBlink < 15)  //used for blinking up arrow
                     {
                          KWSprite(161,40,16,16,(ushort*)&lit_arrowsprite_u);
                     }
                }
           }
-          if (pageLimit[MenuIntA] > 5)
+          if (pageLimit[MenuType] > 5)
           {
 
                if (GlobalCharC == 1)  //menuOverflowIndex
                {
-                    if (GlobalCharB < 15)  //used for blinking down arrow
+                    if (MenuBlink < 15)  //used for blinking down arrow
                     {
                          KWSprite(161,117,16,16,(ushort*)&lit_arrowsprite_d);
                     }
                }          
           }
      }
-     if (MenuIntA > 0)  //used for left arrow
+     if (MenuType > 0)  //used for left arrow
      {
           KWSprite(80,22,16,16,(ushort*)&lit_arrowsprite_l);
      }
-     if (MenuIntA < 3)  //used for right arrow
+     if (MenuType < 3)  //used for right arrow
      {
           KWSprite(240,22,16,16,(ushort*)&lit_arrowsprite_r);
      }
 
      
-     g_mlogoY = 0x00000075;
-     g_mflagID = 0;
-     g_mpressstartID = 0;
-     g_mracewayTime = 0;
-
+     
 
      
 
@@ -687,170 +674,143 @@ void printMenu()
 
 
 
-void titleMenu(void)
+void RunOptionsMenu()
 {
-     
-     
-     if (!GlobalBoolA)
-     {
-          GlobalBoolA = true;
-          loadCoinSprite();
-          loadArrows();
-          loadNumberSprites();
-	     loadCoin();
-     }
-     
-     
 
-
-     if (GlobalCharB > 30)  //used for blinking menu +
+     if (ButtonHolding == true)
      {
-          GlobalCharB = 0;
+          MenuButtonHeld = 0;
+          ButtonTimer = ButtonTimer + 1;  //Button Held Timer          
+          if (ButtonTimer >= 9)
+          {    
+               ButtonHolding = 0;
+               ButtonTimer = 0;  //Button Held Timer               
+          }
      }
      else
      {
-          GlobalCharB++;  //used for blinking menu +
+          if (GlobalController[4]->ButtonHeld > 0)
+          {
+               MenuButtonHeld = GlobalController[4]->ButtonHeld;
+               
+          }
+          else if (GlobalController[4]->AnalogHeld > 0)
+          {
+               MenuButtonHeld = GlobalController[4]->AnalogHeld;
+               
+          }
+          else
+          {          
+               ButtonHolding = false;
+               ButtonTimer = 0;  //Button Held Timer
+          }
      }
 
-
-     if(titleDemo > 4)
-     {
-          titleDemo = 4;   //This is a timer that runs at the title screen. Locking at 4 Prevents the demo courses from being displayed.
-     }
      
-
-     // Reset the MenuButtonHeld timer. This is set to 0x01 when a button is held down.
-     // Used for advancing menu when direction is held.
-     GlobalShortA = 0;
-     if (GlobalController[4]->ButtonHeld > 0)
-     {
-          GlobalShortA = GlobalController[4]->ButtonHeld;
-     }
-     else if (GlobalController[4]->AnalogHeld > 0)
-     {
-          GlobalShortA = GlobalController[4]->AnalogHeld;
-     }
-     else
-     {          
-          MenuButtonHeld = 0;
-          ButtonTimer = 0;  //Button Held Timer
-     }
-
-     ButtonTimer = ButtonTimer + 1;  //Button Held Timer          
-     if (ButtonTimer >= 9)
-     {    
-          MenuButtonHeld = 0;
-          ButtonTimer = 0;  //Button Held Timer               
-     }
-
-     if ((titleDemo > 3) && (menuScreenB <= 0x03))
-     {
 
           
           //MenuButtonHeld is set to 0x01 when a button is held down.
-          if(MenuButtonHeld != 1)
+     if(ButtonHolding == false)
+     {
+          
+          // Uses the Control Stick or Dpad to switch through the menu.
+          switch(MenuButtonHeld)
           {
-               
-               // Uses the Control Stick or Dpad to switch through the menu.
-               switch(GlobalShortA)
+               //Increase the current menu Parameter by 1
+               case BTN_DRIGHT :
                {
-                    //Increase the current menu Parameter by 1
-                    case BTN_DRIGHT :
+                    ButtonHolding = true;
+                    if (MenuIndex > 0) //currentParameter
                     {
-                         MenuButtonHeld = 1;
-                         if (MenuIntB > 0) //currentParameter
+                         swapParameter(1);
+                         playSound(0x49008000);
+                    }
+                    else
+                    {
+                         if (MenuType < 3)
                          {
-                              swapParameter(1);
-                              playSound(0x49008000);
+                              MenuType++;
+                              GlobalCharC = 0;
+                              playSound(0x49008001);
                          }
                          else
                          {
-                              if (MenuIntA < 3)
-                              {
-                                   MenuIntA++;
-                                   GlobalCharC = 0;
-                                   playSound(0x49008001);
-                              }
-                              else
-                              {
-                                   playSound(0x49008002);
-                              }
+                              playSound(0x49008002);
                          }
-                         break;
-
                     }
-                    //Decrease the current menu Parameter by 1
-                    case BTN_DLEFT :
-                    {
-                         MenuButtonHeld = 1;
-                         if (MenuIntB > 0) //currentParameter
-                         {
-                              swapParameter(0);
-                              playSound(0x49008000);
-                         }
-                         else
-                         {
-                              if (MenuIntA > 0)
-                              {
-                                   MenuIntA--;
-                                   GlobalCharC = 0;
-                                   playSound(0x49008001);
-                              }
-                              else
-                              {
-                                   playSound(0x49008002);
-                              }
-                         }
-                         break;
-
-                    }
-                    //Move forward to next option
-                    case BTN_DDOWN :
-                    {
-                         MenuButtonHeld = 1;
-                         if (MenuIntB + GlobalCharC < pageLimit[MenuIntA]) //currentParameter
-                         {
-                              if ((MenuIntB == 4) && (MenuIntA < 3))
-                              {
-                                   GlobalCharC++;
-                              }
-                              else
-                              {
-                                   MenuIntB++; //currentParameter
-                              }
-                              playSound(0x4900801C);
-                         }
-                         break;
-
-                         //
-                    }
-                    //Move backward to previous option
-                    case BTN_DUP :
-                    {
-                         MenuButtonHeld = 1;
-                         if (MenuIntB + GlobalCharC > 0) //currentParameter
-                         {
-                              if ((MenuIntB == 1) && (MenuIntA < 3) && (GlobalCharC > 0))
-                              {
-                                   GlobalCharC--;
-                              }
-                              else
-                              {
-                                   MenuIntB--; //currentParameter
-                              }
-                              playSound(0x4900801C);
-                         }
-                         break;
-                    }
-
+                    break;
 
                }
-               // End of menu Dpad code.
+               //Decrease the current menu Parameter by 1
+               case BTN_DLEFT :
+               {
+                    ButtonHolding = true;
+                    if (MenuIndex > 0) //currentParameter
+                    {
+                         swapParameter(0);
+                         playSound(0x49008000);
+                    }
+                    else
+                    {
+                         if (MenuType > 0)
+                         {
+                              MenuType--;
+                              GlobalCharC = 0;
+                              playSound(0x49008001);
+                         }
+                         else
+                         {
+                              playSound(0x49008002);
+                         }
+                    }
+                    break;
+
+               }
+               //Move forward to next option
+               case BTN_DDOWN :
+               {
+                    ButtonHolding = true;
+                    if (MenuIndex + GlobalCharC < pageLimit[MenuType]) //currentParameter
+                    {
+                         if ((MenuIndex == 4) && (MenuType < 3))
+                         {
+                              GlobalCharC++;
+                         }
+                         else
+                         {
+                              MenuIndex++; //currentParameter
+                         }
+                         playSound(0x4900801C);
+                    }
+                    break;
+
+                    //
+               }
+               //Move backward to previous option
+               case BTN_DUP :
+               {
+                    ButtonHolding = true;
+                    if (MenuIndex + GlobalCharC > 0) //currentParameter
+                    {
+                         if ((MenuIndex == 1) && (MenuType < 3) && (GlobalCharC > 0))
+                         {
+                              GlobalCharC--;
+                         }
+                         else
+                         {
+                              MenuIndex--; //currentParameter
+                         }
+                         playSound(0x4900801C);
+                    }
+                    break;
+               }
 
 
           }
+          // End of menu Dpad code.
+
+
      }
-     
 
      // Now print the menu using the menuFlag and parameterFlag options above.
      if ((SaveGame.GameSettings.StatsMode == 1) || (SaveGame.GameSettings.GameMode == 1))
@@ -861,6 +821,171 @@ void titleMenu(void)
      {
           checkStats(0);
      }
+
+     OptionsMenu();
+}
+
+void titleMenu()
+{
+     
+     if (MenuBlink > 30)
+     {
+          MenuBlink = 0;
+     }
+     else
+     {
+          MenuBlink++;
+     }
+     if(titleDemo > 4)
+     {
+          titleDemo = 4;   //This is a timer that runs at the title screen. Locking at 4 Prevents the demo courses from being displayed.
+          gMatrixCount = 0;
+     }
+     
+     if ((GlobalController[0]->ButtonPressed & BTN_R) == BTN_R)
+     {
+          MenuToggle = !MenuToggle;
+     }
+     g_mlogoY = 0x00000104;
+     g_mracewayTime = 0;
+     g_mflagID = 0;
+     
+     
+     
+     #if OverKartBuild
+          
+         
+
+          GlobalUIntA = ((uint)(&ok_Storage)) + 0x5000;
+          KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(GlobalUIntA),(void*)(&V256x12832B),256,128,256,4);
+          KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(GlobalUIntA),(void*)(&V256x12832B),256,128,256,4);
+          
+
+          
+          guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
+          gSPPerspNormalize(*graphPointer, PerspectiveValue);
+          *graphPointer +=8;
+          gSPMatrix(*graphPointer, K0_TO_PHYS((u32) &(gDynamicP->projection1)),G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
+          *graphPointer +=8;
+          GULookAt(&gDynamicP->viewing,
+               0, 0,0,
+               0, 0,100,
+               0,1,0);
+          gSPMatrix(*graphPointer, K0_TO_PHYS((u32) &(gDynamicP->viewing)),G_MTX_PROJECTION|G_MTX_MUL|G_MTX_NOPUSH);
+	     LoadIdentAffineMtx(AffineMatrix);
+		SetMatrix(AffineMatrix,0);
+
+          *graphPointer +=8;
+
+
+          objectPosition[0] = 0;
+          objectPosition[1] = 0;
+          objectPosition[2] = -200;
+          objectAngle[0] =0;
+          objectAngle[1] = 0;
+          objectAngle[2] = 0;
+          DrawGeometryScale(objectPosition, objectAngle, 0x0A000000, 1.4);
+          
+          if (!CheckCheat())
+          {
+               if ((GlobalController[0]->ButtonHeld & BTN_L) != BTN_L)
+               {
+                    MenuAngle[0]++;
+                    MenuAngle[1]++;
+                    if (MenuAngle[1] > 119)
+                    {
+                         MenuAngle[1] = 0;
+                    }
+
+                    if (MenuAngle[1] < 60)
+                    {
+                         MenuAngle[2]++;
+                    }
+                    else
+                    {
+                         MenuAngle[2]--;
+                    }
+                    if (MenuAngle[1] < 60)
+                    {
+                         MenuAngle[3]--;
+                    }
+                    else
+                    {
+                         MenuAngle[3]++;
+                    }
+                    
+                    g_mpressstartID = 0;
+                    g_mflagID = 0;
+                    g_NintendoLogoOffset = 0x0A000008;
+
+                    if (MenuToggle)
+                    {
+                         RunOptionsMenu();
+                    }
+
+                    if (!MenuToggle)
+                    {               
+                         objectPosition[0] = 0;
+                         objectPosition[1] = 20;
+                         objectPosition[2] = -150;
+                    }
+                    else
+                    {
+
+                         objectPosition[0] = 0;
+                         objectPosition[1] = -20;
+                         objectPosition[2] = -150;
+                    }
+
+                    gSPDisplayList(*graphPointer, 0x0D0076F8)
+                    
+
+                    *graphPointer +=8;
+
+                    objectAngle[0] = 0;
+                    objectAngle[1] = (MenuAngle[2] * DEG1 / -5);
+                    objectAngle[2] = (MenuAngle[3] * DEG1 / 5);
+                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000010, 0.5);
+
+
+                    if (!MenuToggle)
+                    {      
+                         objectPosition[1] -= 20;      
+                         objectPosition[2] -= 50;
+                    }
+                    else
+                    {
+                         objectPosition[1] -= 35;
+                         objectPosition[2] -= 50;
+                    }
+                    objectAngle[1] = 0;
+                    objectAngle[2] = MenuAngle[0] * -1 * DEG1;
+                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.4);
+                    if (!MenuToggle)
+                    {               
+                         if (MenuBlink > 15)
+                         {
+                              KWSpriteDiv(160,180,(ushort*)(&ok_Storage),256,32,8);
+                         }
+                    }
+               }
+          }
+     #else
+          g_mpressstartID = 0;
+          RunOptionsMenu();
+     #endif
+     // Reset the MenuButtonHeld timer. This is set to 0x01 when a button is held down.
+     // Used for advancing menu when direction is held.
+
+     
+          
+
+
+     
+
+     
+
+     /*
      loadFont();
      if (ConsolePlatform)
      {
@@ -880,9 +1005,8 @@ void titleMenu(void)
         
 
      printString(0,200,"BUILD 5.1   ");
-
-     printMenu();
-
+     */
+     
 
 
 

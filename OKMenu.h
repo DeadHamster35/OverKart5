@@ -9,4 +9,5 @@ extern void printGPTime(float printTime, int OffsetY);
 extern void printTime(float printTime);
 extern void PrintMenuTest();
 extern void titleMenu();
+extern void RunOptionsMenu();
 #endif

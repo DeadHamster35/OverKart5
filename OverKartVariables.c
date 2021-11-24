@@ -11,6 +11,7 @@ char* gameMode = (char*)&SaveGame.GameSettings;
 char* modMode = (char*)&SaveGame.ModSettings;
 char* renderMode = (char*)&SaveGame.RenderSettings;
 
+int LoadedProgress;
 int menuChar[] = {12,11,14,10};
 int cupChar[] = {12,10,8,11};
 int courseChar[] = {13,14,13,17,12,15,18,13,13,12,13,15,11,12,13,10,10,11,17,9};
@@ -33,21 +34,19 @@ int ItemChance[8];
 //
 //
 
-
 //PracticeHack
 
 int FlyCamPosition[3];
-short FlyCamDirection;
 
-char FlyCamToggle, FlyCamCheck;
+char GenericInput, MapMode = 0, FlyCamToggle, FlyCamCheck;
 short FlyCamSection, FlyCamSectionCheck;
 short FlyCamView, FlyCamViewCheck;
-short FlyCamPilot;
+short FlyCamPilot,FlyCamDirection;
 float FlyCamRadian;
 float FlyCamLook[2][2];
 int LocalInput[2];
 int InputColor[4];
-char GenericInput, MapMode = 0;
+
 short FlyCamSpeed = 5;
 
 

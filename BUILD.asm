@@ -31,6 +31,8 @@
 .org 0x113FCE
 .byte 0x00
 
+
+
 .org 0x079290
 J SnowHook
 NOP
@@ -39,6 +41,24 @@ NOP
 J DisplayMap2Hook
 NOP
 
+//Remove the default Title Screen Image
+.org 0x09F8C4
+NOP
+//add XLU to RGBA32
+
+.org 0x047350
+.word 0x273979E8
+.org 0x0473C4
+.word 0x273979E8
+
+//fix kwtexture2D_rgba32_bl
+.org 0x0473F0
+.word 0x0C011869
+
+//Change kwtexture2d to use loadtile
+
+.org 0x463E0
+.word 0x0C010F0A
 
 .org 0x123B0C
 JAL MapStartup
@@ -152,7 +172,6 @@ JAL CommonGameEventChart
 
 .org 0x05AD08
 JAL CommonGameEventChart
-
 
 
 
@@ -495,7 +514,19 @@ CollisionHopTable:
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0 //99
 
+Test32:
+.import "data\\ImageData.RAW"       ;;  c10
+.align 0x10
+End32:
 
+Boo:
+.import "data\\Boo\\Test.raw"
+.align 0x10
+BooEnd:
+
+PerspectiveASM:
+.import "data\\Perspective.bin"
+.align 0x10
 
 
 EndRAMData:
@@ -506,7 +537,14 @@ EndRAMData:
 
 .headersize 0
 
-
+Splash3D:
+.import "data\\SplashLogo\\model\\SplashLogo.bin"
+.align 0x10
+Splash3DEnd:
+BackDrop:
+.import "data\\SplashLogo\\backdrop.bin"
+.align 0x10
+BackDropEnd:
 
 previewN:
 .import "textures\\preview_n.mio0.bin"       ;;  c10
@@ -517,6 +555,15 @@ previewU:
 LogoROM:
 .import "data\\logo.bin" ;; 0xD388
 .align 0x10
+BackgroundLogo:
+.import "data\\SplashLogo\\BackgroundSource.bin"
+.align 0x10
+BackgroundEnd:
+
+StartLogo:
+.import "data\\SplashLogo\\PressStart.bin"
+.align 0x10
+StartEnd:
 Pirate:
 .import "Data\test\Pirate512.MIO0"
 .align 0x10

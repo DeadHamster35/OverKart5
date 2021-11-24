@@ -495,7 +495,6 @@ void practiceHack()
 				GlobalPlayer[0].item = 0;				
 				RouletteStart(0,14);
 				*(int*)(0x8007AC54) = 0x10400009;
-				ButtonHeld = 1;
 				break;
 			}
 			case(BTN_DDOWN):
@@ -594,8 +593,6 @@ void practiceHack()
 								FlyCamSpeed = FlyCamSpeed - 1;
 							}
 						}
-						
-						ButtonHeld = 1;
 						break;
 					}
 
@@ -609,7 +606,6 @@ void practiceHack()
 						{							
 							FlyCamSpeed = FlyCamSpeed + 5;							
 						}
-						ButtonHeld = 1;
 						break;
 					}
 				}
@@ -715,10 +711,6 @@ void practiceHack()
 	if (SaveGame.ModSettings.PracticeMode == 2)
 	{
 		printMap(MapMode);
-		if (GlobalCharA == 0x00)
-		{
-			ButtonHeld = 0x00;
-		}
 		if (GlobalCharB == 0x01)
 		{
 
@@ -726,20 +718,18 @@ void practiceHack()
 			{
 				case 0x08 :
 				{
-					if (MapMode > 0 && ButtonHeld == 0)
+					if (MapMode > 0)
 					{
 						MapMode--;
-						ButtonHeld = 1;
 					}
 					break;
 				}
 
 				case 0x04 :
 				{
-					if (MapMode < 3 && ButtonHeld == 0)
+					if (MapMode < 3)
 					{
 						MapMode++;
-						ButtonHeld = 1;
 					}
 					break;
 				}
@@ -747,7 +737,6 @@ void practiceHack()
 		}
 		else
 		{
-			ButtonHeld = 0;
 			switch(MapMode)
 			{
 				case 0:
