@@ -20,9 +20,9 @@ extern char *courseNames[];
 extern int courseChar[];
 
 extern char *gameOptions[];
-extern char *gameParameters[][3];
+extern char *gameParameters[][4];
 extern int gameLimits[];
-extern int gameChar[][3];
+extern int gameChar[][4];
 
 extern char *modOptions[];
 extern char *modParameters[][14];

@@ -16,8 +16,8 @@ int menuChar[] = {12,11,14,10};
 int cupChar[] = {12,10,8,11};
 int courseChar[] = {13,14,13,17,12,15,18,13,13,12,13,15,11,12,13,10,10,11,17,9};
 
-int gameLimits[] = {2,1,1,1,1,1,1};
-int gameChar[][3] = {{7,10,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {3,2}, {7,4}};
+int gameLimits[] = {3,1,1,1,1,1,1};
+int gameChar[][4] = {{7,10,8,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {3,2}, {7,4}};
 
 int modLimits[] = {2,1,1,2};
 int modChar[][14] = {{3,2,3,3}, {3,2}, {3,2}, {3,2,8}, {7,3,3,3,3,3,3,3,3,6,10,10,4,8}};
@@ -111,7 +111,7 @@ short baseTurn, addTurn = 0;
 
 
 char *gameOptions[] = {"Game Mode", "Racer Stats", "Audio Mode", "Mirror Mode", "GP Always Advance", "All Cup", "Multiplayer"};
-char *gameParameters[][3] = {{"Default", "Time Trial", "Coin Mode"}, {"Classic", "Equal"}, {"USA", "JP"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
+char *gameParameters[][4] = {{"Default", "Time Trial", "Red Coin", "Gold Coin"}, {"Classic", "Equal"}, {"USA", "JP"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
 
 char *modOptions[] = {"Practice Mode", "Flycam", "Input Display", "Details", "Force Items"};
 char *modParameters[][14] = {{"Off", "On", "Map", "Dev"}, {"Off" , "On"}, {"Off" , "On"}, {"Off","On","Shortcut"},

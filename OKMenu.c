@@ -839,28 +839,25 @@ void titleMenu()
      if(titleDemo > 4)
      {
           titleDemo = 4;   //This is a timer that runs at the title screen. Locking at 4 Prevents the demo courses from being displayed.
-          gMatrixCount = 0;
      }
-     
+
      if ((GlobalController[0]->ButtonPressed & BTN_R) == BTN_R)
      {
           MenuToggle = !MenuToggle;
      }
-     g_mlogoY = 0x00000104;
      g_mracewayTime = 0;
-     g_mflagID = 0;
-     
-     
      
      #if OverKartBuild
           
-         
-
+          GlobalAddressA = 0x8018DABC;
+          for (int Loop = 0; Loop < 4; Loop++)
+          {
+               *(uint*)(GlobalAddressA) = 0; 
+               GlobalAddressA += 4;
+          }
           GlobalUIntA = ((uint)(&ok_Storage)) + 0x5000;
           KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(GlobalUIntA),(void*)(&V256x12832B),256,128,256,4);
           KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(GlobalUIntA),(void*)(&V256x12832B),256,128,256,4);
-          
-
           
           guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
           gSPPerspNormalize(*graphPointer, PerspectiveValue);
@@ -872,10 +869,11 @@ void titleMenu()
                0, 0,100,
                0,1,0);
           gSPMatrix(*graphPointer, K0_TO_PHYS((u32) &(gDynamicP->viewing)),G_MTX_PROJECTION|G_MTX_MUL|G_MTX_NOPUSH);
-	     LoadIdentAffineMtx(AffineMatrix);
-		SetMatrix(AffineMatrix,0);
-
+          LoadIdentAffineMtx(AffineMatrix);
+          SetMatrix(AffineMatrix,0);
           *graphPointer +=8;
+
+          
 
 
           objectPosition[0] = 0;
@@ -891,10 +889,14 @@ void titleMenu()
                if ((GlobalController[0]->ButtonHeld & BTN_L) != BTN_L)
                {
                     MenuAngle[0]++;
-                    MenuAngle[1]++;
+                    
                     if (MenuAngle[1] > 119)
                     {
                          MenuAngle[1] = 0;
+                    }
+                    else
+                    {
+                         MenuAngle[1]++;
                     }
 
                     if (MenuAngle[1] < 60)
@@ -927,14 +929,14 @@ void titleMenu()
                     {               
                          objectPosition[0] = 0;
                          objectPosition[1] = 20;
-                         objectPosition[2] = -150;
+                         objectPosition[2] = -120;
                     }
                     else
                     {
 
                          objectPosition[0] = 0;
                          objectPosition[1] = -20;
-                         objectPosition[2] = -150;
+                         objectPosition[2] = -120;
                     }
 
                     gSPDisplayList(*graphPointer, 0x0D0076F8)
@@ -945,7 +947,7 @@ void titleMenu()
                     objectAngle[0] = 0;
                     objectAngle[1] = (MenuAngle[2] * DEG1 / -5);
                     objectAngle[2] = (MenuAngle[3] * DEG1 / 5);
-                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000010, 0.5);
+                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000010, 0.35);
 
 
                     if (!MenuToggle)
@@ -960,7 +962,7 @@ void titleMenu()
                     }
                     objectAngle[1] = 0;
                     objectAngle[2] = MenuAngle[0] * -1 * DEG1;
-                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.4);
+                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.3);
                     if (!MenuToggle)
                     {               
                          if (MenuBlink > 15)
@@ -995,7 +997,7 @@ void titleMenu()
      {
           if (EmulatorPlatform)
           {               
-               printString(0,190,"PROJECT64  ");               
+               PROJECT64  ");               
           }
           else
           {

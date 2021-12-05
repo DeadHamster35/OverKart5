@@ -31,6 +31,9 @@
 .org 0x113FCE
 .byte 0x00
 
+//fix the flip and stop that shit
+.org 0x095C64
+NOP
 
 
 .org 0x079290
@@ -89,6 +92,30 @@ LB t2, -1(v0)
 .halfword lo(DisplayHopTable)
 .org 0x10C7D6
 .halfword(100)
+
+
+//Kart Collision Wrappers
+.org 0x02BF48 
+JAL BombThrowRolloverWrap
+.org 0x02BF6C
+JAL RolloverWrap
+.org 0x02BF90
+JAL WheelspinWrap
+.org 0x02C044
+JAL BrokenWrap
+.org 0x02C068
+JAL ThunderWrap
+.org 0x02C08C
+JAL SpinWrap
+.org 0x02C0B0
+JAL BombRolloverWrap
+.org 0x02C0D4
+JAL BombThrowRolloverWrap
+.org 0x02C184
+JAL ProWheelSpinWrap
+.org 0x02C1A4
+JAL BombRolloverWrap
+
 
 
 .org 0x10CB44
@@ -470,7 +497,7 @@ DisplayHopTable:
 .word 0x802A34D4, 0x802A3414, 0x802A34D4, 0x802A345C  //35
 .word 0x802A3440, 0x802A34AC, 0x802A3470, 0x802A3484  //39
 .word 0x802A3360, 0x802A34D4, 0x802A3498, 0x802A3300  //43
-.word 0x802A33E4, DisplayHop, 0x802A33E4, 0x802A33E4  //47
+.word 0x802A33E4, DisplayHop, DisplayHop, DisplayHop  //47
 .word 0x802A33E4, 0x802A33E4, 0x802A33E4, 0x802A33E4  //51
 .word 0x802A33E4, 0x802A33E4, 0x802A33E4, 0x802A33E4  //55
 .word 0x802A33E4, 0x802A33E4, 0x802A33E4, 0x802A33E4  //59
@@ -499,7 +526,7 @@ CollisionHopTable:
 .word 0x802A0D40, 0x802A0D40, 0x802A0D40, 0x802A0D40
 .word 0x802A0D40, 0x802A0D40, 0x802A0D40, 0x802A0D40 //39
 .word 0x802A0744, 0x802A0C34, 0x802A09B0, 0x802A09B0
-.word 0x802A09B0, CollisionHop, 0x802A09B0, 0x802A09B0
+.word 0x802A09B0, CollisionHop, CollisionHop, CollisionHop
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0 //59

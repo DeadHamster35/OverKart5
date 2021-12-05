@@ -5,13 +5,14 @@
 void loadLogo()
 {
 	SetSegment(8,(int)(&ok_Logo));
-	*sourceAddress = (int)(&LogoROM);
-	*targetAddress = (int)(&ok_FreeSpace);
+	*sourceAddress = (int)(0x80600000);
+	*targetAddress = (int)(0x80600000);
 	dataLength = 0xD388;
 	runDMA();
-	*sourceAddress = (int)(&ok_FreeSpace);
-	*targetAddress = (int)(&ok_Logo);
-	runMIO();
+	*sourceAddress = (int)(0x80600000);
+	*targetAddress = (int)(0x80600000);
+	runMIO();+
+	
 	g_NintendoLogoOffset = 0x080059E8;
 	g_NintendoLogoBorder = 0x256B9478;
 
@@ -52,8 +53,11 @@ void okSetup(void)
 	
 	if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
 	{
-		SaveGame.GameSettings.GameMode = 2;
-		SaveGame.ModSettings.PracticeMode = 2;
+		if ((GlobalController[0]->ButtonHeld & BTN_DDOWN) == BTN_DDOWN)
+		{	
+			SaveGame.GameSettings.GameMode = 2;
+			SaveGame.ModSettings.PracticeMode = 2;			
+		}
 	}
 
 	
@@ -186,10 +190,24 @@ void startRace()
 		}
 		if ((SaveGame.GameSettings.GameMode == 2))
 		{        	
-			GlobalAddressA = GetRealAddress(0x060009D8);
-			RedCoinChallenge(GlobalAddressA);
-			CoinCount = 0;
-		}		
+			RedCoinChallenge(GetRealAddress(0x060009D8));
+			CoinCount[0] = 0;
+			CoinCount[1] = 0;
+			CoinCount[2] = 0;
+			CoinCount[3] = 0;
+		}
+		if ((SaveGame.GameSettings.GameMode == 3))
+		{        	
+			GoldCoinChallenge(GetRealAddress(pathOffset));
+			CoinCount[0] = 0;
+			CoinCount[1] = 0;
+			CoinCount[2] = 0;
+			CoinCount[3] = 0;
+			CoinCount[4] = 0;
+			CoinCount[5] = 0;
+			CoinCount[6] = 0;
+			CoinCount[7] = 0;
+		}				
 		if (VersionNumber > 4)
 		{
 			for (int This = 0; This < 100; This++)
@@ -221,6 +239,17 @@ void endRace()
 	}
 }
 
+void CheckIFrames()
+{
+	for (int ThisPlayer = 0; ThisPlayer < 8; ThisPlayer++)
+	{
+		if (IFrames[ThisPlayer] != 0)
+		{
+			IFrames[ThisPlayer]--;
+		}
+	}
+}
+
 void MapStartup(short InputID)
 {
 	LoadCustomHeader(courseValue + gpCourseIndex);
@@ -243,18 +272,22 @@ void InitialMapCode()
 
 void gameCode(void)
 {	
-	
+
+
+
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
 	}
 	else
 	{
+
+		CheckIFrames();
 		
 		
 		if (SaveGame.ModSettings.PracticeMode > 0 || SaveGame.ModSettings.FlycamMode > 0)
 		{
-			//practiceHack();		
+			practiceHack();		
 		}
 		if (SaveGame.ModSettings.InputMode > 0x00)
 		{
@@ -418,7 +451,7 @@ void allRun(void)
 	
 	
 	
-	
+	gMatrixCount = 0;
 	
 	
 
@@ -487,6 +520,7 @@ void allRun(void)
 				loadCoin();
 				SetFontColor(26,26,29,12,12,15);
 
+				#if OverKartBuild
 				MenuAngle[2] = -30;
 				MenuAngle[3] = 30;
 				*sourceAddress = (int)(&StartLogo);
@@ -513,6 +547,9 @@ void allRun(void)
 				*targetAddress = (int)(&ok_Storage) + 0x25000;
 				runMIO();
 				SetSegment(0xA, *targetAddress);
+				MenuToggle = 0;
+
+				#endif
 
 				MenuChanged = 10;
 				startupSwitch = 2;
