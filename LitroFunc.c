@@ -36,39 +36,6 @@ void loadNumberSprites()
 	*targetAddress = (int)(&lit_numberSprite);
 	runMIO();
 }
-/*
-void loadAlpacaSprite()
-{
-	*sourceAddress = (int)(&AlpacaSpriteROM);
-	*targetAddress = (int)(&ok_FreeSpace);
-	dataLength = 0x240;
-	runDMA();
-	*sourceAddress = (int)(&ok_FreeSpace);
-	*targetAddress = (int)(&lit_alpacasprite);
-	runMIO();
-}
-
-void loadHeartSprite()
-{
-	*sourceAddress = (int)(&HeartSpriteROM);
-	*targetAddress = (int)(&ok_FreeSpace);
-	dataLength = 0x80;
-	runDMA();
-	*sourceAddress = (int)(&ok_FreeSpace);
-	*targetAddress = (int)(&lit_heartsprite);
-	runMIO();
-}
-*/
-void loadTitleMenuFrame()
-{
-	*sourceAddress = (int)(&TitleMenuFrameROM);
-	*targetAddress = (int)(&ok_FreeSpace);
-	dataLength = 0x790;
-	runDMA();
-	*sourceAddress = (int)(&ok_FreeSpace);
-	*targetAddress = (int)(&lit_titleFrame);
-	runMIO();
-}
 
 void setAlwaysAdvance()
 {

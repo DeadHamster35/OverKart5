@@ -1,0 +1,274 @@
+#include "..\Library\MainInclude.h"
+#include "OKInclude.h"
+
+typedef struct ObjectivePlayer
+{
+     char      FlagHeld, TeamIndex;
+     short     FlagTimer;
+     short     IFrames, Score;
+} ObjectivePlayer;
+
+typedef struct ObjectiveObject
+{
+     float     Position[3];
+     float     Velocity[3];
+     short     RespawnTimer, IFrames;
+     char      PlayerHolding, TeamIndex;     
+     short     Angle;
+     uint      F3D;
+     Bump      BumpData;
+} ObjectiveObject;
+
+ObjectivePlayer       Objectives[4];
+ObjectiveObject     GameFlag[4];
+ObjectiveObject     GameBase[4];
+
+char      FlagCount, TeamMode;
+short     ScoreToWin;
+short     SpawnTime, HitstunTime;
+short     TeamScore[2];
+
+
+
+void ManualBump(Bump* BumpData, Vector Position )
+{
+     float dist;
+     dist = BumpData->distance_zx;
+     if ((BumpData->distance_zx < 0) && (BumpData->flag_zx == TRUE))     
+     {
+          Position[0] -= BumpData->bump_zx[0] * dist;
+          Position[1] -= BumpData->bump_zx[1] * dist;
+          Position[2] -= BumpData->bump_zx[2] * dist;
+     }
+     
+     dist = BumpData->distance_xy;
+     if ((BumpData->distance_xy < 0) && (BumpData->flag_xy == TRUE))
+     {
+          Position[0] -= BumpData->bump_xy[0] * dist;
+          Position[1] -= BumpData->bump_xy[1] * dist;
+          Position[2] -= BumpData->bump_xy[2] * dist;
+     }
+     
+     dist = BumpData->distance_yz;
+     if ((BumpData->distance_yz < 0) && (BumpData->flag_yz == TRUE))
+     {
+          Position[0] -= BumpData->bump_yz[0] * dist;
+          Position[1] -= BumpData->bump_yz[1] * dist;
+          Position[2] -= BumpData->bump_yz[2] * dist;
+     }
+}
+void ManualBounce(Vector BumpDistance, Vector Velocity)
+{
+     float fx, fy, fz;
+     float vx, vy, vz;
+     float m, LocalVelo, vv, LocalVelo2;
+
+     vx = Velocity[0];
+     vy = Velocity[1];
+     vz = Velocity[2];
+     LocalVelo = sqrtf(vx * vx + vy * vy + vz * vz);
+
+     m = BumpDistance[0] * vx + BumpDistance[1] * vy + BumpDistance[2] * vz;
+     fx = vx - m * BumpDistance[0];
+     fy = vy - m * BumpDistance[1];
+     fz = vz - m * BumpDistance[2];
+     vx = fx - m * BumpDistance[0];
+     vy = fy - m * BumpDistance[1];
+     vz = fz - m * BumpDistance[2];
+
+     LocalVelo2 = sqrtf(vx * vx + vy * vy + vz * vz);
+     vv = 1 / LocalVelo2 * LocalVelo;
+     Velocity[0] = vx * vv;
+     Velocity[1] = vy * vv;
+     Velocity[2] = vz * vv;
+}
+
+void PlaceFlags()
+{
+     for (int ThisFlag = 0; ThisFlag < g_playerCount; ThisFlag++)
+     {
+          Objectives[ThisFlag].FlagHeld = -1;
+          Objectives[ThisFlag].FlagTimer = 0;
+          Objectives[ThisFlag].IFrames = 0;
+          Objectives[ThisFlag].Score = 0;
+          Objectives[ThisFlag].TeamIndex = -1;
+
+          GameFlag[ThisFlag].PlayerHolding = -1;
+          GameFlag[ThisFlag].IFrames = 0;
+          GameFlag[ThisFlag].RespawnTimer = 0;
+          GameFlag[ThisFlag].Angle = GlobalPlayer[ThisFlag].direction[1];
+          GameFlag[ThisFlag].Velocity[0] = 0;
+          GameFlag[ThisFlag].Velocity[1] = 0;
+          GameFlag[ThisFlag].Velocity[2] = 0;
+
+          objectVelocity[0] = 0;
+          objectVelocity[1] = 0;
+          objectVelocity[2] = 15;
+          MakeAlignVector(objectVelocity, GameFlag[ThisFlag].Angle);
+
+          GameFlag[ThisFlag].Position[0] = GlobalPlayer[ThisFlag].position[0] + objectVelocity[0];
+          GameFlag[ThisFlag].Position[1] = GlobalPlayer[ThisFlag].position[1] + objectVelocity[1] + 5;
+          GameFlag[ThisFlag].Position[2] = GlobalPlayer[ThisFlag].position[2] + objectVelocity[2];
+          GameFlag[ThisFlag].F3D = (uint)&BattleFlag;
+     }
+     for (int ThisFlag = g_playerCount; ThisFlag < 4; ThisFlag++)
+     {
+          GameFlag[ThisFlag].PlayerHolding = -1;
+          GameFlag[ThisFlag].IFrames = 0;
+          GameFlag[ThisFlag].RespawnTimer = 0;
+          GameFlag[ThisFlag].Angle = GlobalPlayer[ThisFlag].direction[1];
+          GameFlag[ThisFlag].Position[0] = -60000;
+          GameFlag[ThisFlag].Position[1] = 50000;
+          GameFlag[ThisFlag].Position[2] = -55000;
+     }
+     FlagCount = g_playerCount;
+}
+
+void CaptureFlag()
+{
+     //Decrement the I-Frames for the Flag.
+     for (int ThisFlag = 0; ThisFlag < FlagCount; ThisFlag++)
+     {
+          if (GameFlag[ThisFlag].IFrames > 0)
+          {
+               GameFlag[ThisFlag].IFrames--;
+          }
+          if (Objectives[ThisFlag].IFrames > 0)
+          {
+               Objectives[ThisFlag].IFrames--;
+          }
+     }
+
+     //Check for Picking up Flags
+     for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+     {
+          if (Objectives[ThisPlayer].FlagHeld == -1)
+          {
+               if (Objectives[ThisPlayer].IFrames == 0)
+               {
+                    for (int ThisFlag = 0; ThisFlag < FlagCount; ThisFlag++)
+                    {
+                         if (GameFlag[ThisFlag].PlayerHolding == -1)
+                         {
+                              if (GameFlag[ThisFlag].IFrames == 0)
+                              {
+                                   if (TestCollideSphere(GlobalPlayer[ThisPlayer].position, GlobalPlayer[ThisPlayer].radius, GameFlag[ThisFlag].Position, 5.0))
+                                   {
+                                        Objectives[ThisPlayer].FlagHeld = ThisFlag;
+                                        GameFlag[ThisFlag].PlayerHolding = ThisPlayer;
+                                        ChangeMaxSpeed(ThisPlayer, -60);
+                                   }
+                              }
+                         }
+                    }
+               }
+          }
+     }
+     //Check Scoring
+     /*
+     for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+     {
+          if (Objectives[ThisPlayer].FlagHeld != 0)
+          {
+               for (int ThisBase = 0; ThisBase < FlagCount; ThisBase++)
+               {
+                    if (TestCollideSphere(GlobalPlayer[ThisPlayer].position, GlobalPlayer[ThisPlayer].radius, GameBase[ThisBase].Position, 5.0))
+                    {
+                         if (TeamMode == 1)
+                         {
+                              TeamScore[(int)Objectives[ThisPlayer].TeamIndex]++;
+                         }
+                         else
+                         {
+                              Objectives[ThisPlayer].Score++;
+                         }
+                         GameFlag[(int)Objectives[ThisPlayer].FlagHeld].PlayerHolding = -1;
+                         GameFlag[(int)Objectives[ThisPlayer].FlagHeld].RespawnTimer = SpawnTime;
+                         Objectives[ThisPlayer].FlagHeld = -1;                         
+                    }
+               }
+          }
+     }
+     */
+}
+void DropFlag(int PlayerIndex)
+{
+     GlobalIntD += 1;
+     if (Objectives[PlayerIndex].FlagHeld != -1)
+     {
+          GlobalIntA = (int)Objectives[PlayerIndex].FlagHeld;
+          GameFlag[GlobalIntA].Position[0] = GlobalPlayer[PlayerIndex].position[0];
+          GameFlag[GlobalIntA].Position[1] = GlobalPlayer[PlayerIndex].position[1] + 5;
+          GameFlag[GlobalIntA].Position[2] = GlobalPlayer[PlayerIndex].position[2];
+
+          
+          GameFlag[GlobalIntA].Velocity[0] = -6 + (MakeRandomLimmit(12));
+          GameFlag[GlobalIntA].Velocity[1] = 5;
+          GameFlag[GlobalIntA].Velocity[2] = -8 + (MakeRandomLimmit(16));
+
+          MakeAlignVector(objectVelocity,(GlobalPlayer[PlayerIndex].direction[1]));
+          
+          ChangeMaxSpeed((char)PlayerIndex, 60);
+
+          GameFlag[(int)Objectives[PlayerIndex].FlagHeld].PlayerHolding = -1;
+          GameFlag[(int)Objectives[PlayerIndex].FlagHeld].IFrames = 30;
+          Objectives[PlayerIndex].FlagHeld= -1;
+          Objectives[PlayerIndex].IFrames = 90;
+     }       
+	
+}
+void DrawGameFlags(Camera* LocalCamera)
+{
+     
+     //Draw GameFlags
+     
+     objectAngle[0] = 0;     
+     objectAngle[2] = 0;
+     for (int ThisFlag = 0; ThisFlag < FlagCount; ThisFlag++)
+     {
+          GlobalIntA = (int)GameFlag[ThisFlag].PlayerHolding;
+          GameFlag->Angle += (DEG1 * 2);
+          if (GlobalIntA != -1)
+          {
+               GameFlag[ThisFlag].Position[0] = GlobalPlayer[GlobalIntA].position[0];
+               GameFlag[ThisFlag].Position[1] = GlobalPlayer[GlobalIntA].position[1] + 5;
+               GameFlag[ThisFlag].Position[2] = GlobalPlayer[GlobalIntA].position[2];               
+          }
+          else
+          {
+               GameFlag[ThisFlag].Position[0] += GameFlag[ThisFlag].Velocity[0];
+               GameFlag[ThisFlag].Position[1] += GameFlag[ThisFlag].Velocity[1];
+               GameFlag[ThisFlag].Position[2] += GameFlag[ThisFlag].Velocity[2];
+
+               
+
+               CheckBump2((Bump*)&GameFlag[ThisFlag].BumpData, 4.0, GameFlag[ThisFlag].Position[0], GameFlag[ThisFlag].Position[1], GameFlag[ThisFlag].Position[2], GameFlag[ThisFlag].Position[0] - GameFlag[ThisFlag].Velocity[0], GameFlag[ThisFlag].Position[1] - GameFlag[ThisFlag].Velocity[1], GameFlag[ThisFlag].Position[2] - GameFlag[ThisFlag].Velocity[2] );
+               ManualBump((Bump*)&GameFlag[ThisFlag].BumpData, GameFlag[ThisFlag].Position);     
+               if (GameFlag[ThisFlag].BumpData.distance_xy < 0)               
+               {
+                    ManualBounce(GameFlag[ThisFlag].BumpData.bump_xy, GameFlag[ThisFlag].Velocity);                    
+               }
+               if (GameFlag[ThisFlag].BumpData.distance_yz < 0)
+               {
+                    ManualBounce(GameFlag[ThisFlag].BumpData.bump_yz, GameFlag[ThisFlag].Velocity);
+               }
+               if(GameFlag[ThisFlag].BumpData.distance_zx < 0)
+               {
+                    GameFlag[ThisFlag].Velocity[0] *= (1.0 - (0.7 / 30));
+                    GameFlag[ThisFlag].Velocity[1] = 0;
+                    GameFlag[ThisFlag].Velocity[2] *= (1.0 - (0.7 / 30));
+               }
+               else
+               {
+                    GameFlag[ThisFlag].Velocity[1] -= 0.5;
+                    if (GameFlag[ThisFlag].Velocity[1] < -2.0)
+                    {
+                         GameFlag[ThisFlag].Velocity[1] = -2.0;
+                    }
+               }
+          }
+                    
+          objectAngle[1] = GameFlag->Angle;
+          DrawGeometryScale(GameFlag[ThisFlag].Position, objectAngle, (int)GameFlag[ThisFlag].F3D, 0.1);
+     }
+}

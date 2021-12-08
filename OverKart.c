@@ -5,15 +5,14 @@
 void loadLogo()
 {
 	SetSegment(8,(int)(&ok_Logo));
-	*sourceAddress = (int)(0x80600000);
-	*targetAddress = (int)(0x80600000);
-	dataLength = 0xD388;
+	*sourceAddress = (int)(&LogoROM);
+	*targetAddress = (int)(&ok_FreeSpace);
+	dataLength = 0x38AC;
 	runDMA();
-	*sourceAddress = (int)(0x80600000);
-	*targetAddress = (int)(0x80600000);
-	runMIO();+
-	
-	g_NintendoLogoOffset = 0x080059E8;
+	*sourceAddress = (int)(&ok_FreeSpace);
+	*targetAddress = (int)(&ok_Logo);
+	runMIO();
+	g_NintendoLogoOffset = 0x08005A70;
 	g_NintendoLogoBorder = 0x256B9478;
 
 	
@@ -173,6 +172,9 @@ void startRace()
 {
 	setZoomLevel(1); //Just for Amped Up (All races start zoomed out)
 	g_loadedcourseFlag = 0xF0;
+
+	
+		
 	if (HotSwapID > 0)
 	{
 		if (g_gameMode != 0)
@@ -188,6 +190,7 @@ void startRace()
 			setWater();
 			loadMinimap();				
 		}
+
 		if ((SaveGame.GameSettings.GameMode == 2))
 		{        	
 			RedCoinChallenge(GetRealAddress(0x060009D8));
@@ -207,7 +210,8 @@ void startRace()
 			CoinCount[5] = 0;
 			CoinCount[6] = 0;
 			CoinCount[7] = 0;
-		}				
+		}
+		
 		if (VersionNumber > 4)
 		{
 			for (int This = 0; This < 100; This++)
@@ -255,7 +259,6 @@ void MapStartup(short InputID)
 	LoadCustomHeader(courseValue + gpCourseIndex);
 	SetCustomData();
 	LoadMapData(InputID);
-	
 	setPath();
 }
 void InitialMapCode()
@@ -270,11 +273,16 @@ void InitialMapCode()
 	}
 }
 
+
+void DrawPerScreen(Camera* LocalCamera)
+{
+	DrawOKObjects(LocalCamera);
+	DrawGameFlags(LocalCamera);
+}
+
+
 void gameCode(void)
 {	
-
-
-
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -397,7 +405,6 @@ void gameCode(void)
 			{
 				DisplayCoinSprite();			
 			}
-
 		}
 		
 		if (g_startingIndicator == 0x05)

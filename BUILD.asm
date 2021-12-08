@@ -12,16 +12,16 @@
 
 .definelabel DMA_MAX_LENGTH,       org(EndRAMData) - org(StartRAMData)
 .definelabel Printf, 			0x800D6420
-.definelabel ok_ModelDataRawSize,     filesize("data\NewLogo\logo.raw")
+.definelabel ok_ModelDataRawSize,     filesize("data\ModelData\ModelData.raw")
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
+.definelabel OKBuild, 0
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
 .include "..\library\GameVariables\NTSC\StatsOffsets.asm"
 .include "..\library\OKHeader.asm"
 .include "..\library\GameVariables\NTSC\OKAssembly.asm"
 .include "data\ModelData\ModelData.asm"
-.include "data\NewLogo\logo.asm"
 
 .org 0xBFFFFC
 .word 0xF00000
@@ -31,10 +31,17 @@
 .org 0x113FCE
 .byte 0x00
 
+
+
+.if OKBuild
 //fix the flip and stop that shit
 .org 0x095C64
 NOP
+//Remove the default Title Screen Image
+.org 0x09F8C4
+NOP
 
+.endif
 
 .org 0x079290
 J SnowHook
@@ -42,10 +49,6 @@ NOP
 
 .org 0x0FBA68
 J DisplayMap2Hook
-NOP
-
-//Remove the default Title Screen Image
-.org 0x09F8C4
 NOP
 //add XLU to RGBA32
 
@@ -445,6 +448,8 @@ NOP
 .align 0x10
 .importobj "MarioKartPractice.o"
 .align 0x10
+.importobj "OKGameTypes.o"
+.align 0x10
 .importobj "LitroFunc.o"
 .align 0x10
 .importobj "OverKart.o"
@@ -464,7 +469,7 @@ NOP
 
 .align 0x10
 FreeDraw:
-JAL DrawOKObjects
+JAL DrawPerScreen
 NOP
 LW ra, 0x24 (sp)
 LW s0, 0x18 (sp)
@@ -541,19 +546,6 @@ CollisionHopTable:
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0
 .word 0x802A09B0, 0x802A09B0, 0x802A09B0, 0x802A09B0 //99
 
-Test32:
-.import "data\\ImageData.RAW"       ;;  c10
-.align 0x10
-End32:
-
-Boo:
-.import "data\\Boo\\Test.raw"
-.align 0x10
-BooEnd:
-
-PerspectiveASM:
-.import "data\\Perspective.bin"
-.align 0x10
 
 
 EndRAMData:
@@ -580,7 +572,7 @@ previewU:
 .import "textures\\preview_U.mio0.bin"       ;;  c64
 .align 0x10
 LogoROM:
-.import "data\\logo.bin" ;; 0xD388
+.import "data\\ModelData\\Logo\\Logo.bin" ;; 0xD388
 .align 0x10
 BackgroundLogo:
 .import "data\\SplashLogo\\BackgroundSource.bin"
@@ -611,9 +603,6 @@ RCSpriteROM:
 .align 0x10
 ArrowsSpriteROM:
 .import "data\\arrows.png.MIO0" ;; 0x1000
-.align 0x10
-TitleMenuFrameROM:
-.import "data\\TitleMenuFrame.png.MIO0" ;; 0x1C00
 .align 0x10
 NumbersSpriteROM:
 .import "data\\number_sprites.png.MIO0" ;; 0x1600

@@ -25,33 +25,44 @@ void loadCoin()
 	
 }
 
-void DropCoins(int PlayerID)
+void DropCoins(int PlayerIndex)
 {
-	IFrames[PlayerID] = 90;
-	objectPosition[0] = GlobalPlayer[PlayerID].position[0];
-	objectPosition[1] = GlobalPlayer[PlayerID].position[1];
-	objectPosition[2] = GlobalPlayer[PlayerID].position[2];
+	IFrames[PlayerIndex] = 90;
+	objectPosition[0] = GlobalPlayer[PlayerIndex].position[0]; 
+	objectPosition[1] = GlobalPlayer[PlayerIndex].position[1];
+	objectPosition[2] = GlobalPlayer[PlayerIndex].position[2];
 
-	for (int ThisCoin = 0; ThisCoin < CoinCount[PlayerID]; ThisCoin++)
+	for (int ThisCoin = 0; ThisCoin < CoinCount[PlayerIndex]; ThisCoin++)
 	{
 		objectVelocity[0] = -3 + (MakeRandomLimmit(6));
 		objectVelocity[1] = 12;
 		objectVelocity[2] = -4 + (MakeRandomLimmit(8));
-		MakeAlignVector(objectVelocity,(GlobalPlayer[PlayerID].direction[1]));
+		MakeAlignVector(objectVelocity,(GlobalPlayer[PlayerIndex].direction[1]));
 		MasterCreateObject(objectPosition, objectAngle, objectVelocity, 48, 3.0); //motion coin
-		ChangeMaxSpeed(PlayerID, -3);
+		ChangeMaxSpeed(PlayerIndex, -3);
 	}
-	CoinCount[PlayerID] = 0;
+	CoinCount[PlayerIndex] = 0;
+}
+
+void CheckHit(int PlayerIndex)
+{
+	if (SaveGame.GameSettings.GameMode == 2)
+	{
+		DropCoins(PlayerIndex);
+	}
+	if (g_gameMode == 3)
+	{
+		DropFlag(PlayerIndex);
+	}
 }
 
 
 void BombThrowRolloverWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+	
+	CheckHit((int)PlayerID);
+		
 	SetBombThrowRollover(Kart,PlayerID);
 }
 
@@ -59,10 +70,9 @@ void BombThrowRolloverWrap(Player* Kart, char Kno)
 void RolloverWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+		
+	CheckHit((int)PlayerID);
+		
 	SetRollover(Kart,PlayerID);
 }
 
@@ -70,20 +80,18 @@ void RolloverWrap(Player* Kart, char Kno)
 void WheelSpinWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+		
+	CheckHit((int)PlayerID);
+		
 	SetWheelspin(Kart,PlayerID);
 }
 
 void BrokenWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+		
+	CheckHit((int)PlayerID);
+		
 	SetBroken(Kart,PlayerID);
 	
 }
@@ -91,39 +99,35 @@ void BrokenWrap(Player* Kart, char Kno)
 void ThunderWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+		
+	CheckHit((int)PlayerID);
+		
 	SetThunder(Kart,PlayerID);
 }
 
 void SpinWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+		
+	CheckHit((int)PlayerID);
+		
 	SetSpin(Kart,PlayerID);
 }
 void BombRolloverWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+		
+	CheckHit((int)PlayerID);
+		
 	SetBombRollover(Kart,PlayerID);
 }
 
 void ProWheelSpinWrap(Player* Kart, char Kno)
 {
 	int PlayerID = (*(long*)&Kart - (long)&g_PlayerStructTable) / 0xDD8;
-	if (SaveGame.GameSettings.GameMode == 3)
-	{
-		DropCoins((int)PlayerID);
-	}	
+		
+	CheckHit((int)PlayerID);
+		
 	SetProWheelSpin(Kart,PlayerID);
 }
 
