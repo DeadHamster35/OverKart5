@@ -26,6 +26,22 @@ void loadCoinSprite()
 	runMIO();
 }
 
+
+     
+
+void loadNiceFont()
+{
+	*sourceAddress = (int)(&NiceFontROM);
+	*targetAddress = (int)(&ok_FreeSpace);
+	dataLength = 0x4400;
+	runDMA();
+	*sourceAddress = (int)(&ok_FreeSpace);
+	*targetAddress = (int)(&nicefont);
+	runMIO();
+}
+
+
+
 void loadNumberSprites()
 {
 	*sourceAddress = (int)(&NumbersSpriteROM);

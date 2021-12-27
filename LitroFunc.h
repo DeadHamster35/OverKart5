@@ -4,6 +4,7 @@
 #include "OKInclude.h"
 extern void loadCoinSprite();
 extern void loadArrows();
+extern void loadNiceFont();
 extern void loadNumberSprites();
 //extern void loadAlpacaSprite();
 //extern void loadHeartSprite();
