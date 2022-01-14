@@ -23,23 +23,61 @@ ObjectivePlayer       Objectives[4];
 ObjectiveObject     GameFlag[4];
 ObjectiveObject     GameBase[4];
 
+Marker* PlayerSpawnPoints;
+Marker* ObjectivePoints;
+
+float SpawnPoint[4][3];
 char      FlagCount, TeamMode;
-short     ScoreToWin;
+char      ScoreToWin, ObjectiveCount;
 short     SpawnTime, HitstunTime;
 short     TeamScore[2];
 
-
+Vector Origin = {0,0,0,};
 
 void PlaceFlags()
 {
+     if (HotSwapID > 0)
+     {
+          PlayerSpawnPoints = (Marker*)(GetRealAddress(0x06000008));
+          ObjectivePoints = (Marker*)(GetRealAddress(0x06000030));
+
+          for (ObjectiveCount = 0; ObjectiveCount < 64; ObjectiveCount++)
+          {
+               if ((ushort)ObjectivePoints[(int)ObjectiveCount].Position[0] == 0x8000)
+               {
+                    break;
+               }
+          }
+     }
      for (int ThisFlag = 0; ThisFlag < g_playerCount; ThisFlag++)
      {
+          if (HotSwapID > 0)
+          {
+               GlobalPlayer[ThisFlag].position[0] = PlayerSpawnPoints[ThisFlag].Position[0];
+               GlobalPlayer[ThisFlag].position[1] = PlayerSpawnPoints[ThisFlag].Position[1] + 5;
+               GlobalPlayer[ThisFlag].position[2] = PlayerSpawnPoints[ThisFlag].Position[2];
+               GlobalPlayer[ThisFlag].direction[1] = (short)(CalcDirection(GlobalPlayer[ThisFlag].position, Origin));
+          }
           Objectives[ThisFlag].FlagHeld = -1;
           Objectives[ThisFlag].FlagTimer = 0;
           Objectives[ThisFlag].IFrames = 0;
           Objectives[ThisFlag].Score = 0;
-          Objectives[ThisFlag].TeamIndex = -1;
-
+          
+          if (TeamMode == 1)
+          {
+               if (ThisFlag < 2)
+               {
+                    Objectives[ThisFlag].TeamIndex = 0;                    
+               }
+               else
+               {
+                    Objectives[ThisFlag].TeamIndex = 1;
+               }
+          }
+          else
+          {
+               Objectives[ThisFlag].TeamIndex = ThisFlag;
+          }
           GameFlag[ThisFlag].PlayerHolding = -1;
           GameFlag[ThisFlag].IFrames = 0;
           GameFlag[ThisFlag].RespawnTimer = 0;
@@ -58,15 +96,21 @@ void PlaceFlags()
           GameFlag[ThisFlag].Position[2] = GlobalPlayer[ThisFlag].position[2] + objectVelocity[2];
           GameFlag[ThisFlag].F3D = (uint)&BattleFlag;
      }
-     for (int ThisFlag = g_playerCount; ThisFlag < 4; ThisFlag++)
+     if (TeamMode != 1)
      {
-          GameFlag[ThisFlag].PlayerHolding = -1;
-          GameFlag[ThisFlag].IFrames = 0;
-          GameFlag[ThisFlag].RespawnTimer = 0;
-          GameFlag[ThisFlag].Angle = GlobalPlayer[ThisFlag].direction[1];
-          GameFlag[ThisFlag].Position[0] = -60000;
-          GameFlag[ThisFlag].Position[1] = 50000;
-          GameFlag[ThisFlag].Position[2] = -55000;
+          for (int ThisFlag = g_playerCount; ThisFlag < 4; ThisFlag++)
+          {
+               objectVelocity[0] = 5;
+               objectVelocity[1] = 0;
+               objectVelocity[2] = 15;
+               MakeAlignVector(objectVelocity, GlobalPlayer[ThisFlag].direction[1]);
+
+               SpawnPoint[ThisFlag][0] = GlobalPlayer[ThisFlag].position[0] - objectVelocity[0] * 2;
+               SpawnPoint[ThisFlag][1] = GlobalPlayer[ThisFlag].position[1];
+               SpawnPoint[ThisFlag][2] = GlobalPlayer[ThisFlag].position[2] - objectVelocity[2] * 2;
+
+               //ResetFlag(ThisFlag);
+          }
      }
      FlagCount = g_playerCount;
 }
@@ -112,7 +156,7 @@ void CaptureFlag()
           }
      }
      //Check Scoring
-     /*
+     
      for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
      {
           if (Objectives[ThisPlayer].FlagHeld != 0)
@@ -136,7 +180,7 @@ void CaptureFlag()
                }
           }
      }
-     */
+     
 }
 void DropFlag(int PlayerIndex)
 {

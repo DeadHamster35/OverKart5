@@ -7,7 +7,7 @@
 char GlobalCharA;  //DpadInput
 short GlobalCharD;  //Cpad Input
 char GlobalCharB;   L/R Button
-char GlobalCharC;   A/B Buttons
+char MenuOverflow;   A/B Buttons
 */
 
 
@@ -58,9 +58,9 @@ void splitFunc()
 
 void modCheck()
 {
-	if (SaveGame.GameSettings.AudioMode != AudioLanguage)
+	if (SaveGame.RenderSettings.AudioMode != AudioLanguage)
 	{
-		AudioLanguage = SaveGame.GameSettings.AudioMode;
+		AudioLanguage = SaveGame.RenderSettings.AudioMode;
 		if (AudioLanguage == 0)
 		{
 			*(long*)(&g_RawAudio + 1) = *(long*)&ok_USAudio;
@@ -447,6 +447,7 @@ void moveCameraTilt(int inputDistance, int tilt)
 //SaveGame.ModSettings.PracticeMode is > 0 then
 void practiceHack()
 {
+	
 	GlobalCharA = (d_Input & 0x0F);	 //Dpad
 	GlobalCharB = (p_Input & 0xF0) >> 4;  //LR Trigger
 	GlobalCharC = (d_Input & 0xF0) >> 4;  //AB Button

@@ -1,7 +1,6 @@
 #include "../Library/MainInclude.h"
 #include "OKInclude.h"
 #include "data/ModelData/ModelData.h"
-struct OKCollisionSphere CoinCollision[2];
 
 
 void loadCoin()

@@ -4,7 +4,7 @@
 /*
 char GlobalCharA; CPU STY
 char GlobalCharB; FORCE CPU
-char GlobalCharC; START BOOST
+char MenuOverflow; START BOOST
 */
 void fastAI()
 {

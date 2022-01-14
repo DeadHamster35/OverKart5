@@ -555,6 +555,8 @@ EndRAMData:
 
 
 .headersize 0
+.align 0x10
+.include "..\Library\LIBRARYBUILD2.asm"
 
 Splash3D:
 .import "data\\SplashLogo\\model\\SplashLogo.bin"

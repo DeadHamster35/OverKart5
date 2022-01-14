@@ -4,7 +4,7 @@
 
 
 typedef struct GameOptions{
-     char GameMode, StatsMode, AudioMode, MirrorMode, GPMode, CupMode, AIMode, PAD; //8
+     char GameMode, StatsMode, MirrorMode, GPMode, CupMode, AIMode, PAD, PAD2; //8
 } GameOptions;
 
 typedef struct ModOptions{
@@ -12,7 +12,7 @@ typedef struct ModOptions{
 } ModOptions;
 
 typedef struct RenderOptions{
-     char ScreenMode, AliasMode, SplitMode, DrawMode, TempoMode, PAD, PAD2, PAD3;
+     char AudioMode, ScreenMode, AliasMode, SplitMode, DrawMode, TempoMode, PAD, PAD2;
 } RenderOptions;
 
 typedef struct SaveData{

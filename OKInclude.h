@@ -9,7 +9,7 @@
 #include "MarioKartAI.h"
 #include "MarioKartPractice.h"
 #include "OKMenu.h"
-#include "OKGameTypes.h"
+#include "CTF.h"
 #include "OverKart.h"
 #include "OverKartObjectHandler.h"
 #include "OverKartVariables.h"

@@ -2,7 +2,6 @@
 #define OverKartObjectHandlerH
 #include "..\Library\MainInclude.h"
 #include "OKInclude.h"
-extern struct OKCollisionSphere CoinCollision[2];
 extern void loadCoin();
 extern void DisplayObject(void *Car, Object *InputObject);
 extern void RedCoinChallenge(long PathOffset);

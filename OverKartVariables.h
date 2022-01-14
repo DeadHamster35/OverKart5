@@ -6,6 +6,14 @@
 
 
 extern SaveData SaveGame;
+extern OKMenu   GameOKMenu;
+extern OKMenu   RenderOKMenu;
+extern OKPanel GamePanel, ModPanel, RenderPanel;
+extern OKOption OKGameOptions[6];
+extern OKOption OKModOptions[4];
+extern OKOption OKRenderOptions[6];
+
+
 extern char* gameMode;
 extern char* modMode;
 extern char* renderMode;
@@ -14,10 +22,6 @@ extern int LoadedProgress;
 
 extern char *menuNames[];
 extern int menuChar[];
-extern char *cupNames[];
-extern int cupChar[];
-extern char *courseNames[];
-extern int courseChar[];
 
 extern char *gameOptions[];
 extern char *gameParameters[][4];
