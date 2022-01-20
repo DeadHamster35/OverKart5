@@ -448,7 +448,7 @@ NOP
 .align 0x10
 .importobj "MarioKartPractice.o"
 .align 0x10
-.importobj "OKGameTypes.o"
+.importobj "CTF.o"
 .align 0x10
 .importobj "LitroFunc.o"
 .align 0x10

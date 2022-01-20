@@ -184,7 +184,6 @@ void CaptureFlag()
 }
 void DropFlag(int PlayerIndex)
 {
-     GlobalIntD += 1;
      if (Objectives[PlayerIndex].FlagHeld != -1)
      {
           GlobalIntA = (int)Objectives[PlayerIndex].FlagHeld;

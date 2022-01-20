@@ -350,17 +350,11 @@ void gameCode(void)
 	if (scrollLock)
 	{
 		loadFont();
-		printStringNumber(0,0,"",OverKartRAMHeader.ObjectHeader.ObjectTypeCount);
 		GlobalIntA = 10;
-		for (int CurrentModel = 0; CurrentModel < (int)OverKartRAMHeader.ObjectHeader.ObjectTypeList[0].OKModelCount; CurrentModel++)
-		{
-			printStringUnsignedHex(0,GlobalIntA,"",(uint)(GetRealAddress(0x0A000000 | (uint)&OverKartRAMHeader.ObjectHeader.ObjectTypeList[0].ObjectModel[CurrentModel])));
-			GlobalIntA += 10;
-		}
-		for (int CurrentModel = 0; CurrentModel < (int)OverKartRAMHeader.ObjectHeader.ObjectTypeList[1].OKModelCount; CurrentModel++)
-		{
-			printStringUnsignedHex(0,GlobalIntA,"",(uint)(GetRealAddress(0x0A000000 | (uint)&OverKartRAMHeader.ObjectHeader.ObjectTypeList[1].ObjectModel[CurrentModel])));
-			GlobalIntA += 10;
+		for (int CurrentModel = 0; CurrentModel < (int)OverKartRAMHeader.ObjectHeader.ObjectTypeCount; CurrentModel++)
+		{			
+			printStringUnsignedHex(0,GlobalIntA,"",(uint)&OverKartRAMHeader.ObjectHeader.ObjectTypeList[CurrentModel]);
+			GlobalIntA += 20;
 		}
 		if ((GlobalController[0]->ButtonPressed & BTN_DLEFT) == BTN_DLEFT)
 		{
