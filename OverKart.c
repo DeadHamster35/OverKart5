@@ -339,45 +339,17 @@ void InitialMapCode()
 
 void DrawPerScreen(Camera* LocalCamera)
 {
-	DrawOKObjects(LocalCamera);
-	DrawGameFlags(LocalCamera);
+	if (scrollLock)
+	{
+		DrawOKObjects(LocalCamera);
+		DrawGameFlags(LocalCamera);
+	}
+	
 }
 
 
 void gameCode(void)
 {	
-	
-	if (scrollLock)
-	{
-		loadFont();
-		GlobalIntA = 10;
-		for (int CurrentModel = 0; CurrentModel < (int)OverKartRAMHeader.ObjectHeader.ObjectTypeCount; CurrentModel++)
-		{			
-			printStringUnsignedHex(0,GlobalIntA,"",(uint)&OverKartRAMHeader.ObjectHeader.ObjectTypeList[CurrentModel]);
-			GlobalIntA += 20;
-		}
-		if ((GlobalController[0]->ButtonPressed & BTN_DLEFT) == BTN_DLEFT)
-		{
-			for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-			{
-				OKObjectArray[0].ObjectData.position[ThisVector] = GlobalPlayer[0].position[ThisVector];
-			}
-
-			OKObjectArray[0].ObjectData.position[1] += 10;
-		}
-
-
-		if ((GlobalController[0]->ButtonPressed & BTN_DRIGHT) == BTN_DRIGHT)
-		{
-			for (int ThisVector = 0; ThisVector < 3; ThisVector++)
-			{
-				OKObjectArray[1].ObjectData.position[ThisVector] = GlobalPlayer[0].position[ThisVector];
-			}
-
-			OKObjectArray[1].ObjectData.position[1] += 10;
-		}
-
-	}
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -790,11 +762,6 @@ void allRun(void)
 }
 void PrintMenuFunction()
 {
-	
-	loadFont();
-	printStringUnsignedHex(0,10,"",(uint)GameOKMenu.PanelAddress[0].NameAddress);
-	printStringNumber(0,20,"",MenuIndex);
-	printStringNumber(0,30,"",ParameterIndex);
 	#if ProtectMode
 	if(SaveGame.TENNES == 1)
 	{		
