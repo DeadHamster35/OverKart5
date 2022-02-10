@@ -91,7 +91,7 @@ void modCheck()
 
 	if (SaveGame.RenderSettings.ScreenMode > 0x00)
 	{
-		if ((g_screenSplitA != 0) && (SaveGame.RenderSettings.SplitMode == 0x00))
+		if ((g_ScreenSplitA != 0) && (SaveGame.RenderSettings.SplitMode == 0x00))
 		{
 			g_aspectRatio = 3.5;
 		}
@@ -102,7 +102,7 @@ void modCheck()
 	}
 	else
 	{
-		if (g_screenSplitA != 0)
+		if (g_ScreenSplitA != 0)
 		{
 			g_aspectRatio = 2.6666667;
 		}
@@ -127,7 +127,7 @@ void modCheck()
 	{
 		if (g_playerCount == 0x02)
 		{
-			g_screenSplitA = 2;
+			g_ScreenSplitA = 2;
 			g_ScreenSplitB = 2;
 		}
 	}

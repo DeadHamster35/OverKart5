@@ -347,9 +347,27 @@ void DrawPerScreen(Camera* LocalCamera)
 	
 }
 
-
 void gameCode(void)
 {	
+	if(scrollLock)
+	{
+		loadFont();
+		
+		GlobalIntA = GetRealAddress( ObjectSegment | OverKartRAMHeader.ObjectHeader.ObjectTypeList[0].ObjectAnimations);		
+		uint* AnimationOffsets = (uint*)(GlobalIntA);
+		GlobalIntA = GetRealAddress( ObjectSegment | AnimationOffsets[0]);
+		GlobalIntA += 4; //skip past the framecount, we stored this earlier.
+		GlobalAddressA = GlobalIntA + 20; //ooohhhh you.
+		OKSkeleton* Skeleton = (OKSkeleton*)(GlobalIntA); 
+		for (int ThisNode = 0; ThisNode < Skeleton->NodeCount; ThisNode++)
+		{
+			OKNode* Node = (OKNode*)GetRealAddress((ObjectSegment | Skeleton->NodeOffset));
+			printStringUnsignedHex(0,ThisNode * 20,"",Node->TextureOffset);
+			printStringUnsignedHex(0,(ThisNode * 20) + 10,"",Node->MeshOffset);
+		}
+		
+
+	}
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -803,6 +821,13 @@ void PrintMenuFunction()
 		}
 	}
 	#endif
+}
+
+
+void ScreenDrawHook(void)
+{
+    DoObjBlock(0);
+    PrintMenuFunction();
 }
 
 void DisplayCrashScreen()

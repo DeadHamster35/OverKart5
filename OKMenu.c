@@ -988,7 +988,7 @@ void titleMenu()
           objectAngle[0] =0;
           objectAngle[1] = 0;
           objectAngle[2] = 0;
-          DrawGeometryScale(objectPosition, objectAngle, 0x0A000000, 1.4);
+          DrawGeometryScale(objectPosition, objectAngle, ObjectSegment, 1.4);
           
           if (!CheckCheat())
           {
