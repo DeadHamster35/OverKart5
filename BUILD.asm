@@ -5,7 +5,7 @@
 
 
 
-.definelabel PAYLOAD_ROM, 		0x00C00000
+.definelabel PAYLOAD_ROM, 		0x00D00000
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel DMA_FUNC,    		0x80001158
 .definelabel RAM_END,           org(EndRAMData)
@@ -61,6 +61,8 @@ NOP
 .org 0x0473F0
 .word 0x0C011869
 
+
+
 //Change kwtexture2d to use loadtile
 
 .org 0x463E0
@@ -82,6 +84,7 @@ JAL DisplayCrashScreen
 NOP
 .org 0x5240
 NOP
+
 
 
 

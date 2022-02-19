@@ -27,7 +27,7 @@ void loadLogo()
 
 void okSetup(void)
 {
-
+	DPRTester = osGetTime();
 	SaveFunc800B45E0 = 0x03E0000800000000;
 	SaveFunc800B4670 = 0x03E0000800000000;
 	SaveFunc800B559C = 0x03E0000800000000;
@@ -38,6 +38,7 @@ void okSetup(void)
 	EmulatorPlatform = CheckEmulator();	
 	
 	loadHeaderOffsets();
+	loadHudButtons();
 
 	if (SwopCheck == 0x11342067)
 	{
@@ -349,25 +350,6 @@ void DrawPerScreen(Camera* LocalCamera)
 
 void gameCode(void)
 {	
-	if(scrollLock)
-	{
-		loadFont();
-		
-		GlobalIntA = GetRealAddress( ObjectSegment | OverKartRAMHeader.ObjectHeader.ObjectTypeList[0].ObjectAnimations);		
-		uint* AnimationOffsets = (uint*)(GlobalIntA);
-		GlobalIntA = GetRealAddress( ObjectSegment | AnimationOffsets[0]);
-		GlobalIntA += 4; //skip past the framecount, we stored this earlier.
-		GlobalAddressA = GlobalIntA + 20; //ooohhhh you.
-		OKSkeleton* Skeleton = (OKSkeleton*)(GlobalIntA); 
-		for (int ThisNode = 0; ThisNode < Skeleton->NodeCount; ThisNode++)
-		{
-			OKNode* Node = (OKNode*)GetRealAddress((ObjectSegment | Skeleton->NodeOffset));
-			printStringUnsignedHex(0,ThisNode * 20,"",Node->TextureOffset);
-			printStringUnsignedHex(0,(ThisNode * 20) + 10,"",Node->MeshOffset);
-		}
-		
-
-	}
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -808,16 +790,19 @@ void PrintMenuFunction()
 		{
 			PrintNiceTextNumber(75,35, 1.75f,"Custom Set ",HotSwapID);
 		}
-		
+		SpriteBtnCLeft(45,35,1.0,false);
+		SpriteBtnCRight(279,35,1.0,false);
 		if (MenuToggle)
 		{
 			GameOptionsHandler();
+			*(uint*)0x800B0508 = 0;
 		}
 		else
 		{
 			GlobalAddressA = (uint)(&ok_Storage) + 8192;
 			DrawBox(60,208,200,16,0,0,0,255);
-			KWSpriteDiv(160,218,(ushort*)(GlobalAddressA),256,16,8);
+			KWSpriteDiv(160,218,(ushort*)(GlobalAddressA),256,16,8);			
+			*(uint*)0x800B0508 = 0x0C02CED6;
 		}
 	}
 	#endif
