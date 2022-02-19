@@ -62,6 +62,27 @@ NOP
 .word 0x0C011869
 
 
+//AddGravityHooks
+.org 0x2E00C
+JAL AddGravityEdit
+
+.org 0x2F2A4
+JAL AddGravityEdit
+
+.org 0x3997C
+JAL AddGravityEdit
+
+
+//InitSmokeHooks
+.org 0x6D59C
+JAL InitRndSmokeHook
+
+.org 0x6D584
+JAL InitRapidSmokeHook
+
+.org 0x6D520
+JAL InitSpinSmokeHook
+
 
 //Change kwtexture2d to use loadtile
 

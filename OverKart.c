@@ -383,9 +383,6 @@ void gameCode(void)
 				CheckOKObjects();
 				runDisplayScreen();
 				CheckPaths();
-				GetSurfaceID();	
-				
-				
 			}	
 		}
 		
