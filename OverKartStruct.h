@@ -12,7 +12,7 @@ typedef struct ModOptions{
 } ModOptions;
 
 typedef struct RenderOptions{
-     char AudioMode, ScreenMode, AliasMode, SplitMode, DrawMode, TempoMode, PAD, PAD2;
+     char AudioMode, ScreenMode, AliasMode, SplitMode, DrawMode, TempoMode, DisplayFPS, PAD2;
 } RenderOptions;
 
 typedef struct SaveData{

@@ -557,7 +557,7 @@ void OptionsMenu(int Alpha, int FirstMenu, int MenuPanels)
 
 void GameOptionsHandler()
 {
-
+     
      if (ButtonHolding == true)
      {
           MenuButtonHeld = 0;
@@ -586,8 +586,6 @@ void GameOptionsHandler()
                ButtonTimer = 0;  //Button Held Timer
           }
      }
-
-     
 
           
           //MenuButtonHeld is set to 0x01 when a button is held down.
@@ -655,7 +653,7 @@ void GameOptionsHandler()
                          GlobalShortA = pageLimit[1];
                     }
                     
-                    if (ParameterIndex + MenuOverflow < pageLimit[MenuIndex]) //currentParameter
+                    if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[MenuIndex].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
                          {
@@ -868,7 +866,7 @@ void TitleMenuHandler()
                case BTN_DDOWN :
                {
                     ButtonHolding = true;
-                    if (ParameterIndex + MenuOverflow < pageLimit[MenuIndex]) //currentParameter
+                    if (ParameterIndex + MenuOverflow < RenderOKMenu.PanelAddress[0].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
                          {
@@ -966,10 +964,20 @@ void titleMenu()
           KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(GlobalUIntA),(void*)(&V256x12832B),256,128,256,4);
           
           guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
+          gSPPerspNormalize(GraphPtrOffset++, PerspectiveValue);
+          gSPMatrix(GraphPtrOffset++, K0_TO_PHYS((u32) &(gDynamicP->projection1)),G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
+          //gSPMatrix(GraphPtrOffset++, K0_TO_PHYS((u32) &(gDynamicP->viewing)),G_MTX_PROJECTION|G_MTX_MUL|G_MTX_NOPUSH);
+          GULookAt(&gDynamicP->viewing,
+               0, 0,0,
+               0, 0,100000,
+               0,1,0);
+          
+          LoadIdentAffineMtx(AffineMatrix);
+          SetMatrix(AffineMatrix,0);
+          /*
+          guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
           gSPPerspNormalize(*graphPointer, PerspectiveValue);
-          *graphPointer +=8;
           gSPMatrix(*graphPointer, K0_TO_PHYS((u32) &(gDynamicP->projection1)),G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
-          *graphPointer +=8;
           GULookAt(&gDynamicP->viewing,
                0, 0,0,
                0, 0,100,
@@ -977,18 +985,17 @@ void titleMenu()
           gSPMatrix(*graphPointer, K0_TO_PHYS((u32) &(gDynamicP->viewing)),G_MTX_PROJECTION|G_MTX_MUL|G_MTX_NOPUSH);
           LoadIdentAffineMtx(AffineMatrix);
           SetMatrix(AffineMatrix,0);
-          *graphPointer +=8;
-
+          */
           
 
 
           objectPosition[0] = 0;
           objectPosition[1] = 0;
           objectPosition[2] = -200;
-          objectAngle[0] =0;
+          objectAngle[0] = 0;
           objectAngle[1] = 0;
           objectAngle[2] = 0;
-          DrawGeometryScale(objectPosition, objectAngle, ObjectSegment, 1.4);
+          DrawGeometryScale(objectPosition, objectAngle, 0x0A000000, 1.4);
           
           if (!CheckCheat())
           {
@@ -997,20 +1004,30 @@ void titleMenu()
                     MenuAngle[0]++;
                     
                     MenuAngle[1]++;
-                    if (MenuAngle[1] > 119)
+                    if (MenuAngle[1] > 79)
                     {
                          MenuAngle[1] = 0;
                     }
 
-                    if (MenuAngle[1] < 60)
+                    if (MenuAngle[1] < 20)
                     {
                          MenuAngle[2]++;
                          MenuAngle[3]--;
                     }
-                    else
+                    else if (MenuAngle[1] < 40)
+                    {
+                         MenuAngle[2]++;
+                         MenuAngle[3]++;
+                    }
+                    else if (MenuAngle[1] < 60)
                     {
                          MenuAngle[2]--;
                          MenuAngle[3]++;
+                    }
+                    else
+                    {
+                         MenuAngle[2]--;
+                         MenuAngle[3]--;
                     }
 
                     g_mpressstartID = 0;
@@ -1036,10 +1053,7 @@ void titleMenu()
                          objectPosition[2] = -120;
                     }
 
-                    gSPDisplayList(*graphPointer, 0x0D0076F8)
-                    
-
-                    *graphPointer +=8;
+                    gSPDisplayList(GraphPtrOffset++, 0x0D0076F8)
 
                     objectAngle[0] = 0;
                     objectAngle[1] = (MenuAngle[2] * DEG1 / -5);
@@ -1059,7 +1073,7 @@ void titleMenu()
                     }
                     objectAngle[1] = 0;
                     objectAngle[2] = MenuAngle[0] * -1 * DEG1;
-                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.3);
+                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.45);
                     if (!MenuToggle)
                     {               
                          if (MenuBlink > 15)

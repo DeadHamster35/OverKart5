@@ -7,6 +7,8 @@
 
 .definelabel PAYLOAD_ROM, 		0x00D00000
 .definelabel PAYLOAD_RAM, 		0x80400000
+.definelabel PRELOAD_RAM,          0x80200000
+.definelabel ExpansionCheckAddress,          0x80001264
 .definelabel DMA_FUNC,    		0x80001158
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -42,6 +44,9 @@ NOP
 NOP
 
 .endif
+
+
+
 
 .org 0x079290
 J SnowHook
@@ -108,6 +113,32 @@ NOP
 
 
 
+//CheckMapBG_ZX Hooks
+.org 0x2EBE0
+JAL CheckMapBG_ZX_Hook
+.org 0x2FB10
+JAL CheckMapBG_ZX_Hook
+.org 0x30614
+JAL CheckMapBG_ZX_Hook
+.org 0x39CC0
+JAL CheckMapBG_ZX_Hook
+
+
+
+
+//AirControlChange
+.org 0x38A04
+NOP
+
+.org 0x38A10
+JAL ProStickAngleHook
+
+.org 0x38A4C
+NOP
+
+
+
+
 
 .org 0x111D4C
 LB t2, -1(v0)
@@ -119,6 +150,28 @@ LB t2, -1(v0)
 .halfword lo(DisplayHopTable)
 .org 0x10C7D6
 .halfword(100)
+
+
+
+
+
+
+// fix for MKInit duplicate calls which are overwritten by our boot code.
+// gamecode never needs to be reloaded.
+.org 0x3314
+NOP
+.org 0x3354
+NOP
+.org 0x01CC64
+NOP
+.org 0x003334
+NOP
+.org 0x00335C
+NOP
+
+
+
+
 
 
 //Kart Collision Wrappers
@@ -172,6 +225,7 @@ JAL PlayFinalLapMusicHook
 .halfword lo(CollisionHopTable)
 .org 0x109A92
 .halfword(100)
+
 
 
 
@@ -261,32 +315,12 @@ J raceMP
 NOP
 
 
-.org 0x17EC //RAM address 0x80000BEC
-LUI a0, 0x8040 //RAM address
-LUI a1, hi(PAYLOAD_ROM)
-ADDIU a1, a1, lo(PAYLOAD_ROM) //DMA from ROM address 0x00C00000
-LUI a2, hi(DMA_MAX_LENGTH)
-JAL DMA_FUNC
-ADDIU a2, lo(DMA_MAX_LENGTH)
-J OriginalBootFunction
-NOP
-
-
-
-
-
 
 
 
 .headersize PAYLOAD_RAM - PAYLOAD_ROM
 .org PAYLOAD_RAM
-
-
-
 StartRAMData:
-
-
-
 
 .align 0x10
 bannerN:
@@ -327,17 +361,6 @@ set4:
 set4end:
 
 
-.align 0x10
-OriginalBootFunction: //we overwrite this when DMAing our code
-//therefore, make sure it gets ran or the game wont boot
-LUI    T6, 0x8030
-LUI    AT, 0x1FFF
-ORI    AT, AT, 0xFFFF
-ADDIU t6, t6, 0x9F80
-AND t7, t6, at
-LUI at, 0x8015
-J 0x800012AC //jump back to where execution should be on boot
-SW t7, 0x02B4 (at)
 
 .align 0x10
 CustomCodeTitleScreen:
@@ -354,17 +377,6 @@ NOP
 NOP
 
 
-.align 0x10
-GlobalCustomCode:
-ADDIU sp, sp, -0x20
-SW ra, 0x001C (sp) //push ra to the stack
-NOP
-JAL allRun
-NOP
-LW ra, 0x001C (sp) //pop ra from the stack
-ADDIU sp, sp, 0x20
-J 0x8000286C //tells the game where to jump back to, dont remove
-NOP
 
 
 .align 0x10
@@ -424,15 +436,6 @@ LUI v0, 0x800E
 LW v0, 0xC5E8 (v0)
 J 0x80001D00
 NOP
-
-.align 0x10
-PrintMenuHook:
-LW ra, 0x14 (sp)
-SW ra, 0x1C (sp)
-JAL PrintMenuFunction
-NOP
-J 0x80001F64
-LW ra, 0x001C(sp)
 
 
 .align 0x10
@@ -576,73 +579,155 @@ EndRAMData:
 
 
 
+//ROM data
+//Offsets are ROM Relative- Headersize 0
+.headersize 0
 
+     .align 0x10
+     PreCodeROM:
+     .importobj "PreCode.o"
+     PreCodeEnd:
+
+
+
+
+     .align 0x10
+     .include "..\Library\LIBRARYBUILD2.asm"
+
+     Splash3D:
+     .import "data\\SplashLogo\\model\\SplashLogo.bin"
+     .align 0x10
+     Splash3DEnd:
+     BackDrop:
+     .import "data\\SplashLogo\\backdrop.bin"
+     .align 0x10
+     BackDropEnd:
+
+     previewN:
+     .import "textures\\preview_n.mio0.bin"       ;;  c10
+     .align 0x10
+     previewU:
+     .import "textures\\preview_U.mio0.bin"       ;;  c64
+     .align 0x10
+     LogoROM:
+     .import "data\\ModelData\\Logo\\Logo.bin" ;; 0xD388
+     .align 0x10
+     BackgroundLogo:
+     .import "data\\SplashLogo\\BackgroundSource.bin"
+     .align 0x10
+     BackgroundEnd:
+
+     StartLogo:
+     .import "data\\SplashLogo\\PressStart.bin"
+     .align 0x10
+     StartEnd:
+     Pirate:
+     .import "Data\test\Pirate512.MIO0"
+     .align 0x10
+     PirateEnd:
+
+     Crash:
+     .import "Data\test\Crash512.bin"
+     .align 0x10
+     CrashEnd:
+     
+     TESTROMIMG:
+     .import "Data\TESTROM.RAW"
+     .align 0x10
+
+     RAMCheck:
+     .import "Data\test\output\RAMCheck.bin"
+     .align 0x10
+     RAMCheckEnd:
+
+     ModelDataStart:
+     .import "data\\ModelData\\ModelData.bin"
+     .align 0x10
+     ModelDataEnd:
+
+     RCSpriteROM:
+     .import "data\\RedCoinSprite16.png.MIO0" ;; 0x4F0
+     .align 0x10
+     ArrowsSpriteROM:
+     .import "data\\arrows.png.MIO0" ;; 0x1000
+     .align 0x10
+     NumbersSpriteROM:
+     .import "data\\number_sprites.png.MIO0" ;; 0x1600
+     .align 0x10
+     JP_Bank:
+     .import "data\\JP_Bank.bin"
+     .align 0x10
+     JP_Audio:
+     .import "data\\JP_Audio.bin"
+     .align 0x10
+//END ROM DATA
+
+
+
+
+///BOOT CODE START
+.align 0x10
+.headersize 0
+//REPLACEMENT FOR InitializeSystemWorks
+BootCode:
+.import "Data\BootCode.bin"
+
+
+//NEW CUSTOM BOOT CODE
+//OVERWRITES InitializeSystemWorks
+
+.headersize (ExpansionCheckAddress - 0x1E64)
+LoadMainCode:
+.org ExpansionCheckAddress
+ADDIU sp, sp, -0x20
+SW ra, 0x001C (sp)
+LUI a0, hi(PRELOAD_RAM)
+ADDIU a0, a0, lo(PRELOAD_RAM)
+LUI a1, hi(PreCodeROM)
+ADDIU a1, a1, lo(PreCodeROM) //DMA from ROM address 0x00C00000
+LUI a2, hi(PreCodeEnd - PreCodeROM)
+JAL DMA_FUNC
+ADDIU a2, lo(PreCodeEnd - PreCodeROM)
+JAL  PRELOAD_RAM
+NOP
+JAL  (PRELOAD_RAM + 0x200)
+NOP
+LW ra, 0x001C (sp)
+ADDIU sp, sp, 0x20
+jr ra
+NOP
+
+
+.align 0x10
+.importobj "PreSwitch.o"
+
+.align 0x10
+PrintMenuHook:
+LW ra, 0x14 (sp)
+SW ra, 0x1C (sp)
+JAL printMenuSwitch
+NOP
+J 0x80001F64
+LW ra, 0x001C(sp)
+
+.align 0x10
+GlobalCustomCode:
+ADDIU sp, sp, -0x20
+SW ra, 0x001C (sp) //push ra to the stack
+NOP
+JAL allRunSwitch
+NOP
+LW ra, 0x001C (sp) //pop ra from the stack
+ADDIU sp, sp, 0x20
+J 0x8000286C //tells the game where to jump back to, dont remove
+NOP
+
+//END OF NEW CUSTOM BOOT CODE
+
+///BOOT CODE END
 
 .headersize 0
-.align 0x10
-.include "..\Library\LIBRARYBUILD2.asm"
-
-Splash3D:
-.import "data\\SplashLogo\\model\\SplashLogo.bin"
-.align 0x10
-Splash3DEnd:
-BackDrop:
-.import "data\\SplashLogo\\backdrop.bin"
-.align 0x10
-BackDropEnd:
-
-previewN:
-.import "textures\\preview_n.mio0.bin"       ;;  c10
-.align 0x10
-previewU:
-.import "textures\\preview_U.mio0.bin"       ;;  c64
-.align 0x10
-LogoROM:
-.import "data\\ModelData\\Logo\\Logo.bin" ;; 0xD388
-.align 0x10
-BackgroundLogo:
-.import "data\\SplashLogo\\BackgroundSource.bin"
-.align 0x10
-BackgroundEnd:
-
-StartLogo:
-.import "data\\SplashLogo\\PressStart.bin"
-.align 0x10
-StartEnd:
-Pirate:
-.import "Data\test\Pirate512.MIO0"
-.align 0x10
-PirateEnd:
-
-Crash:
-.import "Data\test\Crash512.bin"
-.align 0x10
-CrashEnd:
-
-ModelDataStart:
-.import "data\\ModelData\\ModelData.bin"
-.align 0x10
-ModelDataEnd:
-
-RCSpriteROM:
-.import "data\\RedCoinSprite16.png.MIO0" ;; 0x4F0
-.align 0x10
-ArrowsSpriteROM:
-.import "data\\arrows.png.MIO0" ;; 0x1000
-.align 0x10
-NumbersSpriteROM:
-.import "data\\number_sprites.png.MIO0" ;; 0x1600
-.align 0x10
-JP_Bank:
-.import "data\\JP_Bank.bin"
-.align 0x10
-JP_Audio:
-.import "data\\JP_Audio.bin"
-.align 0x10
-
-
-
-
-.org 0xEFFFFC
+.org 0xEFFFF8
+.word DMA_MAX_LENGTH
 .word 0xFFFFFFFF
 .close

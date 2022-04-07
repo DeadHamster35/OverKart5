@@ -465,8 +465,8 @@ void practiceHack()
 			g_player1LocationY = g_player1LocationY + 3;
 			g_player1SpeedY = 0;
 			GraphPtr = FillRect1ColorF(GraphPtr, 23, 43, 120, 53, 0, 0,0, 175);
-	          loadFont();
-	          printString(5,25, "FLYING");
+			loadFont();
+			printString(5,25, "FLYING");
 		}
 		switch(GlobalController[0]->ButtonPressed)
 		{
@@ -510,17 +510,8 @@ void practiceHack()
 	
 		}
 	}
-
-
 	if (SaveGame.ModSettings.FlycamMode == 1)
 	{
-		
-
-		
-		
-		
-	
-			
 
 		if ((GlobalController[0]->ButtonPressed & BTN_CLEFT) == BTN_CLEFT)
 		{
@@ -537,7 +528,8 @@ void practiceHack()
 				*(uint*)(0x8001EE98) = 0x03E00008;
 				*(uint*)(0x80291154) = 0x3C040000 | ((uint)(&FlyCamSection) >> 16);
 				*(uint*)(0x80291164) = 0x84840000 | ((uint)(&FlyCamSection) & 0xFFFF);
-
+				GlobalFloatC = GlobalPlayer[0].offsetsize;
+				GlobalPlayer[0].offsetsize = 0.001;
 
 				*(uint*)(0x800382DC) = 0x03E00008;
 				*(uint*)(0x800382E0) = 0;
@@ -546,6 +538,9 @@ void practiceHack()
 				*targetAddress = (int)&ok_FreeCamBackup;
 				runRAM();
 				*sourceAddress = (int)&ok_FreeCam;
+				FlyCamBackupPosition[0] = GlobalPlayer[0].position[0];
+				FlyCamBackupPosition[1] = GlobalPlayer[0].position[1];
+				FlyCamBackupPosition[2] = GlobalPlayer[0].position[2];
 				
 			}
 			else
@@ -560,7 +555,7 @@ void practiceHack()
 
 				*(uint*)(0x800382DC) = 0x3C02800E;
 				*(uint*)(0x800382E0) = 0x8C42C52C;
-
+				GlobalPlayer[0].offsetsize = GlobalFloatC;
 				*sourceAddress = (int)&ok_FreeCamBackup;
 			}
 			*targetAddress = (int)0x8018CAB0;
@@ -614,6 +609,9 @@ void practiceHack()
 			}	
 			else
 			{	
+				GlobalPlayer[0].position[0] = FlyCamBackupPosition[0];
+				GlobalPlayer[0].position[1] = FlyCamBackupPosition[1];
+				GlobalPlayer[0].position[2] = FlyCamBackupPosition[2];
 				switch(GlobalController[0]->ButtonPressed)
 				{
 					case BTN_DLEFT:

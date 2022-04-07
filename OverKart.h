@@ -2,9 +2,7 @@
 #define OverKartH
 #include "..\Library\MainInclude.h"
 #include "OKInclude.h"
-extern void runDMA();
-extern void runRAM();
-extern void runTKM();
-extern void runMIO();
+extern void allRun();
+extern void PrintMenuFunction();
 extern void DrawPerScreen(Camera* CameraPointer);
 #endif

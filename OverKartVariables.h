@@ -9,9 +9,9 @@ extern SaveData SaveGame;
 extern OKMenu   GameOKMenu;
 extern OKMenu   RenderOKMenu;
 extern OKPanel GamePanel, ModPanel, RenderPanel;
-extern OKOption OKGameOptions[6];
-extern OKOption OKModOptions[4];
-extern OKOption OKRenderOptions[6];
+extern OKOption OKGameOptions[];
+extern OKOption OKModOptions[];
+extern OKOption OKRenderOptions[];
 
 
 extern char* gameMode;
@@ -49,6 +49,7 @@ extern float FlyCamRadian;
 extern float FlyCamHeight;
 extern short FlyCamSection, FlyCamSectionCheck;
 extern short FlyViewSection, FlyCamViewCheck;
+extern float FlyCamBackupPosition[3];
 extern char FlyCamToggle, FlyCamCheck;
 extern short FlyCamPilot;
 extern short FlyCamDirection;

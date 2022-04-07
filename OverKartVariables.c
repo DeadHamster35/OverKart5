@@ -28,6 +28,7 @@ char GenericInput, MapMode = 0, FlyCamToggle, FlyCamCheck;
 short FlyCamSection, FlyCamSectionCheck;
 short FlyCamView, FlyCamViewCheck;
 short FlyCamPilot,FlyCamDirection;
+float FlyCamBackupPosition[3];
 float FlyCamRadian;
 float FlyCamLook[2][2];
 int LocalInput[2];
@@ -90,27 +91,27 @@ short baseTurn, addTurn = 0;
 //
 
 
-int menuChar[] = {12,11,14,10};
 
 int SaveStateCourseID;
-int pageLimit[] = {6,4,6,5};  // GAME - MOD - RENDER - CUP EDITOR
+int pageLimit[] = {6,4,7,5};  // GAME - MOD - RENDER - CUP EDITOR
 
 OKPanel GamePanel, ModPanel, RenderPanel;
 OKOption OKGameOptions[6];
 OKOption OKModOptions[4];
-OKOption OKRenderOptions[6];
+OKOption OKRenderOptions[7];
 
 OKMenu GameOKMenu;
 
 
+int menuChar[] = {12,11,14,10};
 int gameLimits[] = {4,2,2,2,2,2};
 int gameChar[][4] = {{7,10,8,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {7,4}};
 
 int modLimits[] = {2,2,2,2};
 int modChar[][14] = {{3,2,3,3}, {3,2}, {3,2}, {3,2,8}, {7,3,3,3,3,3,3,3,3,6,10,10,4,8}};
 
-int renderLimits[] = {2,2,2,2,2,2};
-int renderChar[][2] = {{3,2}, {3,2}, {3,2}, {10,8}, {7,8}, {7,8}};
+int renderLimits[] = {2,2,2,2,2,2,2};
+int renderChar[][2] = {{3,2}, {3,2}, {3,2}, {10,8}, {7,8}, {7,8}, {3,2} };
 
 OKMenu RenderOKMenu;
 
@@ -127,8 +128,8 @@ char *modParameters[][14] = {{"Off", "On", "Map", "Dev"}, {"Off" , "On"}, {"Off"
 
 
 
-char *renderOptions[] = { "Audio Mode", "Widescreen", "Anti-Alias",  "Screen Split", "Draw Dist.", "Game Tempo"};
-char *renderParameters[][2] = {{"USA", "JP"},  {"Off" , "On"}, {"Off" , "On"},  {"Horizontal", "Vertical"}, {"Default","Extended"}, {"Console","Emulator"}};
+char *renderOptions[] = { "Audio Mode", "Widescreen", "Anti-Alias",  "Screen Split", "Draw Dist.", "Game Tempo", "Show FPS"};
+char *renderParameters[][2] = {{"USA", "JP"},  {"Off" , "On"}, {"Off" , "On"},  {"Horizontal", "Vertical"}, {"Default","Extended"}, {"Console","Emulator"},  {"Off" , "On"}};
 
 
 //InputDisplay Variables

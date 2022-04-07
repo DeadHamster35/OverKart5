@@ -3,12 +3,18 @@
 
 //OverKart5
 
+
+
+
+
 int DPRTester;
 int RandomDPR;
 
 #if OverKartBuild
 void loadLogo()
 {
+
+	
 	SetSegment(8,(int)(&ok_Logo));
 	*sourceAddress = (int)(&LogoROM);
 	*targetAddress = (int)(&ok_FreeSpace);
@@ -27,7 +33,8 @@ void loadLogo()
 
 void okSetup(void)
 {
-	DPRTester = osGetTime();
+
+	//DPRTester = osGetTime();
 	SaveFunc800B45E0 = 0x03E0000800000000;
 	SaveFunc800B4670 = 0x03E0000800000000;
 	SaveFunc800B559C = 0x03E0000800000000;
@@ -37,9 +44,10 @@ void okSetup(void)
 	ConsolePlatform = CheckPlatform();
 	EmulatorPlatform = CheckEmulator();	
 	
+
 	loadHeaderOffsets();
 	loadHudButtons();
-
+	SetupFontF3D();
 	if (SwopCheck == 0x11342067)
 	{
 		StopSwop = true;
@@ -55,6 +63,7 @@ void okSetup(void)
 
 	
 	loadEEPROM((uint)&SaveGame);	
+	CheckContPackMenu();
 	
 	if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
 	{
@@ -83,7 +92,7 @@ void okSetup(void)
 	#if OverKartBuild
 	loadLogo();
 	#endif
-	loadNiceFont();
+	loadBigFont();
 	copyCourseTable(1);
 	NopSplashCheckCode();
 	FlyCamInit();
@@ -342,7 +351,11 @@ void DrawPerScreen(Camera* LocalCamera)
 {
 	if (scrollLock)
 	{
-		DrawOKObjects(LocalCamera);
+		if(HotSwapID > 0)
+		{
+			DrawOKObjects(LocalCamera);
+		}
+		
 		DrawGameFlags(LocalCamera);
 	}
 	
@@ -350,12 +363,17 @@ void DrawPerScreen(Camera* LocalCamera)
 
 void gameCode(void)
 {	
+	loadFont();
+	printStringNumber(0,0,"",GlobalPlayer[0].tire_FL.Status);
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
 	}
 	else
 	{
+		ClockCycle[1] = osGetCount();
+		CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
+		OldCycle[1] = ClockCycle[1];
 
 		CheckIFrames();
 		
@@ -487,6 +505,11 @@ void gameCode(void)
 		{
 			raceStatus = 0x07;
 			endRace();
+		}
+		
+		if(SaveGame.RenderSettings.DisplayFPS == 1)
+		{
+			DrawFPS(220,10);	
 		}	
 		
 	}
@@ -504,15 +527,11 @@ void resetMap()
 //
 void allRun(void)
 {
-	if ((GlobalController[0]->ButtonPressed & BTN_L) == BTN_L)
-	{
-		*(vs32*)(0xB0000000 + RandomDPR) = 0x1234;		
-		osWritebackDCacheAll();
-		osInvalDCache((void*)(0xB0000000 + RandomDPR), 4);
-		if (*(vs32*)(0xB0000000 + RandomDPR) == 0x1234) {
-			DPRTester = 0x11342067;
-		}
-	}
+	ClockCycle[0] = osGetCount();
+     CycleCount[0] = (ClockCycle[0] - OldCycle[0]);
+     OldCycle[0] = ClockCycle[0];
+	GlobalFrameCount++;
+
 	switch (startupSwitch)
 	{
 		case 0:
@@ -555,19 +574,14 @@ void allRun(void)
 			HotSwapID = 0;
 		}
 	}
-	
-	
-	
+
 	SetCloudType((char)OverKartHeader.SkyType);
 	SetWeatherType((char)OverKartHeader.WeatherType);
 	SetWeather3D(OverKartHeader.SkyType == 3);
 	SetWaterType((char)OverKartHeader.WaterType);
 	
-	
-	
 	if (SYSTEM_Region == 0x01)
 	{
-		
 		if (HotSwapID > 0)
 		{
 			if (g_gameMode != 3)
@@ -600,11 +614,14 @@ void allRun(void)
 				loadArrows();
 				loadNumberSprites();
 				loadCoin();
-				SetFontColor(26,26,29,12,12,15);
+				
+				
+				//SetFontColor(26,26,29,12,12,15);
+				
 
 				#if OverKartBuild
-				MenuAngle[2] = -30;
-				MenuAngle[3] = 30;
+				MenuAngle[2] = -20;
+				MenuAngle[3] = 0;
 				*sourceAddress = (int)(&StartLogo);
 				*targetAddress = (int)(&ok_FreeSpace);
 				dataLength = (int)&StartEnd - (int)&StartLogo;
@@ -757,8 +774,23 @@ void allRun(void)
 	}
 
 }
+
+
 void PrintMenuFunction()
 {
+	
+	ClockCycle[1] = osGetCount();
+     CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
+     OldCycle[1] = ClockCycle[1];
+
+
+	
+
+	if(SaveGame.RenderSettings.DisplayFPS == 1)
+	{
+		DrawFPS(220,10);	
+	}
+	
 	#if ProtectMode
 	if(SaveGame.TENNES == 1)
 	{		
@@ -777,18 +809,23 @@ void PrintMenuFunction()
 	}
 	if (MenuChanged == 13)
 	{
-		
+	
 		DrawBox(60,15,200,40,0,0,0,255);
-		if (HotSwapID < 10)
+		if (HotSwapID == 0)
 		{
-			PrintNiceTextNumber(75,35, 1.75f,"Custom Set  ",HotSwapID);
+			PrintBigText(75,20, 0.80f,"Original Set");
+		}
+		else if (HotSwapID < 10)
+		{
+			PrintBigTextNumber(75,20, 0.80f,"Custom Set  ",HotSwapID);
 		}
 		else
 		{
-			PrintNiceTextNumber(75,35, 1.75f,"Custom Set ",HotSwapID);
+			PrintBigTextNumber(75,20, 0.80f,"Custom Set ",HotSwapID);
 		}
 		SpriteBtnCLeft(45,35,1.0,false);
 		SpriteBtnCRight(279,35,1.0,false);
+		
 		if (MenuToggle)
 		{
 			GameOptionsHandler();
@@ -808,8 +845,9 @@ void PrintMenuFunction()
 
 void ScreenDrawHook(void)
 {
-    DoObjBlock(0);
-    PrintMenuFunction();
+	return;
+    	DoObjBlock(0);
+    	PrintMenuFunction();
 }
 
 void DisplayCrashScreen()
