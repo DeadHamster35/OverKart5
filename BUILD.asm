@@ -1,11 +1,11 @@
 .n64
 //.open "ROM\amp2.z64", "ROM\BASE.z64", 0
+
+
+
 .open "ROM\stock.z64", "ROM\BASE.z64", 0
-
-
-
-
 .definelabel PAYLOAD_ROM, 		0x00D00000
+
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel PRELOAD_RAM,          0x80200000
 .definelabel ExpansionCheckAddress,          0x80001264
@@ -17,7 +17,8 @@
 .definelabel ok_ModelDataRawSize,     filesize("data\ModelData\ModelData.raw")
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
-.definelabel OKBuild, 0
+.definelabel OKBuild, 1
+
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
 .include "..\library\GameVariables\NTSC\StatsOffsets.asm"
@@ -153,7 +154,10 @@ LB t2, -1(v0)
 
 
 
-
+//Staff Ghost routine
+.org 0x5BA4
+J    GhostHook
+NOP
 
 
 // fix for MKInit duplicate calls which are overwritten by our boot code.
@@ -514,6 +518,21 @@ JAL  CollideObject
 MOVE  $a1, $s0
 J     0x802A0D44
 LW    $ra, 0x1c($sp)
+
+
+.align 0x10
+GhostHook:
+ADDIU sp, sp, -0x20
+SW ra, 0x001C (sp) //push ra to the stack
+NOP
+JAL SetGhostData
+NOP
+LW ra, 0x001C (sp) //pop ra from the stack
+ADDIU sp, sp, 0x20
+LUI $at, 0x8016
+JR ra
+SH $zero, 0x2DA0($at)
+
 
 
 .align 0x10

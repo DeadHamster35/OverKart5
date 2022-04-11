@@ -263,7 +263,6 @@ void startRace()
 			setWater();
 			loadMinimap();				
 		}
-
 		if ((SaveGame.GameSettings.GameMode == 2))
 		{        	
 			RedCoinChallenge(GetRealAddress(0x060009D8));
@@ -293,7 +292,6 @@ void startRace()
 			}
 			loadOKObjects();
 			setOKObjects();					
-			loadTextureScrollTranslucent();
 		}
 	}
 	
@@ -333,9 +331,15 @@ void MapStartup(short InputID)
 	SetCustomData();
 	LoadMapData(InputID);
 	setPath();
+	
+
+	loadTextureScrollTranslucent();
+	runKillDisplayObjects();
 }
 void InitialMapCode()
 {
+	
+
 	
 	InitialMap();
 	
@@ -363,8 +367,9 @@ void DrawPerScreen(Camera* LocalCamera)
 
 void gameCode(void)
 {	
-	loadFont();
-	printStringNumber(0,0,"",GlobalPlayer[0].tire_FL.Status);
+	
+	
+	
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -401,6 +406,7 @@ void gameCode(void)
 				CheckOKObjects();
 				runDisplayScreen();
 				CheckPaths();
+				
 			}	
 		}
 		
@@ -780,11 +786,12 @@ void PrintMenuFunction()
 {
 	
 	ClockCycle[1] = osGetCount();
-     CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
-     OldCycle[1] = ClockCycle[1];
+	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
+	OldCycle[1] = ClockCycle[1];
 
 
-	
+	loadFont();
+	printStringUnsignedHex(0,0,"",(uint)&OverKartHeader);
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
 	{
