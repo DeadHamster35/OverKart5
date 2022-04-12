@@ -8,7 +8,6 @@ extern void printDetails();
 extern void printGPTime(float printTime, int OffsetY);
 extern void printTime(float printTime);
 extern void PrintMenuTest();
-extern void titleMenu();
 extern void TitleMenuHandler();
 extern void GameOptionsHandler();
 #endif

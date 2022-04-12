@@ -325,30 +325,6 @@ void CheckIFrames()
 	}
 }
 
-void MapStartup(short InputID)
-{
-	LoadCustomHeader(courseValue + gpCourseIndex);
-	SetCustomData();
-	LoadMapData(InputID);
-	setPath();
-	
-
-	loadTextureScrollTranslucent();
-	runKillDisplayObjects();
-}
-void InitialMapCode()
-{
-	
-
-	
-	InitialMap();
-	
-	if ((HotSwapID > 0) && (g_gameMode == 3))
-	{
-		SearchListFile(0x06000000 | OverKartHeader.SurfaceMapPosition);
-		MakeCollision();
-	}
-}
 
 
 void DrawPerScreen(Camera* LocalCamera)
@@ -369,7 +345,8 @@ void gameCode(void)
 {	
 	
 	
-	
+	loadFont();
+	printStringUnsignedHex(0,0,"",GlobalUIntB);
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -427,9 +404,9 @@ void gameCode(void)
 			// Adds Scrolling Textures.
 			// Adds Tranlucent Textures.
 
-			if (raceStatus != 0x01)
+			if (raceStatus != 1)
 			{
-				raceStatus = 0x01;
+				raceStatus = 1;
 				startRace();
 				hsLabel = -1;
 				MenuChanged = -1;
@@ -439,9 +416,9 @@ void gameCode(void)
 			GlobalShortD = 0;
 			
 		}
-		if (g_startingIndicator == 0x02)
+		if (g_startingIndicator == 2)
 		{
-			raceStatus = 0x02;
+			raceStatus = 2;
 			scrollLock = true;
 			
 			if (GlobalShortD < 60)
@@ -462,7 +439,7 @@ void gameCode(void)
 						printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
 						printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
 					}			
-					if (g_gameMode == 0x00)
+					if (g_gameMode == 0)
 					{
 						printGPTime(gpTotalTime,0);
 						if (HotSwapID > 0)
@@ -531,7 +508,7 @@ void resetMap()
 //
 //
 //
-void allRun(void)
+void allRun()
 {
 	ClockCycle[0] = osGetCount();
      CycleCount[0] = (ClockCycle[0] - OldCycle[0]);
@@ -734,31 +711,7 @@ void allRun(void)
 				courseValue = -1;
 				setPreviews();
 				previewRefresh();
-			}	
-
-			switch(g_gameMode)
-			{
-				//GRAND PRIX
-
-				case 0:
-				{
-					if (courseValue != (g_cupSelect * 4))
-					{
-						FreeSpaceAddress = (int)&ok_Storage;
-						break;
-					}	
-				}
-				case 1:
-				case 2:
-				case 3:
-				{
-					if (courseValue != (g_cupSelect * 4)  + g_courseSelect)
-					{
-						FreeSpaceAddress = (int)&ok_Storage;
-						break;
-					}
-				}
-			}	
+			}		
 
 			//PlayerSelectMenuAfter();		
 			MapSelectMenu();
@@ -865,22 +818,4 @@ void DisplayCrashScreen()
 	runDMA();
 }
 
-
-void XLUDisplay(Screen* PlayerScreen)
-{	
-	if ((OverKartHeader.Version > 4) && (HotSwapID > 0))
-	{	
-		if (g_gameMode != 3)
-		{
-			DisplayGroupmap(GetRealAddress(SegmentAddress(6,OverKartHeader.XLUSectionViewPosition)), PlayerScreen);
-		}
-		else
-		{
-			*(long*)*graphPointer = (long)(0x06000000);
-			*graphPointer = *graphPointer + 4;
-			*(long*)*graphPointer = (long)(SegmentAddress(6,OverKartHeader.XLUSectionViewPosition));
-			*graphPointer = *graphPointer + 4;
-		}
-	}
-}
 
