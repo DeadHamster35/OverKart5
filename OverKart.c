@@ -31,6 +31,7 @@ void loadLogo()
 }
 #endif
 
+
 void okSetup(void)
 {
 
@@ -326,20 +327,6 @@ void CheckIFrames()
 }
 
 
-
-void DrawPerScreen(Camera* LocalCamera)
-{
-	if (scrollLock)
-	{
-		if(HotSwapID > 0)
-		{
-			DrawOKObjects(LocalCamera);
-		}
-		
-		DrawGameFlags(LocalCamera);
-	}
-	
-}
 
 void gameCode(void)
 {	

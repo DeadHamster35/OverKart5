@@ -58,8 +58,6 @@ StartRAMData:
      .align 0x10
      .importobj "MarioKartPractice.o"
      .align 0x10
-     .importobj "CTF.o"
-     .align 0x10
      .importobj "LitroFunc.o"
      .align 0x10
      .importobj "OverKart.o"
@@ -86,6 +84,12 @@ EndRAMData:
      .import "data\\SplashLogo\\backdrop.bin"
      .align 0x10
      BackDropEnd:
+     
+     
+     RAMCheck:
+     .import "Data\test\output\RAMCheck.bin"
+     .align 0x10
+     RAMCheckEnd:
 
      previewN:
      .import "textures\\preview_n.mio0.bin"       ;;  c10
@@ -109,11 +113,6 @@ EndRAMData:
      .import "Data\test\Pirate512.MIO0"
      .align 0x10
      PirateEnd:
-
-     RAMCheck:
-     .import "Data\test\output\RAMCheck.bin"
-     .align 0x10
-     RAMCheckEnd:
 
      ModelDataStart:
      .import "data\\ModelData\\ModelData.bin"
