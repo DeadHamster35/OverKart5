@@ -696,8 +696,6 @@ void allRun()
 				stockASM();
 				hsLabel = -1;
 				courseValue = -1;
-				setPreviews();
-				previewRefresh();
 			}		
 
 			//PlayerSelectMenuAfter();		
@@ -797,12 +795,5 @@ void ScreenDrawHook(void)
     	PrintMenuFunction();
 }
 
-void DisplayCrashScreen()
-{
-	*sourceAddress = (int)(&Crash);
-	*targetAddress = *(uint*)0x80162D5C;
-	dataLength = (int)&CrashEnd - (int)&Crash;
-	runDMA();
-}
 
 
