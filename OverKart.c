@@ -333,7 +333,16 @@ void gameCode(void)
 	
 	
 	loadFont();
-	printStringUnsignedHex(0,0,"",GlobalUIntB);
+	printStringNumber(0,0,"",OverKartRAMHeader.ObjectCount);
+	printStringNumber(50,0,"",OverKartRAMHeader.ObjectTypeCount);
+
+	printStringUnsignedHex(0,20,"",(uint)OverKartRAMHeader.ObjectList);
+	printStringUnsignedHex(80,20,"",(uint)OverKartRAMHeader.ObjectTypeList);
+
+	for (int ThisObject = 0; ThisObject < OverKartRAMHeader.ObjectCount; ThisObject++)
+	{
+		printStringNumber(0,30 + (ThisObject * 10),"",OKObjectArray[ThisObject].SubBehaviorClass);
+	}
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -797,3 +806,9 @@ void ScreenDrawHook(void)
 
 
 
+
+
+void MapStartup_OutHook()
+{
+	*(uint*)(0x80670000) = 0x35142435;
+}

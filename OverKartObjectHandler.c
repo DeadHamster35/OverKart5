@@ -3,6 +3,20 @@
 #include "data/ModelData/ModelData.h"
 
 
+
+void DrawPerScreen(Camera* LocalCamera)
+{
+	if (scrollLock)
+	{
+		if(HotSwapID > 0)
+		{
+			DrawOKObjects(LocalCamera);
+		}
+		
+		DrawGameFlags(LocalCamera);
+	}
+	
+}
 void loadCoin()
 {
 	SetSegment(8,(int)(&ok_ModelData));

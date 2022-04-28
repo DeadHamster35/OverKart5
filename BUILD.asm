@@ -6,8 +6,6 @@
 .open "ROM\stock.z64", "ROM\BASE.z64", 0
 .definelabel PAYLOAD_ROM, 		0x00D00000
 .definelabel PAYLOAD_RAM, 		0x80400000
-.definelabel PRELOAD_RAM,          0x80200000
-.definelabel ExpansionCheckAddress,          0x80001264
 .definelabel DMA_FUNC,    		0x80001158
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -134,6 +132,8 @@ EndRAMData:
      JP_Audio:
      .import "data\\JP_Audio.bin"
      .align 0x10
+
+     
 //END ROM DATA
 
 
