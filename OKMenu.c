@@ -758,7 +758,7 @@ void TitleMenuHandler()
                     {
                          if (MenuIndex == 0)
                          {
-                              swapParameter(RenderOKMenu,1);
+                              swapParameter(TitleOKMenu,1);
                          }
                          else
                          {
@@ -814,7 +814,7 @@ void TitleMenuHandler()
                     {
                          if (MenuIndex == 0)
                          {
-                              swapParameter(RenderOKMenu,0);
+                              swapParameter(TitleOKMenu,0);
                          }
                          else
                          {
@@ -866,7 +866,7 @@ void TitleMenuHandler()
                case BTN_DDOWN :
                {
                     ButtonHolding = true;
-                    if (ParameterIndex + MenuOverflow < RenderOKMenu.PanelAddress[0].OptionCount) //currentParameter
+                    if (ParameterIndex + MenuOverflow < TitleOKMenu.PanelAddress[0].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
                          {
@@ -919,7 +919,7 @@ void TitleMenuHandler()
      }
      if (MenuIndex == 0)
      {
-          ModularMenu(175,RenderOKMenu);
+          ModularMenu(175,TitleOKMenu);
      }
      else
      {

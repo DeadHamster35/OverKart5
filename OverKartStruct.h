@@ -3,9 +3,13 @@
 
 
 
-typedef struct GameOptions{
+typedef struct RaceOptions{
      char GameMode, StatsMode, MirrorMode, GPMode, CupMode, AIMode, PAD, PAD2; //8
-} GameOptions;
+} RaceOptions;
+
+typedef struct BattleOptions{
+     char GameMode, MirrorMode, PAD1, PAD2, PAD3, PAD4, PAD5, PAD6;
+} BattleOptions;
 
 typedef struct ModOptions{
      char PracticeMode, FlycamMode, InputMode, DetailMode, ItemMode, PAD, PAD2, PAD3; //8
@@ -16,12 +20,13 @@ typedef struct RenderOptions{
 } RenderOptions;
 
 typedef struct SaveData{
-     GameOptions    GameSettings;
+     RaceOptions    GameSettings;
      ModOptions     ModSettings;
-     RenderOptions  RenderSettings;     
+     RenderOptions  RenderSettings;    
+     BattleOptions  BattleSettings; 
      bool           TENNES;
      char           SaveVersion;
-     char           PAD[478];
+     char           PAD[470];
 } SaveData;
 
 #endif

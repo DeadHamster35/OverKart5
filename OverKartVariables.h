@@ -7,8 +7,8 @@
 
 extern SaveData SaveGame;
 extern OKMenu   GameOKMenu;
-extern OKMenu   RenderOKMenu;
-extern OKPanel GamePanel, ModPanel, RenderPanel;
+extern OKMenu   TitleOKMenu;
+extern OKPanel RacePanel, BattlePanel, ModPanel, RenderPanel;
 extern OKOption OKGameOptions[];
 extern OKOption OKModOptions[];
 extern OKOption OKRenderOptions[];

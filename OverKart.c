@@ -150,36 +150,39 @@ void okSetup(void)
 	SaveGame.TENNES = false;
 
 	
-	GameOKMenu.PanelCount = 2;
-	RenderOKMenu.PanelCount = 2;
-	GameOKMenu.PanelAddress = (OKPanel*)(uint)&GamePanel;
-	RenderOKMenu.PanelAddress = (OKPanel*)(uint)&RenderPanel;
+	
+	TitleOKMenu.PanelCount = 2;	
+	TitleOKMenu.PanelAddress = (OKPanel*)(uint)&RenderPanel;
+	TitleOKMenu.PanelAddress[0].NameAddress = (uint)menuNames[2];
+	TitleOKMenu.PanelAddress[0].OptionCount = pageLimit[2];
+	TitleOKMenu.PanelAddress[0].NameLength = menuChar[2];
+	TitleOKMenu.PanelAddress[0].ParameterToggles = (char*)&renderMode[0];
+	TitleOKMenu.PanelAddress[0].Options = (OKOption*)&OKRenderOptions;
 
+	GameOKMenu.PanelCount = 3;
+	GameOKMenu.PanelAddress = (OKPanel*)(uint)&RacePanel;
 	GameOKMenu.PanelAddress[0].NameAddress = (uint)menuNames[0];
 	GameOKMenu.PanelAddress[1].NameAddress = (uint)menuNames[1];
-	RenderOKMenu.PanelAddress[0].NameAddress = (uint)menuNames[2];
-
-	GameOKMenu.PanelAddress[0].OptionCount = pageLimit[0];
-	GameOKMenu.PanelAddress[1].OptionCount = pageLimit[1];
-
-	RenderOKMenu.PanelAddress[0].OptionCount = pageLimit[2];
-
+	GameOKMenu.PanelAddress[2].NameAddress = (uint)menuNames[2];
 	GameOKMenu.PanelAddress[0].NameLength = menuChar[0];
 	GameOKMenu.PanelAddress[1].NameLength = menuChar[1];
-
-	RenderOKMenu.PanelAddress[0].NameLength = menuChar[2];
-
-	
+	GameOKMenu.PanelAddress[2].NameLength = menuChar[2];
+	GameOKMenu.PanelAddress[0].OptionCount = pageLimit[0];
+	GameOKMenu.PanelAddress[1].OptionCount = pageLimit[1];
+	GameOKMenu.PanelAddress[2].OptionCount = pageLimit[2];
 	GameOKMenu.PanelAddress[0].ParameterToggles = (char*)&gameMode[0];
 	GameOKMenu.PanelAddress[1].ParameterToggles = (char*)&modMode[0];
-
-	RenderOKMenu.PanelAddress[0].ParameterToggles = (char*)&renderMode[0];
-
+	GameOKMenu.PanelAddress[2].ParameterToggles = (char*)&renderMode[0];
 	GameOKMenu.PanelAddress[0].Options = (OKOption*)&OKGameOptions;
 	GameOKMenu.PanelAddress[1].Options = (OKOption*)&OKModOptions;
+	GameOKMenu.PanelAddress[2].Options = (OKOption*)&OKRenderOptions;
 
-	RenderOKMenu.PanelAddress[0].Options = (OKOption*)&OKRenderOptions;
-	
+	/*
+	GameOKMenu.PanelAddress[0].OptionCount = pageLimit[0];
+	GameOKMenu.PanelAddress[0].Options = (OKOption*)&OKGameOptions;
+	GameOKMenu.PanelAddress[0].ParameterToggles = (char*)&gameMode[0];
+
+	*/
 	for (int ThisLoop = 0; ThisLoop < pageLimit[0]; ThisLoop++)
 	{
 		GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = gameLimits[ThisLoop];
@@ -196,10 +199,10 @@ void okSetup(void)
 	}
 	for (int ThisLoop = 0; ThisLoop < pageLimit[2]; ThisLoop++)
 	{
-		RenderOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = renderLimits[ThisLoop];
-		RenderOKMenu.PanelAddress[0].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
-		RenderOKMenu.PanelAddress[0].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
-		RenderOKMenu.PanelAddress[0].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = renderLimits[ThisLoop];
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
 	}
 	
 	
@@ -333,11 +336,12 @@ void gameCode(void)
 	
 	
 	loadFont();
-	printStringNumber(0,0,"",OverKartRAMHeader.ObjectCount);
-	printStringNumber(50,0,"",OverKartRAMHeader.ObjectTypeCount);
+	printStringNumber(0,0,"",OverKartHeader.WVOffset);
+	printStringNumber(0,10,"",OverKartHeader.ScreenOffset);
+	printStringNumber(0,20,"",OverKartHeader.KDOffset);
+	printStringNumber(0,30,"",OverKartHeader.ScrollSize);	
 
-	printStringUnsignedHex(0,20,"",(uint)OverKartRAMHeader.ObjectList);
-	printStringUnsignedHex(80,20,"",(uint)OverKartRAMHeader.ObjectTypeList);
+	printStringUnsignedHex(0,50,"",(uint)&ok_scrolltranslucent);
 
 	for (int ThisObject = 0; ThisObject < OverKartRAMHeader.ObjectCount; ThisObject++)
 	{
@@ -506,6 +510,30 @@ void resetMap()
 //
 void allRun()
 {
+
+	switch(GlobalController[0]->ButtonPressed)
+	{
+		case BTN_DUP:
+		{
+			playSound(0x4900900f);
+			break;
+		}
+		case BTN_DLEFT:
+		{
+			playSound(0x4901900f);
+			break;
+		}
+		case BTN_DRIGHT:
+		{
+			playSound(0x4900800f);
+			break;
+		}
+		case BTN_DDOWN:
+		{
+			playSound(0x4901800f);
+			break;
+		}
+	}
 	ClockCycle[0] = osGetCount();
      CycleCount[0] = (ClockCycle[0] - OldCycle[0]);
      OldCycle[0] = ClockCycle[0];

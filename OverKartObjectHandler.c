@@ -4,6 +4,7 @@
 
 
 
+
 void DrawPerScreen(Camera* LocalCamera)
 {
 	if (scrollLock)
@@ -12,11 +13,12 @@ void DrawPerScreen(Camera* LocalCamera)
 		{
 			DrawOKObjects(LocalCamera);
 		}
-		
 		DrawGameFlags(LocalCamera);
 	}
 	
 }
+
+
 void loadCoin()
 {
 	SetSegment(8,(int)(&ok_ModelData));
@@ -229,21 +231,24 @@ int GoldCoinCollide(Player *Car, Object *Coin)
 }
 
 
-int CollideObject(void *Camera, void *Object)
+int CollideObject(Player *Car, Object *Target)
 {
-	objectIndex = (short)((*(long*)(*(long*)(&Object)) >> 16) & 0x0000FFFF);
+	
+	objectIndex = (short)((*(long*)(*(long*)(&Target)) >> 16) & 0x0000FFFF);
+
+
 	switch (objectIndex)
 	{
 		case 47:
 		{
-			return RedCoinCollide(Camera,Object);
+			return RedCoinCollide(Car,Target);
 
 			break;
 		}
 		case 48:
 		case 49:
 		{
-			return GoldCoinCollide(Camera,Object);
+			return GoldCoinCollide(Car,Target);
 
 			break;
 		}

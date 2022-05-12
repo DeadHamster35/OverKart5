@@ -95,17 +95,20 @@ short baseTurn, addTurn = 0;
 int SaveStateCourseID;
 int pageLimit[] = {6,4,7,5};  // GAME - MOD - RENDER - CUP EDITOR
 
-OKPanel GamePanel, ModPanel, RenderPanel;
+OKPanel RacePanel, BattlePanel, ModPanel, RenderPanel;
 OKOption OKGameOptions[6];
 OKOption OKModOptions[4];
 OKOption OKRenderOptions[7];
 
 OKMenu GameOKMenu;
-
+OKMenu TitleOKMenu;
 
 int menuChar[] = {12,11,14,10};
 int gameLimits[] = {4,2,2,2,2,2};
 int gameChar[][4] = {{7,10,8,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {7,4}};
+
+int battleLimits[] = {3,2};
+int battleChar[][4] = {{7,3,6}, {3,2}};
 
 int modLimits[] = {2,2,2,2};
 int modChar[][14] = {{3,2,3,3}, {3,2}, {3,2}, {3,2,8}, {7,3,3,3,3,3,3,3,3,6,10,10,4,8}};
@@ -113,12 +116,15 @@ int modChar[][14] = {{3,2,3,3}, {3,2}, {3,2}, {3,2,8}, {7,3,3,3,3,3,3,3,3,6,10,1
 int renderLimits[] = {2,2,2,2,2,2,2};
 int renderChar[][2] = {{3,2}, {3,2}, {3,2}, {10,8}, {7,8}, {7,8}, {3,2} };
 
-OKMenu RenderOKMenu;
+
 
 char *menuNames[] = {"Game Options", "Mod Options","Render Options","Cup Editor"};	
 
 char *gameOptions[] = {"Game Mode", "Racer Stats", "Mirror Mode", "GP Always Advance", "All Cup", "Multiplayer"};
 char *gameParameters[][4] = {{"Default", "Time Trial", "Red Coin", "Gold Coin"}, {"Classic", "Equal"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
+
+char *battleOptions[] = {"Game Mode", "Mirror Mode"};
+char *battleParameters[][4] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}};
 
 
 char *modOptions[] = {"Practice Mode", "Flycam", "Input Display", "Details", "Force Items"};

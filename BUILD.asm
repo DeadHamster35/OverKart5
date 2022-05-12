@@ -131,7 +131,11 @@ EndRAMData:
      .align 0x10
      JP_Audio:
      .import "data\\JP_Audio.bin"
+     .align 0x10     
+     Crash:
+     .import "../library/data/test/Crash512.bin"
      .align 0x10
+     CrashEnd:
 
      
 //END ROM DATA
