@@ -867,12 +867,3 @@ void ScreenDrawHook(void)
     	DoObjBlock(0);
     	PrintMenuFunction();
 }
-
-
-
-
-
-void MapStartup_OutHook()
-{
-	*(uint*)(0x80670000) = 0x35142435;
-}
