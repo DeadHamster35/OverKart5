@@ -374,6 +374,7 @@ void CheckIFrames()
 
 void gameCode(void)
 {	
+	//
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
