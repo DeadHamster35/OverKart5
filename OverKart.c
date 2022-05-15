@@ -374,17 +374,6 @@ void CheckIFrames()
 
 void gameCode(void)
 {	
-	
-	
-	loadFont();
-	printStringNumber(0,0,"",scrollLock);
-	for (int ThisFlag = 0; ThisFlag < FlagCount; ThisFlag++)
-	{
-		printStringNumber(0,10 + (ThisFlag * 30),"",GameFlag[ThisFlag].F3D);
-		printStringNumber(0,20 + (ThisFlag * 30),"",GameFlag[ThisFlag].Position[0]);
-		printStringNumber(60,20+ (ThisFlag * 30),"",GameFlag[ThisFlag].Position[1]);
-		printStringNumber(120,20+ (ThisFlag * 30),"",GameFlag[ThisFlag].Position[2]);
-	};
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
