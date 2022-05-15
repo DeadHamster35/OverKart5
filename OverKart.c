@@ -803,8 +803,6 @@ void PrintMenuFunction()
 	OldCycle[1] = ClockCycle[1];
 
 
-	loadFont();
-	printStringUnsignedHex(0,0,"",(uint)&OverKartHeader);
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
 	{
