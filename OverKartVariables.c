@@ -7,9 +7,11 @@
 
 
 SaveData SaveGame;
+
 char* gameMode = (char*)&SaveGame.GameSettings;
 char* modMode = (char*)&SaveGame.ModSettings;
 char* renderMode = (char*)&SaveGame.RenderSettings;
+char* battleMode = (char*)&SaveGame.BattleSettings;
 
 int LoadedProgress;
 
@@ -93,7 +95,7 @@ short baseTurn, addTurn = 0;
 
 
 int SaveStateCourseID;
-int pageLimit[] = {6,4,7,5};  // GAME - MOD - RENDER - CUP EDITOR
+int pageLimit[] = {6,4,7,5,2};  // GAME - MOD - RENDER - CUP EDITOR  -  BATTLE
 
 OKPanel RacePanel, BattlePanel, ModPanel, RenderPanel;
 OKOption OKGameOptions[6];
@@ -108,7 +110,7 @@ int gameLimits[] = {4,2,2,2,2,2};
 int gameChar[][4] = {{7,10,8,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {7,4}};
 
 int battleLimits[] = {3,2};
-int battleChar[][4] = {{7,3,6}, {3,2}};
+int battleChar[][3] = {{7,3,6}, {3,2}};
 
 int modLimits[] = {2,2,2,2};
 int modChar[][14] = {{3,2,3,3}, {3,2}, {3,2}, {3,2,8}, {7,3,3,3,3,3,3,3,3,6,10,10,4,8}};
@@ -124,7 +126,7 @@ char *gameOptions[] = {"Game Mode", "Racer Stats", "Mirror Mode", "GP Always Adv
 char *gameParameters[][4] = {{"Default", "Time Trial", "Red Coin", "Gold Coin"}, {"Classic", "Equal"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
 
 char *battleOptions[] = {"Game Mode", "Mirror Mode"};
-char *battleParameters[][4] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}};
+char *battleParameters[][3] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}};
 
 
 char *modOptions[] = {"Practice Mode", "Flycam", "Input Display", "Details", "Force Items"};

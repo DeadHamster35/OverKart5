@@ -32,6 +32,83 @@ void loadLogo()
 #endif
 
 
+void SetMenuPanels(int SwitchMode)
+{
+
+	
+
+	
+	GameOKMenu.PanelAddress = (OKPanel*)(uint)&RacePanel;
+	GameOKMenu.PanelAddress[0].NameAddress = (uint)menuNames[0];
+	GameOKMenu.PanelAddress[1].NameAddress = (uint)menuNames[1];
+	GameOKMenu.PanelAddress[2].NameAddress = (uint)menuNames[2];
+	GameOKMenu.PanelAddress[0].NameLength = menuChar[0];
+	GameOKMenu.PanelAddress[1].NameLength = menuChar[1];
+	GameOKMenu.PanelAddress[2].NameLength = menuChar[2];
+	
+	GameOKMenu.PanelAddress[1].OptionCount = pageLimit[1];
+	GameOKMenu.PanelAddress[2].OptionCount = pageLimit[2];
+	
+	GameOKMenu.PanelAddress[1].ParameterToggles = (char*)&modMode[0];
+	GameOKMenu.PanelAddress[2].ParameterToggles = (char*)&renderMode[0];
+	GameOKMenu.PanelAddress[0].Options = (OKOption*)&OKGameOptions;
+	GameOKMenu.PanelAddress[1].Options = (OKOption*)&OKModOptions;
+	GameOKMenu.PanelAddress[2].Options = (OKOption*)&OKRenderOptions;
+
+	
+	switch(SwitchMode)
+	{
+		case RACESWITCH:		
+		{
+			GameOKMenu.PanelAddress[0].OptionCount = pageLimit[0];
+			GameOKMenu.PanelAddress[0].ParameterToggles = (char*)&gameMode[0];
+			for (int ThisLoop = 0; ThisLoop < pageLimit[0]; ThisLoop++)
+			{
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = gameLimits[ThisLoop];
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterNames = (uint*)&gameParameters[ThisLoop][0];
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterLengths = (int*)&gameChar[ThisLoop];
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].OptionName = (uint)gameOptions[ThisLoop];
+			}
+			break;
+		}
+		case BATTLESWITCH:
+		{
+			GameOKMenu.PanelAddress[0].OptionCount = pageLimit[4];
+			GameOKMenu.PanelAddress[0].ParameterToggles = (char*)&battleMode[0];
+
+			for (int ThisLoop = 0; ThisLoop < pageLimit[4]; ThisLoop++)
+			{
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = battleLimits[ThisLoop];
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterNames = (uint*)&battleParameters[ThisLoop][0];
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterLengths = (int*)&battleChar[ThisLoop];
+				GameOKMenu.PanelAddress[0].Options[ThisLoop].OptionName = (uint)battleOptions[ThisLoop];
+			}
+			break;
+		}
+	}
+
+
+
+	for (int ThisLoop = 0; ThisLoop < pageLimit[1]; ThisLoop++)
+	{
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterCount = modLimits[ThisLoop];
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterNames = (uint*)&modParameters[ThisLoop];
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterLengths = (int*)modChar[ThisLoop];
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].OptionName = (uint)modOptions[ThisLoop];
+	}
+	for (int ThisLoop = 0; ThisLoop < pageLimit[2]; ThisLoop++)
+	{
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterCount = renderLimits[ThisLoop];
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
+
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = renderLimits[ThisLoop];
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
+		TitleOKMenu.PanelAddress[0].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
+	}
+}
 void okSetup(void)
 {
 
@@ -159,53 +236,9 @@ void okSetup(void)
 	TitleOKMenu.PanelAddress[0].ParameterToggles = (char*)&renderMode[0];
 	TitleOKMenu.PanelAddress[0].Options = (OKOption*)&OKRenderOptions;
 
-	GameOKMenu.PanelCount = 3;
-	GameOKMenu.PanelAddress = (OKPanel*)(uint)&RacePanel;
-	GameOKMenu.PanelAddress[0].NameAddress = (uint)menuNames[0];
-	GameOKMenu.PanelAddress[1].NameAddress = (uint)menuNames[1];
-	GameOKMenu.PanelAddress[2].NameAddress = (uint)menuNames[2];
-	GameOKMenu.PanelAddress[0].NameLength = menuChar[0];
-	GameOKMenu.PanelAddress[1].NameLength = menuChar[1];
-	GameOKMenu.PanelAddress[2].NameLength = menuChar[2];
-	GameOKMenu.PanelAddress[0].OptionCount = pageLimit[0];
-	GameOKMenu.PanelAddress[1].OptionCount = pageLimit[1];
-	GameOKMenu.PanelAddress[2].OptionCount = pageLimit[2];
-	GameOKMenu.PanelAddress[0].ParameterToggles = (char*)&gameMode[0];
-	GameOKMenu.PanelAddress[1].ParameterToggles = (char*)&modMode[0];
-	GameOKMenu.PanelAddress[2].ParameterToggles = (char*)&renderMode[0];
-	GameOKMenu.PanelAddress[0].Options = (OKOption*)&OKGameOptions;
-	GameOKMenu.PanelAddress[1].Options = (OKOption*)&OKModOptions;
-	GameOKMenu.PanelAddress[2].Options = (OKOption*)&OKRenderOptions;
-
-	/*
-	GameOKMenu.PanelAddress[0].OptionCount = pageLimit[0];
-	GameOKMenu.PanelAddress[0].Options = (OKOption*)&OKGameOptions;
-	GameOKMenu.PanelAddress[0].ParameterToggles = (char*)&gameMode[0];
-
-	*/
-	for (int ThisLoop = 0; ThisLoop < pageLimit[0]; ThisLoop++)
-	{
-		GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = gameLimits[ThisLoop];
-		GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterNames = (uint*)&gameParameters[ThisLoop][0];
-		GameOKMenu.PanelAddress[0].Options[ThisLoop].ParameterLengths = (int*)&gameChar[ThisLoop];
-		GameOKMenu.PanelAddress[0].Options[ThisLoop].OptionName = (uint)gameOptions[ThisLoop];
-	}
-	for (int ThisLoop = 0; ThisLoop < pageLimit[1]; ThisLoop++)
-	{
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterCount = modLimits[ThisLoop];
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterNames = (uint*)&modParameters[ThisLoop];
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterLengths = (int*)modChar[ThisLoop];
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].OptionName = (uint)modOptions[ThisLoop];
-	}
-	for (int ThisLoop = 0; ThisLoop < pageLimit[2]; ThisLoop++)
-	{
-		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterCount = renderLimits[ThisLoop];
-		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
-		TitleOKMenu.PanelAddress[0].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
-		TitleOKMenu.PanelAddress[0].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
-	}
+	GameOKMenu.PanelCount = 2;
 	
-	
+	SetMenuPanels(RACESWITCH);
 	startupSwitch = 1;
 }
 bool checkEndGame()
@@ -242,16 +275,24 @@ bool checkEndGame()
 	}
 	
 }
-
-
-
 void startRace()
 {
 	setZoomLevel(1); //Just for Amped Up (All races start zoomed out)
 	g_loadedcourseFlag = 0xF0;
 
 	
-		
+	if (g_gameMode == 3)
+	{
+		if (SaveGame.BattleSettings.GameMode == BTL_CTF)
+		{
+			PlaceFlags(BattleFlag, FlagModels, RedMushroom, MushroomModels);
+		}		
+		if (SaveGame.BattleSettings.GameMode == BTL_SOCCER)
+		{
+			//PlaceBalls();
+		}
+
+	}
 	if (HotSwapID > 0)
 	{
 		if (g_gameMode != 0)
@@ -265,7 +306,7 @@ void startRace()
 		
 			setSky();
 			setWater();
-			loadMinimap();				
+			loadMinimap();	
 		}
 		if ((SaveGame.GameSettings.GameMode == 2))
 		{        	
@@ -336,17 +377,14 @@ void gameCode(void)
 	
 	
 	loadFont();
-	printStringNumber(0,0,"",OverKartHeader.WVOffset);
-	printStringNumber(0,10,"",OverKartHeader.ScreenOffset);
-	printStringNumber(0,20,"",OverKartHeader.KDOffset);
-	printStringNumber(0,30,"",OverKartHeader.ScrollSize);	
-
-	printStringUnsignedHex(0,50,"",(uint)&ok_scrolltranslucent);
-
-	for (int ThisObject = 0; ThisObject < OverKartRAMHeader.ObjectCount; ThisObject++)
+	printStringNumber(0,0,"",scrollLock);
+	for (int ThisFlag = 0; ThisFlag < FlagCount; ThisFlag++)
 	{
-		printStringNumber(0,30 + (ThisObject * 10),"",OKObjectArray[ThisObject].SubBehaviorClass);
-	}
+		printStringNumber(0,10 + (ThisFlag * 30),"",GameFlag[ThisFlag].F3D);
+		printStringNumber(0,20 + (ThisFlag * 30),"",GameFlag[ThisFlag].Position[0]);
+		printStringNumber(60,20+ (ThisFlag * 30),"",GameFlag[ThisFlag].Position[1]);
+		printStringNumber(120,20+ (ThisFlag * 30),"",GameFlag[ThisFlag].Position[2]);
+	};
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -673,6 +711,7 @@ void allRun()
 						renderMode[This] = 0;
 						modMode[This] = 0;
 						gameMode[This] = 0;
+						battleMode[This] = 0;
 					}
 					SaveGame.RenderSettings.AliasMode = 1;
 
@@ -715,15 +754,14 @@ void allRun()
 			g_startingIndicator = 0;
 			if (MenuChanged != 13)
 			{
-				
-				*sourceAddress = (int)(&StartLogo);
-				*targetAddress = (int)(&ok_FreeSpace);
-				dataLength = (int)&StartEnd - (int)&StartLogo;
-				runDMA();
-				*sourceAddress = (int)(&ok_FreeSpace);
-				*targetAddress = (int)(&ok_Storage);
-				runMIO();
-				
+				if (g_gameMode == 3)
+				{
+					SetMenuPanels(BATTLESWITCH);
+				}
+				else
+				{
+					SetMenuPanels(RACESWITCH);
+				}
 				MenuChanged = 13;
 				MenuToggle = 0;
 				MenuIndex = 0;

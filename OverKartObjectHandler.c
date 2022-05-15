@@ -3,8 +3,6 @@
 #include "data/ModelData/ModelData.h"
 
 
-
-
 void DrawPerScreen(Camera* LocalCamera)
 {
 	if (scrollLock)
@@ -13,7 +11,28 @@ void DrawPerScreen(Camera* LocalCamera)
 		{
 			DrawOKObjects(LocalCamera);
 		}
-		DrawGameFlags(LocalCamera);
+		if (g_gameMode == 3)
+		{
+			switch(SaveGame.BattleSettings.GameMode)
+			{
+				case BTL_BATTLE:
+				{
+					break;
+				}
+				case BTL_CTF:
+				{
+					DrawGameFlags(LocalCamera);
+					DrawGameBase(LocalCamera);
+					break;
+				}
+				case BTL_SOCCER:
+				{
+					DrawGameBalls(LocalCamera);
+					break;
+				}
+			}
+		}
+		
 	}
 	
 }

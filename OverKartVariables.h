@@ -2,7 +2,17 @@
 #define OverKartVariablesH
 #include "..\Library\MainInclude.h"
 #include "OKInclude.h"
-//Menu
+//Menuoksetup
+
+
+#define RACESWITCH		0
+#define BATTLESWITCH	1
+
+
+
+#define BTL_BATTLE 	0
+#define BTL_CTF		1
+#define	BTL_SOCCER	2
 
 
 extern SaveData SaveGame;
@@ -17,6 +27,7 @@ extern OKOption OKRenderOptions[];
 extern char* gameMode;
 extern char* modMode;
 extern char* renderMode;
+extern char* battleMode;
 
 extern int LoadedProgress;
 
@@ -27,6 +38,8 @@ extern char *gameOptions[];
 extern char *gameParameters[][4];
 extern int gameLimits[];
 extern int gameChar[][4];
+extern int battleLimits[];
+extern int battleChar[][3];
 
 extern char *modOptions[];
 extern char *modParameters[][14];
@@ -35,6 +48,8 @@ extern int modChar[][14];
 
 extern char *renderOptions[];
 extern char *renderParameters[][2];
+extern char *battleOptions[];
+extern char *battleParameters[][3];
 extern int renderLimits[];
 extern int renderChar[][2];
 extern int SaveStateCourseID;

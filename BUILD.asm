@@ -21,7 +21,6 @@
 .include "..\library\GameVariables\NTSC\StatsOffsets.asm"
 .include "..\library\OKHeader.asm"
 .include "..\library\GameVariables\NTSC\OKAssembly.asm"
-.include "data\ModelData\ModelData.asm"
 
 .org 0xBFFFFC
 .word 0xF00000
@@ -61,6 +60,8 @@ StartRAMData:
      .importobj "OverKart.o"
      .align 0x10
      .importobj "OverKartObjectHandler.o"
+     .align 0x10
+     .importobj "ModelData.o"
 
 
 

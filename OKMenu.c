@@ -605,7 +605,7 @@ void GameOptionsHandler()
                     }
                     else
                     {
-                         if (MenuIndex < 1)
+                         if (MenuIndex < GameOKMenu.PanelCount)
                          {
                               MenuIndex++;
                               MenuOverflow = 0;
@@ -646,12 +646,6 @@ void GameOptionsHandler()
                //Move forward to next option
                case BTN_DDOWN :
                {
-                    ButtonHolding = true;
-                    GlobalShortA = pageLimit[0];
-                    if (MenuIndex == 0)
-                    {
-                         GlobalShortA = pageLimit[1];
-                    }
                     
                     if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[MenuIndex].OptionCount) //currentParameter
                     {
