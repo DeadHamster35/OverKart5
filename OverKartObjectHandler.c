@@ -11,7 +11,7 @@ void DrawPerScreen(Camera* LocalCamera)
 		{
 			DrawOKObjects(LocalCamera);
 		}
-		if (g_gameMode == 3)
+		if (g_gameMode == GAMEMODE_BATTLE)
 		{
 			switch(SaveGame.BattleSettings.GameMode)
 			{
@@ -23,11 +23,12 @@ void DrawPerScreen(Camera* LocalCamera)
 				{
 					DrawGameFlags(LocalCamera);
 					DrawGameBase(LocalCamera);
+					
 					break;
 				}
 				case BTL_SOCCER:
 				{
-					DrawGameBalls(LocalCamera);
+					DrawGameFlags(LocalCamera);
 					break;
 				}
 			}
@@ -87,7 +88,7 @@ void CheckHit(int PlayerIndex)
 	{
 		DropCoins(PlayerIndex);
 	}
-	if (g_gameMode == 3)
+	if (g_gameMode == GAMEMODE_BATTLE)
 	{
 		DropFlag(PlayerIndex);
 	}

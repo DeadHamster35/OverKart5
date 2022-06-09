@@ -281,26 +281,26 @@ void startRace()
 	g_loadedcourseFlag = 0xF0;
 
 	
-	if (g_gameMode == 3)
+	if (g_gameMode == GAMEMODE_BATTLE)
 	{
 		if (SaveGame.BattleSettings.GameMode == BTL_CTF)
 		{
-			PlaceFlags(BattleFlag, FlagModels, RedMushroom, MushroomModels);
+			PlaceFlags(BattleFlag, FlagModels, RedMushroom, MushroomModels, 1);
 		}		
 		if (SaveGame.BattleSettings.GameMode == BTL_SOCCER)
 		{
-			//PlaceBalls();
+			PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);
 		}
 
 	}
 	if (HotSwapID > 0)
 	{
-		if (g_gameMode != 0)
+		if (g_gameMode != GAMEMODE_GP)
 		{
 			gpCourseIndex = 0;
 		}
 		
-		if (g_gameMode != 3)
+		if (g_gameMode != GAMEMODE_BATTLE)
 		{
 			EmptyActionData();
 		
@@ -308,7 +308,7 @@ void startRace()
 			setWater();
 			loadMinimap();	
 		}
-		if ((SaveGame.GameSettings.GameMode == 2))
+		if ((SaveGame.GameSettings.GameMode == GAMEMODE_VS))
 		{        	
 			RedCoinChallenge(GetRealAddress(0x060009D8));
 			CoinCount[0] = 0;
@@ -316,7 +316,7 @@ void startRace()
 			CoinCount[2] = 0;
 			CoinCount[3] = 0;
 		}
-		if ((SaveGame.GameSettings.GameMode == 3))
+		if ((SaveGame.GameSettings.GameMode == GAMEMODE_BATTLE))
 		{        	
 			GoldCoinChallenge(GetRealAddress(pathOffset));
 			CoinCount[0] = 0;
@@ -345,7 +345,7 @@ void startRace()
 
 void endRace()
 {
-	if (g_gameMode == 0x00)
+	if (g_gameMode == GAMEMODE_GP)
 	{
 		if (checkEndGame())
 		{
@@ -372,22 +372,124 @@ void CheckIFrames()
 
 
 
+
+void ExecuteItemHook(Player* Car)
+{
+	if (g_gameMode != GAMEMODE_BATTLE)
+	{
+		ExecuteItem(Car);
+	}
+	{
+		switch (SaveGame.BattleSettings.GameMode)
+		{
+			case BTL_BATTLE:
+			{
+				ExecuteItem(Car);
+				break;
+			}
+			case BTL_CTF:
+			{
+				int PlayerID = (*(uint*)&Car - (uint)&g_PlayerStructTable) / 0xDD8;
+				
+				if (GlobalController[PlayerID]->ButtonPressed & BTN_Z)				
+				{
+					if (CheckExecuteItem(PlayerID))
+					{
+						ExecuteItem(Car);
+					}
+				}
+				break;
+			}
+			case BTL_SOCCER:
+			{
+				int PlayerID = (*(uint*)&Car - (uint)&g_PlayerStructTable) / 0xDD8;
+				
+				if (GlobalController[PlayerID]->ButtonPressed & BTN_Z)
+				{
+					if (CheckExecuteItem(PlayerID))
+					{
+						ExecuteItem(Car);
+					}
+				}
+				break;
+			}
+		}
+	}
+}
+
+
+void CheckBattleCDown()
+{
+	
+	switch (SaveGame.BattleSettings.GameMode)
+	{
+		case BTL_BATTLE:
+		{
+			break;
+		}
+		case BTL_CTF:
+		{
+			for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+			{
+				if (GlobalController[ThisPlayer]->ButtonPressed & BTN_CDOWN)				
+				{
+					DropFlag(ThisPlayer);
+				}
+			}
+			break;
+		}
+		case BTL_SOCCER:
+		{
+			for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+			{
+			}
+			break;
+		}
+	}
+	
+}
+
+
+
 void gameCode(void)
 {	
 	//
+
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
 	}
 	else
 	{
-		ClockCycle[1] = osGetCount();
-		CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
-		OldCycle[1] = ClockCycle[1];
+		loadFont();
+		
+		printStringUnsignedHex(0,0,"", GlobalUIntB);
+		
+		
 
 		CheckIFrames();
 		
-		
+		if (g_gameMode == GAMEMODE_BATTLE)
+		{
+			switch(SaveGame.BattleSettings.GameMode)
+			{
+				case BTL_BATTLE:
+				{
+					break;
+				}
+				case BTL_CTF:
+				{							
+					CaptureFlag();
+					break;
+				}
+				case BTL_SOCCER:
+				{
+					CaptureBalls();
+					break;
+				}
+			}
+		}
+
 		if (SaveGame.ModSettings.PracticeMode > 0 || SaveGame.ModSettings.FlycamMode > 0)
 		{
 			practiceHack();		
@@ -412,9 +514,10 @@ void gameCode(void)
 				runDisplayScreen();
 				CheckPaths();
 				
+				
 			}	
 		}
-		
+
 
 		if ((HotSwapID > 0) || (SaveGame.RenderSettings.DrawMode == 1))
 		{
@@ -467,7 +570,7 @@ void gameCode(void)
 						printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
 						printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
 					}			
-					if (g_gameMode == 0)
+					if (g_gameMode == GAMEMODE_GP)
 					{
 						printGPTime(gpTotalTime,0);
 						if (HotSwapID > 0)
@@ -506,7 +609,7 @@ void gameCode(void)
 			{
 				raceStatus = 0x05;
 			}
-			if (g_gameMode == 0x00)
+			if (g_gameMode == GAMEMODE_GP)
 			{
 				printGPTime(gpTotalTime,30);
 			}
@@ -619,7 +722,7 @@ void allRun()
 	{
 		if (HotSwapID > 0)
 		{
-			if (g_gameMode != 3)
+			if (g_gameMode != GAMEMODE_BATTLE)
 			{
 				g_courseID = 0;
 			}
@@ -744,7 +847,7 @@ void allRun()
 			g_startingIndicator = 0;
 			if (MenuChanged != 13)
 			{
-				if (g_gameMode == 3)
+				if (g_gameMode == GAMEMODE_BATTLE)
 				{
 					SetMenuPanels(BATTLESWITCH);
 				}
@@ -792,7 +895,7 @@ void PrintMenuFunction()
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
-
+	PrintBigText(0,10,0.80f,"Battle Kart 64");
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
 	{
