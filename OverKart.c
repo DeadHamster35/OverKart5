@@ -461,10 +461,6 @@ void gameCode(void)
 	}
 	else
 	{
-		loadFont();
-		
-		printStringUnsignedHex(0,0,"", GlobalUIntB);
-		
 		
 
 		CheckIFrames();
