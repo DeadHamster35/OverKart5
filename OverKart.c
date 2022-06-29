@@ -3,7 +3,7 @@
 
 //OverKart5
 
-
+extern unsigned short net[];
 
 
 
@@ -461,7 +461,17 @@ void gameCode(void)
 	}
 	else
 	{
-		
+		loadFont();
+		printStringUnsignedHex(0,0,"",OKObjectArray[0].ObjectData.angle[1]);
+		printStringUnsignedHex(0,0,"",(uint)&OKObjectArray[0].ObjectData.angle);
+		if ((GlobalController[0]->ButtonHeld & BTN_DLEFT) == BTN_DLEFT)
+		{
+			OKObjectArray[0].ObjectData.angle[1]+= DEG1;
+		}
+		if ((GlobalController[0]->ButtonHeld & BTN_DRIGHT) == BTN_DRIGHT)
+		{
+			OKObjectArray[0].ObjectData.angle[1]-= DEG1;
+		}
 
 		CheckIFrames();
 		
@@ -890,8 +900,6 @@ void PrintMenuFunction()
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
-
-	PrintBigText(0,10,0.80f,"Battle Kart 64");
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
 	{
