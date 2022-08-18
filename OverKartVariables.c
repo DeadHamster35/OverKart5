@@ -107,7 +107,7 @@ OKMenu TitleOKMenu;
 
 int menuChar[] = {12,11,14,10};
 int gameLimits[] = {4,2,2,2,2,2};
-int gameChar[][4] = {{7,10,8,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {7,4}};
+int gameChar[][4] = {{7,12,8,9}, {7,5} ,{3,2}, {3,2}, {3,2}, {7,4}};
 
 int battleLimits[] = {3,2};
 int battleChar[][3] = {{7,3,6}, {3,2}};
@@ -123,7 +123,7 @@ int renderChar[][2] = {{3,2}, {3,2}, {3,2}, {10,8}, {7,8}, {7,8}, {3,2} };
 char *menuNames[] = {"Game Options", "Mod Options","Render Options","Cup Editor"};	
 
 char *gameOptions[] = {"Game Mode", "Racer Stats", "Mirror Mode", "GP Always Advance", "All Cup", "Multiplayer"};
-char *gameParameters[][4] = {{"Default", "Time Trial", "Red Coin", "Gold Coin"}, {"Classic", "Equal"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
+char *gameParameters[][4] = {{"Default", "OK64 T.Trial", "Red Coin", "Gold Coin"}, {"Classic", "Equal"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
 
 char *battleOptions[] = {"Game Mode", "Mirror Mode"};
 char *battleParameters[][3] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}};

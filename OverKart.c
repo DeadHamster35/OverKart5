@@ -454,26 +454,19 @@ void CheckBattleCDown()
 void gameCode(void)
 {	
 	//
-
+	
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
 	}
 	else
 	{
-		loadFont();
-		printStringUnsignedHex(0,0,"",OKObjectArray[0].ObjectData.angle[1]);
-		printStringUnsignedHex(0,0,"",(uint)&OKObjectArray[0].ObjectData.angle);
-		if ((GlobalController[0]->ButtonHeld & BTN_DLEFT) == BTN_DLEFT)
-		{
-			OKObjectArray[0].ObjectData.angle[1]+= DEG1;
-		}
-		if ((GlobalController[0]->ButtonHeld & BTN_DRIGHT) == BTN_DRIGHT)
-		{
-			OKObjectArray[0].ObjectData.angle[1]-= DEG1;
-		}
 
+		loadFont();
+		printStringNumber(0,0,"",OverKartHeader.WeatherType);
+		printStringNumber(0,10,"",OverKartHeader.SkyType);
 		CheckIFrames();
+		DynamicTempo();
 		
 		if (g_gameMode == GAMEMODE_BATTLE)
 		{
@@ -647,7 +640,7 @@ void resetMap()
 //
 void allRun()
 {
-
+	
 	switch(GlobalController[0]->ButtonPressed)
 	{
 		case BTN_DUP:
@@ -853,6 +846,16 @@ void allRun()
 			g_startingIndicator = 0;
 			if (MenuChanged != 13)
 			{
+				//reload the R options
+				
+				*sourceAddress = (int)(&StartLogo);
+				*targetAddress = (int)(&ok_FreeSpace);
+				dataLength = (int)&StartEnd - (int)&StartLogo;
+				runDMA();
+				*sourceAddress = (int)(&ok_FreeSpace);
+				*targetAddress = (int)(&ok_Storage);
+				runMIO();
+				
 				if (g_gameMode == GAMEMODE_BATTLE)
 				{
 					SetMenuPanels(BATTLESWITCH);

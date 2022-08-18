@@ -989,91 +989,90 @@ void titleMenu()
           objectAngle[0] = 0;
           objectAngle[1] = 0;
           objectAngle[2] = 0;
+
+          //Segmented Address of title screen 3D logo is 0x0A000000
           DrawGeometryScale(objectPosition, objectAngle, 0x0A000000, 1.4);
           
-          if (!CheckCheat())
+          if ((GlobalController[0]->ButtonHeld & BTN_L) != BTN_L)
           {
-               if ((GlobalController[0]->ButtonHeld & BTN_L) != BTN_L)
+               MenuAngle[0]++;
+               
+               MenuAngle[1]++;
+               if (MenuAngle[1] > 79)
                {
-                    MenuAngle[0]++;
-                    
-                    MenuAngle[1]++;
-                    if (MenuAngle[1] > 79)
+                    MenuAngle[1] = 0;
+               }
+
+               if (MenuAngle[1] < 20)
+               {
+                    MenuAngle[2]++;
+                    MenuAngle[3]--;
+               }
+               else if (MenuAngle[1] < 40)
+               {
+                    MenuAngle[2]++;
+                    MenuAngle[3]++;
+               }
+               else if (MenuAngle[1] < 60)
+               {
+                    MenuAngle[2]--;
+                    MenuAngle[3]++;
+               }
+               else
+               {
+                    MenuAngle[2]--;
+                    MenuAngle[3]--;
+               }
+
+               g_mpressstartID = 0;
+               g_mflagID = 0;
+               g_NintendoLogoOffset = 0x0A000008;
+
+               if (MenuToggle)
+               {
+                    TitleMenuHandler();
+               }
+
+               if (!MenuToggle)
+               {               
+                    objectPosition[0] = 0;
+                    objectPosition[1] = 15;
+                    objectPosition[2] = -120;
+               }
+               else
+               {
+
+                    objectPosition[0] = 0;
+                    objectPosition[1] = -20;
+                    objectPosition[2] = -120;
+               }
+
+               gSPDisplayList(GraphPtrOffset++, 0x0D0076F8)
+
+               objectAngle[0] = 0;
+               objectAngle[1] = (MenuAngle[2] * DEG1 / -5);
+               objectAngle[2] = (MenuAngle[3] * DEG1 / 5);
+               DrawGeometryScale(objectPosition, objectAngle, 0x0A000010, 0.35);
+
+
+               if (!MenuToggle)
+               {      
+                    objectPosition[1] -= 20;      
+                    objectPosition[2] -= 50;
+               }
+               else
+               {
+                    objectPosition[1] -= 35;
+                    objectPosition[2] -= 55;
+               }
+               objectAngle[1] = 0;
+               objectAngle[2] = MenuAngle[0] * -1 * DEG1;
+               DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.45);
+               if (!MenuToggle)
+               {               
+                    if (MenuBlink > 15)
                     {
-                         MenuAngle[1] = 0;
-                    }
-
-                    if (MenuAngle[1] < 20)
-                    {
-                         MenuAngle[2]++;
-                         MenuAngle[3]--;
-                    }
-                    else if (MenuAngle[1] < 40)
-                    {
-                         MenuAngle[2]++;
-                         MenuAngle[3]++;
-                    }
-                    else if (MenuAngle[1] < 60)
-                    {
-                         MenuAngle[2]--;
-                         MenuAngle[3]++;
-                    }
-                    else
-                    {
-                         MenuAngle[2]--;
-                         MenuAngle[3]--;
-                    }
-
-                    g_mpressstartID = 0;
-                    g_mflagID = 0;
-                    g_NintendoLogoOffset = 0x0A000008;
-
-                    if (MenuToggle)
-                    {
-                         TitleMenuHandler();
-                    }
-
-                    if (!MenuToggle)
-                    {               
-                         objectPosition[0] = 0;
-                         objectPosition[1] = 15;
-                         objectPosition[2] = -120;
-                    }
-                    else
-                    {
-
-                         objectPosition[0] = 0;
-                         objectPosition[1] = -20;
-                         objectPosition[2] = -120;
-                    }
-
-                    gSPDisplayList(GraphPtrOffset++, 0x0D0076F8)
-
-                    objectAngle[0] = 0;
-                    objectAngle[1] = (MenuAngle[2] * DEG1 / -5);
-                    objectAngle[2] = (MenuAngle[3] * DEG1 / 5);
-                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000010, 0.35);
-
-
-                    if (!MenuToggle)
-                    {      
-                         objectPosition[1] -= 20;      
-                         objectPosition[2] -= 50;
-                    }
-                    else
-                    {
-                         objectPosition[1] -= 35;
-                         objectPosition[2] -= 55;
-                    }
-                    objectAngle[1] = 0;
-                    objectAngle[2] = MenuAngle[0] * -1 * DEG1;
-                    DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.45);
-                    if (!MenuToggle)
-                    {               
-                         if (MenuBlink > 15)
-                         {
-                              KWSpriteDiv(160,180,(ushort*)(&ok_Storage),256,32,8);
-                         }
+                         KWSpriteDiv(160,180,(ushort*)(&ok_Storage),256,32,8);
                     }
                }
           }

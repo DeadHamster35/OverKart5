@@ -11,6 +11,8 @@ void DrawPerScreen(Camera* LocalCamera)
 		{
 			DrawOKObjects(LocalCamera);
 		}
+
+
 		if (g_gameMode == GAMEMODE_BATTLE)
 		{
 			switch(SaveGame.BattleSettings.GameMode)
@@ -31,6 +33,13 @@ void DrawPerScreen(Camera* LocalCamera)
 					DrawGameFlags(LocalCamera);
 					break;
 				}
+			}
+		}
+		else
+		{
+			if ((HotSwapID > 0) && (OverKartHeader.GoalBannerToggle != 0))
+			{	
+				DisplayFlagGate(LocalCamera);
 			}
 		}
 		
@@ -82,7 +91,7 @@ void DropCoins(int PlayerIndex)
 
 
 //OVERWRITE CHECKHIT IN LIBRARY
-void CheckHit(int PlayerIndex)
+void CheckHit(int PlayerIndex, int HitType)
 {
 	if (SaveGame.GameSettings.GameMode == 2)
 	{
@@ -139,6 +148,7 @@ void DisplayObject(void *Car, Object *InputObject)
 	{
 		case (47):
 		{
+			return;
 			GlobalAddressB = (long)&RedCoin;
 			objectPosition[0] = InputObject->position[0];
 			objectPosition[1] = InputObject->position[1];
