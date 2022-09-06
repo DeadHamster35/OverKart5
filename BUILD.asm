@@ -33,6 +33,39 @@ NOP
 .org 0x09F8C4
 NOP
 
+
+
+//Disable Map Select Texture
+.org 0x095F40
+LI $a3, 1
+
+//Disable Player Select Texture
+.org 0x095E0C
+LI $a3, 1
+
+//Disable Game Select Texture
+.org 0x095CB8
+LI $a3, 1
+
+//Disable Option and Data UI from Game Select Menu
+.org 0x095D30
+LI $a3, 1
+.org 0x095D44
+LI $a3, 1
+
+
+//Map Select Time Trial Ghost Info
+.org 0x0960D0
+LI $a3, 1
+.org 0x0960E4
+LI $a3, 1
+.org 0x0960F8
+LI $a3, 1
+
+//Map Select GP CC Label
+.org 0x096118
+LI $a3, 1
+
 .endif
 
 
@@ -135,11 +168,33 @@ EndRAMData:
      .import "data\\JP_Audio.bin"
      .align 0x10  
 
+
+     .definelabel OverWriteFonts, 1
+
+     .align 0x10
+     NiceFontROM:
+     .import "../library/data/nice_font.mio0.bin"
+
+     .align 0x10
+     HudButtonsROM:
+     .import "../library/data/hud_buttons.mio0.bin"
+
+     .align 0x10
+     BigFontROM:
+     .import "data/Newfont.MIO0"
+
+     .align 0x10
+     MenuIconsROM:
+     .import "data/Menu/MenuGFX.MIO0"
+     .align 0x10
+     MenuIconsEnd:
+
      
 //END ROM DATA
 
 
 
+    
 
 
 

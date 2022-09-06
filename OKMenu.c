@@ -646,7 +646,7 @@ void GameOptionsHandler()
                //Move forward to next option
                case BTN_DDOWN :
                {
-                    
+                    ButtonHolding = true;
                     if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[MenuIndex].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
@@ -750,9 +750,9 @@ void TitleMenuHandler()
                     ButtonHolding = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
-                         if (MenuIndex == 0)
+                         if (MenuIndex < 3)
                          {
-                              swapParameter(TitleOKMenu,1);
+                              swapParameter(GameOKMenu,1);
                          }
                          else
                          {
@@ -786,7 +786,7 @@ void TitleMenuHandler()
                     }
                     else
                     {
-                         if (MenuIndex < 1)
+                         if (MenuIndex < 4)
                          {
                               MenuIndex++;
                               MenuOverflow = 0;
@@ -806,9 +806,9 @@ void TitleMenuHandler()
                     ButtonHolding = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
-                         if (MenuIndex == 0)
+                         if (MenuIndex < 2)
                          {
-                              swapParameter(TitleOKMenu,0);
+                              swapParameter(GameOKMenu,0);
                          }
                          else
                          {
@@ -860,7 +860,7 @@ void TitleMenuHandler()
                case BTN_DDOWN :
                {
                     ButtonHolding = true;
-                    if (ParameterIndex + MenuOverflow < TitleOKMenu.PanelAddress[0].OptionCount) //currentParameter
+                    if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[0].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
                          {
@@ -911,9 +911,14 @@ void TitleMenuHandler()
      {
           checkStats(0);
      }
-     if (MenuIndex == 0)
+     if (MenuIndex < 3)
      {
-          ModularMenu(175,TitleOKMenu);
+          ModularMenu(175,GameOKMenu);
+          
+          if (MenuIndex == 2)  //filthy hack
+          {
+               KWSprite(240,22,16,16,(ushort*)&lit_arrowsprite_r);
+          }
      }
      else
      {
@@ -952,10 +957,9 @@ void titleMenu()
           {
                *(uint*)(GlobalAddressA) = 0; 
                GlobalAddressA += 4;
-          }
-          GlobalUIntA = ((uint)(&ok_Storage)) + 0x5000;
-          KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(GlobalUIntA),(void*)(&V256x12832B),256,128,256,4);
-          KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(GlobalUIntA),(void*)(&V256x12832B),256,128,256,4);
+          }          
+          KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
+          KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
           
           guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
           gSPPerspNormalize(GraphPtrOffset++, PerspectiveValue);
@@ -1072,7 +1076,7 @@ void titleMenu()
                {               
                     if (MenuBlink > 15)
                     {
-                         KWSpriteDiv(160,180,(ushort*)(&ok_Storage),256,32,8);
+                         KWSpriteDiv(160,180,(ushort*)StartLogoRAM,256,32,8);
                     }
                }
           }
@@ -1090,6 +1094,11 @@ void titleMenu()
      
 
      
+     loadFont();
+     printStringUnsignedHex(0,10,"",StartLogoRAM);
+     printStringUnsignedHex(0,20,"",BackdropRAM);
+     printStringUnsignedHex(0,30,"",Splash3DRAM);
+     printStringUnsignedHex(0,40,"",MenuIconsRAM);
 
      /*
      loadFont();

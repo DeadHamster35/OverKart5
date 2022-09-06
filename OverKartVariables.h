@@ -17,12 +17,13 @@
 
 extern SaveData SaveGame;
 extern OKMenu   GameOKMenu;
-extern OKMenu   TitleOKMenu;
 extern OKPanel RacePanel, BattlePanel, ModPanel, RenderPanel;
 extern OKOption OKGameOptions[];
 extern OKOption OKModOptions[];
 extern OKOption OKRenderOptions[];
 
+
+extern uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 
 extern char* gameMode;
 extern char* modMode;
