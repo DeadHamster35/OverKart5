@@ -16,5 +16,5 @@
 #include "Data\ModelData\ModelData.h"
 #include "Protec.h"
 #include "Build.h"
-#include "data/Menu/MenuGFX.h"
+#include "CustomMenu\GFX\MenuGFX.h"
 #endif

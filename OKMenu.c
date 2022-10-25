@@ -335,6 +335,57 @@ void printAnticheat()
 }
 
 
+void CheckMenuButton (short PlayerIndex)
+{
+     if (ButtonHolding[PlayerIndex] == true)
+     {
+          if ((GlobalController[PlayerIndex]->ButtonHeld == 0) && (GlobalController[PlayerIndex]->AnalogHeld == 0))
+          {
+               MenuButtonHeld[PlayerIndex] = 0;
+               ButtonHolding[PlayerIndex] = false;
+               ButtonTimer[PlayerIndex] = 0;
+               
+          }
+          else
+          {
+               ButtonTimer[PlayerIndex] = ButtonTimer[PlayerIndex] + 1;  //Button Held Timer          
+               if (ButtonTimer[PlayerIndex] >= 15)
+               {                      
+                    ButtonHolding[PlayerIndex] = false;
+                    ButtonTimer[PlayerIndex] = 0;  //Button Held Timer               
+               }
+          }
+     }
+     else
+     {
+          if (GlobalController[PlayerIndex]->ButtonHeld > 0)
+          {
+               MenuButtonHeld[PlayerIndex] = GlobalController[PlayerIndex]->ButtonHeld;
+               if (GlobalController[PlayerIndex]->ButtonPressed == 0)
+               {
+                    ButtonHolding[PlayerIndex] = true;
+               }
+          }
+          else
+          {
+               if (GlobalController[PlayerIndex]->AnalogHeld > 0)
+               {
+                    MenuButtonHeld[PlayerIndex] = GlobalController[PlayerIndex]->AnalogHeld;
+                    if (GlobalController[PlayerIndex]->AnalogPressed == 0)
+                    {
+                         ButtonHolding[PlayerIndex] = true;
+                    }
+               }
+               else
+               {          
+                    MenuButtonHeld[PlayerIndex] = 0;
+                    ButtonHolding[PlayerIndex] = false;
+                    ButtonTimer[PlayerIndex] = 0;  //Button Held Timer
+               }
+          }
+     }
+}
+
 void swapParameter(OKMenu OptionsMenu, int directionIndex)
 {
      
@@ -346,259 +397,38 @@ void swapParameter(OKMenu OptionsMenu, int directionIndex)
           if(OptionsMenu.PanelAddress[MenuIndex].ParameterToggles[ParameterIndex - 1 + MenuOverflow] > 0)
           {
                OptionsMenu.PanelAddress[MenuIndex].ParameterToggles[ParameterIndex - 1 + MenuOverflow]--;
-          }
+               playSound(0x49008000);
+               return;
+          }          
      }
      else if(OptionsMenu.PanelAddress[MenuIndex].ParameterToggles[ParameterIndex - 1+ MenuOverflow] < OptionsMenu.PanelAddress[MenuIndex].Options[ParameterIndex - 1+ MenuOverflow].ParameterCount - 1) 
      {
           OptionsMenu.PanelAddress[MenuIndex].ParameterToggles[ParameterIndex - 1 + MenuOverflow]++;
+          playSound(0x49008000);
+          return;
      }
      
-     playSound(0x49008000);
-
+     
+     playSound(0x49008002);
 }
 
-void OptionsMenu(int Alpha, int FirstMenu, int MenuPanels)
-{
-
-     
-
-     
-     DrawBox(50,10,220,121,0,0,0,Alpha);
-     
-     DrawBox(48,8,2,124,255,0,0,255);
-     DrawBox(270,8,2,124,255,0,0,255);
-     DrawBox(50,8,220,2,255,0,0,255);
-     DrawBox(50,130,220,2,255,0,0,255);
-     DrawBox(60,32,200,1,0,0,0,255);
-
-
-     if (MenuIndex == 3)   //CurrentPage
-     {
-          if (ParameterIndex == 0) //currentParameter
-          {
-               MenuPosition[0] = 157 - ((menuChar[MenuIndex]) * 4);
-               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 19, MenuPosition[0] + (menuChar[MenuIndex] * 8), 29, 200, 0, 0, 200);
-          }
-          else if (ParameterIndex == 1) //currentParameter
-          {
-               MenuPosition[0] = 155 - ((cupChar[MenuCup]) * 4);
-               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 41, MenuPosition[0] + (cupChar[MenuCup] * 8), 51, 0, 200, 0, 200);
-          }
-          else
-          {
-               if (SYSTEM_Region == 0x00)
-               {
-                    GlobalAddressA = (cup_PAL + (MenuCup * 8) + ((ParameterIndex - 2) * 2));
-               }
-               else
-               {
-                    GlobalAddressA = (cup_NTSC + (MenuCup * 8) + ((ParameterIndex - 2) * 2));
-               }
-               short *l_courseID = (short *)GlobalAddressA;
-               MenuPosition[0] = 157 - ((courseChar[(long)*l_courseID]) * 4);
-               MenuPosition[1] = ((ParameterIndex - 1) * 14) + 44;
-               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], MenuPosition[1], MenuPosition[0] + (courseChar[(long)*l_courseID] * 8), MenuPosition[1]+11, 0, 0, 200, 200);
-          }
-     }
-     else
-     {
-          if (ParameterIndex == 0) //currentParameter
-          {
-               MenuPosition[0] = 157 - ((menuChar[MenuIndex]) * 4);
-               GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0], 19, MenuPosition[0] + (menuChar[MenuIndex] * 8), 29, 200, 0, 0, 200);
-          }
-          else
-          {
-               MenuPosition[1] = ParameterIndex * 18 + 33;
-              if (MenuBlink < 29)  
-               {
-                    KWSprite(57,MenuPosition[1]+2,16,16,(ushort*)&lit_red_selecter);
-               }
-          }
-     }
-     
-
-     LoopValue = 0;
-     MenuPosition[0] = 138 - (menuChar[MenuIndex] * 4);
-     
-     
-     
-     loadFont();
-     
-     
-     printString(MenuPosition[0],0,menuNames[MenuIndex]);
-     
-     MenuPosition[1] = 30;
-     
-     
-     
-     switch(MenuIndex)    //CurrentPage
-     {
-          case 0:
-          {
-               do{
-                    
-                    printString(45,MenuPosition[1],gameOptions[LoopValue + (long)MenuOverflow]);
-                    MenuPosition[0] = 200 - (gameChar[LoopValue+ (long)MenuOverflow][(long)gameMode[LoopValue + (long)MenuOverflow]] * 4);
-                    printString(MenuPosition[0],MenuPosition[1],gameParameters[LoopValue+ (long)MenuOverflow][(long)gameMode[LoopValue + (long)MenuOverflow]]);
-                    MenuPosition[1] = MenuPosition[1] + 18;
-                    LoopValue++;
-               } while (LoopValue < 4);
-               break;
-          }
-          case 1:
-          {
-               do{
-                    printString(45,MenuPosition[1],modOptions[LoopValue + (long)MenuOverflow]);
-                    MenuPosition[0] = 200 - (modChar[LoopValue + (long)MenuOverflow][(long)modMode[LoopValue + (long)MenuOverflow]] * 4);
-                    printString(MenuPosition[0],MenuPosition[1],modParameters[LoopValue + (long)MenuOverflow][(long)modMode[LoopValue + (long)MenuOverflow]]);
-                    MenuPosition[1] = MenuPosition[1] + 18;
-                    LoopValue++;
-               } while (LoopValue < 4);
-               break;
-          }
-          case 2:
-          {
-               do{
-                    printString(45,MenuPosition[1],renderOptions[LoopValue + (long)MenuOverflow]);
-                    MenuPosition[0] = 200 - (renderChar[LoopValue + (long)MenuOverflow][(long)renderMode[LoopValue + (long)MenuOverflow]] * 4);
-                    printString(MenuPosition[0],MenuPosition[1],renderParameters[LoopValue + (long)MenuOverflow][(long)renderMode[LoopValue + (long)MenuOverflow]]);
-                    MenuPosition[1] = MenuPosition[1] + 18;
-                    LoopValue++;
-               } while (LoopValue < 4);
-               break;
-          }
-          case 3:
-          {
-               MenuPosition[0] = 135 - (cupChar[MenuCup] * 4);
-               printString(MenuPosition[0],22,cupNames[MenuCup]);
-               MenuPosition[1] = 40;
-               do{
-                    if (SYSTEM_Region == 0x00)
-                    {
-                         GlobalAddressA = (cup_PAL + (MenuCup * 8) + LoopValue * 2);
-                    }
-                    else
-                    {
-                         GlobalAddressA = (cup_NTSC + (MenuCup * 8) + LoopValue * 2);
-                    }
-                    short *l_courseID = (short *)GlobalAddressA;
-                    MenuPosition[0] = 138 - (courseChar[(long)*l_courseID] * 4);
-                    printString(MenuPosition[0],MenuPosition[1],courseNames[(long)*l_courseID]);
-                    MenuPosition[1] = MenuPosition[1] + 14;
-                    LoopValue++;
-               } while (LoopValue < 4);
-               break;
-          }
-          default:
-          {
-               break;
-          }
-          
-     }
-
-
-     
-     
-
-
-
-
-
-
-     
-     if (MenuIndex != 3)    //CurrentPage
-     {
-          if (pageLimit[MenuIndex] > 4)
-          {
-               if (MenuOverflow == 0)  //menuOverflowIndex
-               {
-                    if (MenuBlink < 15)  //used for blinking down arrow
-                    {
-                         KWSprite(161,120,16,16,(ushort*)&lit_arrowsprite_d);
-                    }
-               }
-               else
-               {
-                    if (MenuBlink < 15)  //used for blinking up arrow
-                    {
-                         KWSprite(161,40,16,16,(ushort*)&lit_arrowsprite_u);
-                    }
-               }
-          }
-          if (pageLimit[MenuIndex] > 5)
-          {
-
-               if (MenuOverflow == 1)  //menuOverflowIndex
-               {
-                    if (MenuBlink < 15)  //used for blinking down arrow
-                    {
-                         KWSprite(161,117,16,16,(ushort*)&lit_arrowsprite_d);
-                    }
-               }          
-          }
-     }
-     if (MenuIndex > FirstMenu)  //used for left arrow
-     {
-          KWSprite(80,22,16,16,(ushort*)&lit_arrowsprite_l);
-     }
-     if (MenuIndex < FirstMenu + MenuPanels)  //used for right arrow
-     {
-          KWSprite(240,22,16,16,(ushort*)&lit_arrowsprite_r);
-     }
-
-     
-     
-
-     
-
-}
-
-
-void GameOptionsHandler()
+void GameOptionsHandler(short PlayerIndex)
 {
      
-     if (ButtonHolding == true)
-     {
-          MenuButtonHeld = 0;
-          ButtonTimer = ButtonTimer + 1;  //Button Held Timer          
-          if (ButtonTimer >= 9)
-          {    
-               ButtonHolding = 0;
-               ButtonTimer = 0;  //Button Held Timer               
-          }
-     }
-     else
-     {
-          if (GlobalController[4]->ButtonHeld > 0)
-          {
-               MenuButtonHeld = GlobalController[4]->ButtonHeld;
-               
-          }
-          else if (GlobalController[4]->AnalogHeld > 0)
-          {
-               MenuButtonHeld = GlobalController[4]->AnalogHeld;
-               
-          }
-          else
-          {          
-               ButtonHolding = false;
-               ButtonTimer = 0;  //Button Held Timer
-          }
-     }
-
+    
+     CheckMenuButton(PlayerIndex);
           
-          //MenuButtonHeld is set to 0x01 when a button is held down.
-     if(ButtonHolding == false)
+     //MenuButtonHeld is set to 0x01 when a button is held down.
+     if(ButtonHolding[PlayerIndex] == false)
      {
           
           // Uses the Control Stick or Dpad to switch through the menu.
-          switch(MenuButtonHeld)
+          switch(MenuButtonHeld[PlayerIndex])
           {
                //Increase the current menu Parameter by 1
               case BTN_DRIGHT :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
                          swapParameter(GameOKMenu,1);
@@ -622,7 +452,7 @@ void GameOptionsHandler()
                //Decrease the current menu Parameter by 1
                case BTN_DLEFT :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
                          swapParameter(GameOKMenu,0);
@@ -646,7 +476,7 @@ void GameOptionsHandler()
                //Move forward to next option
                case BTN_DDOWN :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[MenuIndex].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
@@ -666,7 +496,7 @@ void GameOptionsHandler()
                //Move backward to previous option
                case BTN_DUP :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex + MenuOverflow > 0) //currentParameter
                     {
                          if ((ParameterIndex == 1) && (MenuIndex < 3) && (MenuOverflow > 0))
@@ -702,52 +532,20 @@ void GameOptionsHandler()
      ModularMenu(235, GameOKMenu);
 }
 
-void TitleMenuHandler()
+void TitleMenuHandler(short PlayerIndex)
 {
-
-     if (ButtonHolding == true)
-     {
-          MenuButtonHeld = 0;
-          ButtonTimer = ButtonTimer + 1;  //Button Held Timer          
-          if (ButtonTimer >= 9)
-          {    
-               ButtonHolding = 0;
-               ButtonTimer = 0;  //Button Held Timer               
-          }
-     }
-     else
-     {
-          if (GlobalController[4]->ButtonHeld > 0)
-          {
-               MenuButtonHeld = GlobalController[4]->ButtonHeld;
-               
-          }
-          else if (GlobalController[4]->AnalogHeld > 0)
-          {
-               MenuButtonHeld = GlobalController[4]->AnalogHeld;
-               
-          }
-          else
-          {          
-               ButtonHolding = false;
-               ButtonTimer = 0;  //Button Held Timer
-          }
-     }
-
-     
-
-          
-          //MenuButtonHeld is set to 0x01 when a button is held down.
-     if(ButtonHolding == false)
+     CheckMenuButton(PlayerIndex);
+     //MenuButtonHeld is set to 0x01 when a button is held down.
+     if(ButtonHolding[PlayerIndex] == false)
      {
           
           // Uses the Control Stick or Dpad to switch through the menu.
-          switch(MenuButtonHeld)
+          switch(MenuButtonHeld[PlayerIndex])
           {
                //Increase the current menu Parameter by 1
                case BTN_DRIGHT :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
                          if (MenuIndex < 3)
@@ -803,7 +601,7 @@ void TitleMenuHandler()
                //Decrease the current menu Parameter by 1
                case BTN_DLEFT :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
                          if (MenuIndex < 2)
@@ -859,7 +657,7 @@ void TitleMenuHandler()
                //Move forward to next option
                case BTN_DDOWN :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[0].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
@@ -879,7 +677,7 @@ void TitleMenuHandler()
                //Move backward to previous option
                case BTN_DUP :
                {
-                    ButtonHolding = true;
+                    ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex + MenuOverflow > 0) //currentParameter
                     {
                          if ((ParameterIndex == 1) && (MenuIndex < 3) && (MenuOverflow > 0))
@@ -925,12 +723,21 @@ void TitleMenuHandler()
           CourseMenu(175);
      }
      
+
+
+     loadFont();
+     printStringUnsignedNumber(0,10,"",GlobalController[0]->AnalogHeld);
+     printStringUnsignedNumber(0,20,"",GlobalController[0]->AnalogPressed);
+     printStringUnsignedNumber(0,30,"",GlobalController[0]->ButtonHeld);
+     printStringUnsignedNumber(0,40,"",GlobalController[0]->ButtonPressed);
+     printStringUnsignedNumber(0,50,"",ButtonTimer[0]);
+     printStringUnsignedNumber(0,60,"",ButtonHolding[0]);
+     printStringUnsignedNumber(0,70,"",MenuButtonHeld[0]);
      //OptionsMenu(175,2,1);
 }
 
 void titleMenu()
 {
-     
      if (MenuBlink > 30)
      {
           MenuBlink = 0;
@@ -944,10 +751,7 @@ void titleMenu()
           titleDemo = 4;   //This is a timer that runs at the title screen. Locking at 4 Prevents the demo courses from being displayed.
      }
 
-     if ((GlobalController[0]->ButtonPressed & BTN_R) == BTN_R)
-     {
-          MenuToggle = !MenuToggle;
-     }
+     
      g_mracewayTime = 0;
      
      #if OverKartBuild
@@ -1032,10 +836,7 @@ void titleMenu()
                g_mflagID = 0;
                g_NintendoLogoOffset = 0x0A000008;
 
-               if (MenuToggle)
-               {
-                    TitleMenuHandler();
-               }
+               
 
                if (!MenuToggle)
                {               
@@ -1082,7 +883,7 @@ void titleMenu()
           }
      #else
           g_mpressstartID = 0;
-          TitleMenuHandler();
+          TitleMenuHandler(4);
      #endif
      // Reset the MenuButtonHeld timer. This is set to 0x01 when a button is held down.
      // Used for advancing menu when direction is held.
@@ -1094,12 +895,6 @@ void titleMenu()
      
 
      
-     loadFont();
-     printStringUnsignedHex(0,10,"",StartLogoRAM);
-     printStringUnsignedHex(0,20,"",BackdropRAM);
-     printStringUnsignedHex(0,30,"",Splash3DRAM);
-     printStringUnsignedHex(0,40,"",MenuIconsRAM);
-
      /*
      loadFont();
      if (ConsolePlatform)
@@ -1127,3 +922,839 @@ void titleMenu()
 
 
 }
+
+
+
+
+short CheckPlayerSelect(int TargetController, short Direction)
+{
+     short Target = PlayerCharacterSelect[TargetController];
+     while (true)
+     {
+          GlobalBoolC = true;
+          if (((Target + Direction) < 8) && ((Target + Direction) > -1))
+          {
+               Target += Direction;          
+               for (int ThisController = 0; ThisController < g_playerCount; ThisController++)
+               {
+                    if (ThisController != TargetController)
+                    {
+                         if (PlayerCharacterSelect[ThisController] == Target)
+                         {
+                              GlobalBoolC = false;
+                         }
+                    }
+               }
+               if (GlobalBoolC)
+               {
+                    return Target;
+               }
+          }
+          else
+          {
+               return -1;
+          }
+     }
+}
+
+
+
+void PlayerSelectSetup()
+{
+
+     
+	*targetAddress = (long)&BackupPortraitTable;
+	*sourceAddress = (long)&SelectPortraitTable;
+	dataLength = 288;
+	runRAM();
+	
+
+     asm_DispOBSubPSelCursor1[0] = 0x800A08C8;
+	asm_DispOBSubPSelCursor1[1] = 0x800A08C8;
+	asm_DispOBSubPSelCursor1[2] = 0x800A08C8;
+	asm_DispOBSubPSelCursor1[3] = 0x800A08C8;
+	
+	
+	PlayerSelectPositions[0].y -= 10;
+	PlayerSelectPositions[1].y -= 10;
+	PlayerSelectPositions[2].y -= 10;
+	PlayerSelectPositions[3].y -= 10;
+	
+	*targetAddress = (long)&BackupNamePlateTable;
+	*sourceAddress = (long)&SelectNamePlateTable;
+	dataLength = 32;
+	runRAM();
+}
+
+void PlayerSelectMenu(short StatsMode, short PlayerIndex)
+{
+     
+     CheckMenuButton(PlayerIndex);
+     GlobalIntC = *(int*)(long)(&PlayerOK);
+     
+     if ((KBGNumberNext) && (MenuBackup == 0))
+     {
+          KBGNumberNext = 0;
+          
+     }
+     for (int ThisJump = 0; ThisJump < 8; ThisJump++)
+     {
+          jtbl_DispObjPsel[ThisJump] = 0x800A08C8;
+     }
+
+     *(int*)(long)&PlayerShowStats = 0;
+     HotSwapID = 0;
+     stockASM();
+     hsLabel = -1;
+
+     asm_BlinkCheck = 0x1420000E;
+
+     
+     //
+     if (MenuBackup == 0)
+     {    
+          if (StatsMode == 2)
+          {
+               SetEngine(CharacterConvert[PlayerCharacterSelect[PlayerIndex] + 1],PlayerEngineSelect[PlayerIndex]);
+               SetSteering(CharacterConvert[PlayerCharacterSelect[PlayerIndex] + 1], PlayerSteerSelect[PlayerIndex]);
+               
+               if (MenuProgress[PlayerIndex] == 0)
+               {
+                    PlayerOK[PlayerIndex] = 0;
+                    PlayerShowStats[PlayerIndex] = 0;
+                    asm_DispOBSubPSelCursor1[PlayerIndex] = 0x800A08C8;
+                    switch (MenuButtonHeld[PlayerIndex])
+                    {
+                         case BTN_DLEFT:
+                         {    
+                              if (CheckPlayerSelect(PlayerIndex,-1) != -1)
+                              {
+                                   playSound(0x49008001);
+                                   PlayerCharacterSelect[PlayerIndex] = CheckPlayerSelect(PlayerIndex, -1);
+                              }
+                              asm_BlinkCheck = 0;
+                              break;
+                         }
+                         case BTN_DRIGHT:
+                         {
+                              if (CheckPlayerSelect(PlayerIndex,1) != -1)
+                              {
+                                   playSound(0x49008001);
+                                   PlayerCharacterSelect[PlayerIndex] = CheckPlayerSelect(PlayerIndex, 1);
+                              }   
+                              asm_BlinkCheck = 0;
+                              break;
+                         }
+                         case BTN_A:
+                         {
+                              playSound(0x49008001);
+                              MenuProgress[PlayerIndex]++;  
+                              break;
+                         }
+                         case BTN_B:
+                         {                              
+                              SetFadeOutB();
+                              *(int*)(long)&PlayerShowStats = 0;
+                              MenuBackup = 1;
+                              break;
+                         }
+                    }
+               }
+               else if (MenuProgress[PlayerIndex] == 1)
+               {
+                    PlayerOK[PlayerIndex] = 0;
+                    PlayerShowStats[PlayerIndex] = 1;
+                    asm_DispOBSubPSelCursor1[PlayerIndex] = 0x800A00FC;
+
+
+                    switch (MenuButtonHeld[PlayerIndex])
+                    {
+                         case BTN_DLEFT:
+                         {    
+                              if ((int)PlayerEngineSelect[PlayerIndex] > 0)
+                         {
+                              playSound(0x49008001);
+                              PlayerEngineSelect[PlayerIndex]--;                                   
+                         }   
+                              break;
+                         }
+                         case BTN_DRIGHT:
+                         {
+                              if ((int)PlayerEngineSelect[PlayerIndex] < 2)
+                              {
+                                   playSound(0x49008001);
+                                   PlayerEngineSelect[PlayerIndex]++;                                   
+                              }  
+                              break;
+                         }
+                         case BTN_A:
+                         {
+                              playSound(0x49008001);
+                              MenuProgress[PlayerIndex]++;        
+                              break;
+                         }
+                         case BTN_B:
+                         {                              
+                              playSound(0x49008002);
+                              MenuProgress[PlayerIndex]--;
+                              break;
+                         }
+                    }
+               }
+               else if (MenuProgress[PlayerIndex] == 2)
+               {
+                    PlayerOK[PlayerIndex] = 0;
+                    PlayerShowStats[PlayerIndex] = 1;
+                    asm_DispOBSubPSelCursor1[PlayerIndex] = 0x800A00FC;
+
+
+
+                    switch (MenuButtonHeld[PlayerIndex])
+                    {
+                         case BTN_DLEFT:
+                         {    
+                              if ((int)PlayerSteerSelect[PlayerIndex] > 0)
+                              {
+                                   playSound(0x49008001);
+                                   PlayerSteerSelect[PlayerIndex]--;                                   
+                              } 
+                              break;
+                         }
+                         case BTN_DRIGHT:
+                         {
+                              if ((int)PlayerSteerSelect[PlayerIndex] < 2)
+                              {
+                                   playSound(0x49008001);
+                                   PlayerSteerSelect[PlayerIndex]++;                                   
+                              }   
+                              break;
+                         }
+                         case BTN_A:
+                         {
+                              playSound(0x49008001);   
+                              MenuProgress[PlayerIndex]++;
+                              break;
+                         }
+                         case BTN_B:
+                         {                              
+                              playSound(0x49008002);
+                              MenuProgress[PlayerIndex]--;
+                              break;
+                         }
+                    }
+               }
+               else if (MenuProgress[PlayerIndex] == 3)
+               {
+                    PlayerShowStats[PlayerIndex] = 0;
+                    if (PlayerOK[PlayerIndex] != 1)
+                    {
+                         PlayerOK[PlayerIndex] = 1;
+                         int SoundOffset = (0x10 * CharacterConvert[(int)PlayerCharacterSelect[PlayerIndex] + 1]);
+                         playSound(0x2900800e + SoundOffset);  
+                    }
+                    if ((MenuButtonHeld[PlayerIndex] & BTN_B) == BTN_B)
+                    {    
+                         playSound(0x49008002);
+                         MenuProgress[PlayerIndex]--;
+                    }
+               }
+               
+          }
+          else
+          {
+               
+               switch (MenuProgress[PlayerIndex])
+               {
+                    case 0:
+                    {
+                         PlayerShowStats[PlayerIndex] = 1;
+                         asm_DispOBSubPSelCursor1[PlayerIndex] = 0x800A08C8;
+                         PlayerOK[PlayerIndex] = 0;
+
+                         switch (MenuButtonHeld[PlayerIndex])
+                         {
+                              case BTN_DLEFT:
+                              {    
+                                   if (CheckPlayerSelect(PlayerIndex,-1) != -1)
+                                   {
+                                        playSound(0x49008001);
+                                        PlayerCharacterSelect[PlayerIndex] = CheckPlayerSelect(PlayerIndex, -1);
+                                   }
+                                   asm_BlinkCheck = 0;
+                                   break;
+                              }
+                              case BTN_DRIGHT:
+                              {
+                                   if (CheckPlayerSelect(PlayerIndex,1) != -1)
+                                   {
+                                        playSound(0x49008001);
+                                        PlayerCharacterSelect[PlayerIndex] = CheckPlayerSelect(PlayerIndex, 1);
+                                   }   
+                                   asm_BlinkCheck = 0;
+                                   break;
+                              }
+                              case BTN_A:
+                              {
+                                   playSound(0x49008001);
+                                   MenuProgress[PlayerIndex]++;  
+                                   break;
+                              }
+                              case BTN_B:
+                              {                              
+                                   SetFadeOutB();
+                                   *(int*)(long)&PlayerShowStats = 0;
+                                   MenuBackup = 1;
+                                   break;
+                              }
+                         }
+
+                         break;  
+                    }
+                    case 1:
+                    {
+                         PlayerShowStats[PlayerIndex] = 0;
+                         if (PlayerOK[PlayerIndex] != 1)
+                         {
+                              PlayerOK[PlayerIndex] = 1;
+                              int SoundOffset = (0x10 * CharacterConvert[(int)PlayerCharacterSelect[PlayerIndex] + 1]);
+                              playSound(0x2900800e + SoundOffset);  
+                         }
+                         
+                         asm_DispOBSubPSelCursor1[PlayerIndex] = 0x800A00FC;
+
+                              
+                         if ((MenuButtonHeld[PlayerIndex] & BTN_B) == BTN_B)
+                         {    
+                              playSound(0x49008002);
+                              MenuProgress[PlayerIndex]--;
+                         }
+                         break;
+                    }
+               }
+                          
+          }          
+     }
+          
+     GlobalBoolA = true;
+     for (int ThisController = 0; ThisController < g_playerCount; ThisController++)
+     {
+          if (PlayerOK[ThisController] == 0)
+          {
+               GlobalBoolA = false;
+          }
+     }
+     if (GlobalBoolA)
+     {
+          if (menuScreenC !=2)
+          {
+               menuScreenC = 2;
+          }
+          else
+          {
+               if ((MenuButtonHeld[PlayerIndex] & BTN_A) == BTN_A)
+               {
+                    playSound(0x49008000);
+                    SetFadeOut(30);
+               }
+          }
+     }
+
+
+     if ((menuScreenC == 2) && ((MenuButtonHeld[PlayerIndex] & BTN_B) == BTN_B))
+     {
+          menuScreenC = 0;
+          for (int ThisController = 0; ThisController < g_playerCount; ThisController++)
+          {
+               PlayerOK[ThisController] = 0;
+               if (StatsMode == 2)
+               {
+                    MenuProgress[ThisController] = 1;
+               }
+               else
+               {
+                    MenuProgress[ThisController] = 0;
+               }
+          }
+          asm_DispOBSubPSelCursor1[0] = 0x800A08C8;
+          asm_DispOBSubPSelCursor1[1] = 0x800A08C8;
+          asm_DispOBSubPSelCursor1[2] = 0x800A08C8;
+          asm_DispOBSubPSelCursor1[3] = 0x800A08C8;
+     }
+     
+     for (int CurrentHUD = 0; CurrentHUD < 32; CurrentHUD++)
+     {
+          if ((GlobalMenuHUD[CurrentHUD].kind >= KO_PSEL_MA) && (GlobalMenuHUD[CurrentHUD].kind <= KO_PSEL_KU))
+          {
+               GlobalMenuHUD[CurrentHUD].pattern = 4;               
+          }
+     }
+}
+
+void PlayerSelectMenuAfter()
+{
+     for (int ThisController = 0; ThisController < g_playerCount; ThisController++)
+     {
+          asm_DispOBSubPSelCursor1[ThisController] = 0x800A08C8;
+          g_CharacterSelections[ThisController] = CharacterConvert[(int)PlayerCharacterSelect[ThisController] + 1];
+          PlayerCharacterSelect[ThisController] = ThisController;
+          MenuProgress[ThisController] = 0;
+     }
+}
+
+
+void PlayerSelectMenuBefore()
+{
+
+     GlobalIntA = 160 - ((g_playerCount * 64 + ((g_playerCount - 1) * 6)) / 2);
+     for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+     {
+          PlayerSelectPositions[ThisPlayer].x = GlobalIntA;
+          GlobalIntA += 70;
+     }
+     MenuBackup = 0;
+     for (int ThisController = 0; ThisController < g_playerCount; ThisController++)
+     {						
+          PlayerCharacterSelect[ThisController] = ThisController;
+          asm_DispOBSubPSelCursor1[ThisController] = 0x800A08C8;
+     }
+}
+void MapSelectMenu(short PlayerIndex)
+{
+     
+     if (g_gameMode == GAMEMODE_BATTLE)
+     {
+          GlobalShortA = 4;
+     }
+     else
+     {
+          GlobalShortA = 1;
+     }
+     if (menuScreenA == GlobalShortA)
+     {
+          if ((GlobalController[PlayerIndex]->ButtonPressed & BTN_CLEFT) == BTN_CLEFT)
+          {
+               swapHS(0);
+          }
+          else if ((GlobalController[PlayerIndex]->ButtonPressed & BTN_CRIGHT) == BTN_CRIGHT)
+          {
+               swapHS(1);
+          }
+          LoadCustomHeader(courseValue);
+     }
+
+     *(int*)(&PlayerOK) = 0;
+     if (HotSwapID > 0)
+     {
+          courseValue = -1;
+          gpCourseIndex = 0;
+          switch(g_gameMode)
+          {
+               //GRAND PRIX
+
+               case 0:
+               {
+                    courseValue = (g_cupSelect * 4);                    
+                    break;
+               }
+               case 1:
+               case 2:
+               case 3:
+               {
+                    courseValue = (g_cupSelect * 4) + g_courseSelect;
+                    break;
+               }
+          }
+     }
+     else
+     {
+          LoadCustomHeader(-1);
+     }
+     
+}
+
+
+
+char GameMenuIndex = 0;
+#define PSMode 0
+#define GSMode 1
+#define CCMode 2
+void DrawGameSelect()
+{
+     
+     DrawBox(65,18,190,25,0,0,0,175);
+     PrintBigText(95,16, 0.9f,"Game Setup");
+     
+
+     
+     
+
+     #ifndef ColdMeiser
+
+
+
+          //Player Count
+          //Game Mode
+          //CC Mode
+
+
+          DrawBox(25,70,130,28,0,0,0,175);
+          DrawBox(25,105,130,28,0,0,0,175);
+          DrawBox(25,140,130,28,0,0,0,175);
+
+          PrintBigText(38, 75, 0.6f, "Player Count");
+          PrintBigText(53, 110, 0.6f, "Game Mode");
+          PrintBigText(38, 145, 0.6f, "Engine Speed");
+          
+
+          
+          DrawBox(160,50,140,130,0,0,0,175);
+
+
+          
+          //Draw MenuIcon
+          switch (GameMenuIndex)
+          {
+               case PSMode:
+               {
+                    //Player Select Controller Icons
+                    GlobalAddressA  = (MenuIconsRAM + MenuGFX_Controller_Offset);         
+                    break;
+               }
+          }
+
+          switch (g_playerCount)
+          {
+               case 1:
+               {
+                    KWTexture2DRGBA32PT(230,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);                         
+                    break;
+               }
+               case 2:
+               {
+                    KWTexture2DRGBA32PT(215,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    KWTexture2DRGBA32PT(245,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    break;
+               }
+               case 3:
+               {
+                    
+                    KWTexture2DRGBA32PT(215,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    KWTexture2DRGBA32PT(245,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    KWTexture2DRGBA32PT(230,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    break;
+               }
+               case 4:
+               {
+                    KWTexture2DRGBA32PT(215,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    KWTexture2DRGBA32PT(245,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    KWTexture2DRGBA32PT(215,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    KWTexture2DRGBA32PT(245,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+                    break;
+               }
+          }
+     #endif     
+
+     
+}
+void DrawMapSelect()
+{
+     DrawBox(65,18,190,25,0,0,0,175);
+     if (HotSwapID == 0)
+     {
+          PrintBigText(80,16, 0.9f,"Original Set");
+     }
+     else if (HotSwapID < 10)
+     {
+          PrintBigTextNumberNoGap(80,16, 0.9f,"Custom Set ",HotSwapID);
+     }
+     else
+     {
+          PrintBigTextNumberNoGap(80,16, 0.9f,"Custom Set",HotSwapID);
+     }
+     SpriteBtnCLeft(45,35,1.0,false);
+     SpriteBtnCRight(279,35,1.0,false);
+     
+}
+void DrawPlayerSelect(short StatsMode)
+{
+     
+     DrawBox(65,18,190,25,0,0,0,175);
+     PrintBigText(75,16, 0.9f,"Player Select");
+     
+     
+     
+     
+
+     #ifndef ColdMeiser
+
+
+          for (int CurrentPlayer = 0; CurrentPlayer < g_playerCount; CurrentPlayer++)
+          {	
+               
+                              
+               //Set Portraits and Banner for Character Selected
+               for (int ThisPortrait = 0; ThisPortrait < 8; ThisPortrait++)
+               {
+                    SelectPortraitTable[ThisPortrait].TextureOffset[CurrentPlayer] = BackupPortraitTable[ThisPortrait].TextureOffset[(int)PlayerCharacterSelect[CurrentPlayer]];
+               }
+               SelectNamePlateTable.TextureOffset[CurrentPlayer] = BackupNamePlateTable.TextureOffset[(int)PlayerCharacterSelect[CurrentPlayer]];	
+               //
+
+               
+               jtbl_DispObjPsel[CurrentPlayer] = 0x800A01BC;
+               
+               //printStringNumber(5,5,"",(int)(GlobalStat.PowerDownRT[(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] +1]][7] * 1000));
+               //printStringUnsignedHex(5,15,"",(int)(&GlobalStat.PowerDownRT[0][0]));
+               if (PlayerShowStats[CurrentPlayer])
+               {
+                    //printStringNumber(5,5,"PlayerSelect",GlobalIntC);
+                    GlobalIntA = PlayerSelectPositions[CurrentPlayer].x ;
+                    GlobalIntB = PlayerSelectPositions[CurrentPlayer].y +76;
+                    
+                    if ((MenuProgress[CurrentPlayer] == 1) && (StatsMode == 2))
+                    {
+                         if (MenuFlash[CurrentPlayer] > 255)
+                         {
+                              MenuFlash[CurrentPlayer] = 0;
+                         }
+                         else
+                         {
+                              MenuFlash[CurrentPlayer]+=10;
+                         }		
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA - 1,GlobalIntB - 1,GlobalIntA + 66,GlobalIntB + 71,(int)MenuFlash[CurrentPlayer],(int)MenuFlash[CurrentPlayer],(int)MenuFlash[CurrentPlayer],255);	
+                                   
+                    }
+                    GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB,GlobalIntA + 64,GlobalIntB + 69,0,0,0,255);	
+                    
+                    
+                    
+                    GlobalIntA = PlayerSelectPositions[CurrentPlayer].x + 3;
+                    for (int ThisBox = 0; ThisBox < 6; ThisBox++)
+                    {
+                         
+                         GlobalIntB = PlayerSelectPositions[CurrentPlayer].y + 88;
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB,GlobalIntA + 8,GlobalIntB + 4,255,255,255,255);
+                         GlobalIntB +=17;
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB,GlobalIntA + 8,GlobalIntB + 4,255,255,255,255);
+                         GlobalIntB +=17;
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB,GlobalIntA + 8,GlobalIntB + 4,255,255,255,255);
+                         GlobalIntB +=17;
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB,GlobalIntA + 8,GlobalIntB + 4,255,255,255,255);
+                         GlobalIntA += 10;
+                    }
+                    
+                    
+
+                    
+                    
+                    GlobalIntA = PlayerSelectPositions[CurrentPlayer].x + 3;
+                    GlobalIntB = PlayerSelectPositions[CurrentPlayer].y +76;
+
+                    GlobalIntB +=12;
+                    if (StatsMode != 2)
+                    {
+                         GlobalIntC = 58 - (58 * 8 * (1 - (GlobalStat.AccelerationCount[g_raceClass][(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] + 1]] / GlobalStat.AccelerationCount[g_raceClass][6])));
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,255,0,0,255);
+                         GlobalIntB +=17;
+                         GlobalIntC = 58 + (58 * (1 - (GlobalStat.PowerDownRT[(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] +1]][7] / GlobalStat.PowerDownRT[6][7])));
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,0,255,0,255);
+                         GlobalIntB +=17;
+                         GlobalIntC = 58 * (GlobalStat.PowerBandAcceleration[(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] + 1]] / GlobalStat.PowerBandAcceleration[6]);
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,0,0,255,255);
+                         GlobalIntB +=17;
+                         GlobalIntC = 58 + (58 * (1 - (GlobalStat.ProOffsetAngle[(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] + 1]] / GlobalStat.ProOffsetAngle[7])));
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,255,0,0,255);
+                    }
+                    else
+                    {
+                         GlobalIntC = 58 - (58 * 8 * (1 - (GlobalStat.AccelerationCount[g_raceClass][(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] + 1]] / (float)(EngineSpeed[g_raceClass][2]))));
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,255,0,0,255);
+                         GlobalIntB +=17;
+                         GlobalIntC = 58 + (58 * (1 - (GlobalStat.PowerDownRT[(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] +1]][7] /((float)EnginePowerDownRT[1][7] / 100))));
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,0,255,0,255);
+                         GlobalIntB +=17;
+                         GlobalIntC = 29 + (29 * (GlobalStat.PowerBandAcceleration[(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] + 1]] /((float)PowerBand[1] / 10)));
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,0,0,255,255);
+                         GlobalIntB +=17;
+                         GlobalIntC = 58 + (58 * (1 - (GlobalStat.ProOffsetAngle[(int)CharacterConvert[(int)PlayerCharacterSelect[CurrentPlayer] + 1]] /((float)SteerAngle[2] / 100))));
+                         
+                         GraphPtr = FillRect1ColorF(GraphPtr,GlobalIntA,GlobalIntB + 1,GlobalIntA + GlobalIntC,GlobalIntB + 3,255,0,0,255);					
+                    }
+
+
+                    
+                    GlobalIntA = PlayerSelectPositions[CurrentPlayer].x;
+                    GlobalIntB = PlayerSelectPositions[CurrentPlayer].y +76;
+
+                    GlobalIntB -= 18;
+                    GlobalIntA -= 16;
+                    LoadFontF3D((uint)(&RedPaletteF3D));
+                    printString(GlobalIntA,GlobalIntB,"Speed");
+                    
+                    GlobalIntB +=17;
+                    LoadFontF3D((uint)(&GreenPaletteF3D));
+                    printString(GlobalIntA,GlobalIntB,"Grip");
+                    
+                    GlobalIntB +=17;
+                    LoadFontF3D((uint)(&BluePaletteF3D));
+                    printString(GlobalIntA,GlobalIntB,"Boost");
+                    
+                    GlobalIntB +=17;               
+                    LoadFontF3D((uint)(&RedPaletteF3D));
+                    printString(GlobalIntA,GlobalIntB,"Steer");
+                    
+               }	
+          }
+     #endif
+     
+}
+
+
+
+void GameSelectMenu(short PlayerIndex)
+{
+     CheckMenuButton(PlayerIndex);
+
+     switch (MenuButtonHeld[PlayerIndex])
+     {
+          case BTN_DUP:
+          {
+               if (GameMenuIndex > 0)
+               {
+                    GameMenuIndex++;
+                    playSound(0x49008000);
+               }
+               else
+               {
+                    playSound(0x49008002);
+               }
+          }
+          case BTN_DDOWN:
+          {
+               if (GameMenuIndex < 2)
+               {
+                    GameMenuIndex++;
+                    playSound(0x49008000);
+               }
+               else
+               {
+                    playSound(0x49008002);
+               }
+          }
+     }
+     switch (GameMenuIndex)
+     {
+          case PSMode:
+          {
+               //PlayerSelect
+               switch (MenuButtonHeld[PlayerIndex])
+               {
+                    case BTN_DLEFT:
+                    {
+                         if (g_playerCount > 1)
+                         {
+                              g_playerCount--;
+                              playSound(0x49008000);
+                         }
+                         else
+                         {
+                              playSound(0x49008002);
+                         }
+                         
+                         break;
+                    }
+                    case BTN_DRIGHT:
+                    {
+                         if (g_playerCount < 4)
+                         {
+                              g_playerCount++;
+                         }
+                         playSound(0x49008000);
+                         break;
+                    }
+               }
+          }
+     }
+     return;
+}
+
+
+
+void PlayerSelectSwitch(OSContPad *pad,u16 i, u16 newbutton)
+{
+     if ((GlobalController[i]->ButtonPressed & BTN_R) == BTN_R)
+     {
+          MenuToggle = !MenuToggle;
+     }     
+     if (MenuToggle)
+     {
+		GameOptionsHandler(i);
+     }
+     else
+     {
+          PlayerSelectMenu(SaveGame.GameSettings.StatsMode, i);
+     }
+}
+
+void MapSelectSwitch(OSContPad *pad,u16 i, u16 newbutton)
+{
+     GlobalIntD++;
+     if ((GlobalController[i]->ButtonPressed & BTN_R) == BTN_R)
+     {
+          MenuToggle = !MenuToggle;
+     }
+	if (MenuToggle)
+     {
+		GameOptionsHandler(i);
+     }
+     else
+     {
+          MapSelectMenu(i);
+          MSelController(pad,i,newbutton);
+     }
+     
+}
+
+void GameSelectSwitch(OSContPad *pad,u16 i, u16 newbutton)
+{
+     
+     if ((GlobalController[i]->ButtonPressed & BTN_R) == BTN_R)
+     {
+          MenuToggle = !MenuToggle;
+     }
+
+
+     if (MenuToggle)
+     {
+		GameOptionsHandler(i);
+     }
+     else
+     {
+          //GameSelectMenu(i);    
+     }
+}
+
+
+
+void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
+{
+     if ((GlobalController[i]->ButtonPressed & BTN_R) == BTN_R)
+     {
+          MenuToggle = !MenuToggle;
+     }
+     if (MenuToggle)
+     {
+		TitleMenuHandler(i);
+     }
+     else
+     {
+          TitleController(pad,i,newbutton);
+     }
+};

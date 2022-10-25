@@ -117,6 +117,8 @@ void okSetup(void)
 	ConsolePlatform = CheckPlatform();
 	EmulatorPlatform = CheckEmulator();	
 	
+	
+	
 
 	loadHeaderOffsets();
 	loadHudButtons();
@@ -179,32 +181,8 @@ void okSetup(void)
 	ok_Knowledge = (long)(&ok_Target);
 
 	
-	*targetAddress = (long)&BackupPortraitTable;
-	*sourceAddress = (long)&SelectPortraitTable;
-	dataLength = 288;
-	runRAM();
 	
-	asm_PlayerSelectController = 0;
-	//asm_PlayerSelectDoObjectP5 = 0;
-	//asm_PlayerSelectDoObjectP6 = 0;
-	//asm_PlayerSelectDoObjectP7 = 0;
-	//asm_PlayerSelectDoObjectP8 = 0;
-	asm_DispOBSubPSelCursor1[0] = 0x800A08C8;
-	asm_DispOBSubPSelCursor1[1] = 0x800A08C8;
-	asm_DispOBSubPSelCursor1[2] = 0x800A08C8;
-	asm_DispOBSubPSelCursor1[3] = 0x800A08C8;
-	//asm_DOBPSelTurnIn = 0;
-	//asm_DOBPSelTurnOut = 0;
-	
-	PlayerSelectPositions[0].y -= 10;
-	PlayerSelectPositions[1].y -= 10;
-	PlayerSelectPositions[2].y -= 10;
-	PlayerSelectPositions[3].y -= 10;
-	
-	*targetAddress = (long)&BackupNamePlateTable;
-	*sourceAddress = (long)&SelectNamePlateTable;
-	dataLength = 32;
-	runRAM();
+	//PlayerSelectSetup();
 	
 
 	RandomDPR = MakeRandom();
@@ -437,16 +415,40 @@ void CheckBattleCDown()
 
 void gameCode(void)
 {	
-	//
+
+
 	
+	switch (GlobalController[0]->ButtonPressed)
+	{
+		case BTN_DLEFT:
+		{
+			playSound(0x49008027);
+			break;
+		}
+		case BTN_DRIGHT:
+		{
+			playSound(0x49008028);
+			break;
+		}
+		case BTN_DUP:
+		{
+			playSound(0x49008018);
+			break;
+		}
+		case BTN_DDOWN:
+		{
+			playSound(0x49008019);
+			break;
+		}
+		
+	}
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
 	}
 	else
 	{
-
-
+		
 
 
 		CheckIFrames();
@@ -500,7 +502,6 @@ void gameCode(void)
 				runWaterVertex();
 
 				CheckPaths();
-				
 				
 			}	
 		}
@@ -611,8 +612,12 @@ void gameCode(void)
 		if(SaveGame.RenderSettings.DisplayFPS == 1)
 		{
 			DrawFPS(220,10);	
-		}	
+		}
 		
+
+		#ifndef ColdMeiser
+			DrawLapCounter();	
+		#endif
 	}
 }
 void resetMap()
@@ -628,33 +633,12 @@ void resetMap()
 //
 void allRun()
 {
+
 	
-	switch(GlobalController[0]->ButtonPressed)
-	{
-		case BTN_DUP:
-		{
-			playSound(0x4900900f);
-			break;
-		}
-		case BTN_DLEFT:
-		{
-			playSound(0x4901900f);
-			break;
-		}
-		case BTN_DRIGHT:
-		{
-			playSound(0x4900800f);
-			break;
-		}
-		case BTN_DDOWN:
-		{
-			playSound(0x4901800f);
-			break;
-		}
-	}
+	GlobalIntD = 0;
 	ClockCycle[0] = osGetCount();
-     CycleCount[0] = (ClockCycle[0] - OldCycle[0]);
-     OldCycle[0] = ClockCycle[0];
+	CycleCount[0] = (ClockCycle[0] - OldCycle[0]);
+	OldCycle[0] = ClockCycle[0];
 	GlobalFrameCount++;
 
 	switch (startupSwitch)
@@ -734,7 +718,8 @@ void allRun()
 			g_startingIndicator = 0;
 			if (MenuChanged != 10)
 			{	
-				
+				//MenuToggle = 0;
+				MenuChanged = 10;
 				
 				MenuIndex = 0;
 				loadCoinSprite();
@@ -778,22 +763,9 @@ void allRun()
 				GlobalAddressA = runMIO();
 				
 				SetSegment(0xA, Splash3DRAM);
-
-				*sourceAddress = (int)(&MenuIconsROM);
-				*targetAddress = (int)(&ok_FreeSpace);
-				dataLength = (int)&MenuIconsEnd - (int)&MenuIconsROM;
-				runDMA();
-				*sourceAddress = (int)(&ok_FreeSpace);
-				*targetAddress = GlobalAddressA;
-				MenuIconsRAM = GlobalAddressA;
-				GlobalAddressA = runMIO();
-
-
-				MenuToggle = 0;
-
+				
+				GlobalUIntB = (uint)GlobalAddressA;
 				#endif
-
-				MenuChanged = 10;
 				startupSwitch = 2;
 
 				#if ProtectMode
@@ -830,7 +802,18 @@ void allRun()
 			g_startingIndicator = 0;
 			if (MenuChanged != 11)
 			{
+				//MenuToggle = 0;
 				
+
+				*sourceAddress = (int)(&MenuIconsROM);
+				*targetAddress = (int)(&ok_FreeSpace);
+				dataLength = (int)&MenuIconsEnd - (int)&MenuIconsROM;
+				runDMA();
+				*sourceAddress = (int)(&ok_FreeSpace);
+				*targetAddress = (int)(&ok_Storage);
+				MenuIconsRAM = (int)(&ok_Storage);
+				GlobalAddressA = runMIO();
+
 				MenuChanged = 11;
 				saveEEPROM((uint)&SaveGame);
 			}
@@ -842,7 +825,7 @@ void allRun()
 			
 			if (MenuChanged != 12)
 			{					
-				
+				//MenuToggle = 0;
 				if (g_gameMode == GAMEMODE_BATTLE)
 				{
 					SetMenuPanels(BATTLESWITCH);
@@ -852,7 +835,7 @@ void allRun()
 					SetMenuPanels(RACESWITCH);
 				}
 
-				PlayerSelectMenuBefore();
+				//PlayerSelectMenuBefore();
 				MenuProgress[0] = 0;
 				MenuProgress[1] = 0;
 				MenuProgress[2] = 0;
@@ -861,7 +844,6 @@ void allRun()
 				//menuScreenC = 0;       
 			}
 			scrollLock = false;
-			PlayerSelectMenu(SaveGame.GameSettings.StatsMode);
 			HotSwapID = 0;
 			break;
 		}			
@@ -871,7 +853,10 @@ void allRun()
 			g_startingIndicator = 0;
 			if (MenuChanged != 13)
 			{
-				PlayerSelectMenuAfter();
+				//MenuToggle = 0;
+				MenuChanged = 13;
+				
+				//PlayerSelectMenuAfter();
 				//reload the R options
 				
 				*sourceAddress = (int)(&StartLogo);
@@ -881,17 +866,18 @@ void allRun()
 				*sourceAddress = (int)(&ok_FreeSpace);
 				*targetAddress = (int)(&ok_Storage);
 				runMIO();
-				MenuChanged = 13;
-				MenuToggle = 0;
 				MenuIndex = 0;
 				resetMap();
 				setAlwaysAdvance();				
 				HotSwapID = 0;
 				stockASM();
+				setPreviews();
+				previewRefresh();
+				setBanners();
 				hsLabel = -1;
 				courseValue = -1;
+				
 			}				
-			MapSelectMenu();
 		
 
 
@@ -914,7 +900,6 @@ void allRun()
 
 void PrintMenuFunction()
 {
-	
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
@@ -923,7 +908,7 @@ void PrintMenuFunction()
 	{
 		DrawFPS(220,10);	
 	}
-	
+
 	#if ProtectMode
 	if(SaveGame.TENNES == 1)
 	{		
@@ -946,36 +931,26 @@ void PrintMenuFunction()
 		case 11:
 		{
 			DrawGameSelect();
-			if (MenuToggle)
-			{
-				GameOptionsHandler();
-				*(uint*)0x800B0508 = 0;
-			}
-			else
+			break;
+			if (!MenuToggle)
 			{
 				//Press R for Options Message
-				GlobalAddressA = (uint)(&ok_Storage) + 8192;
+				GlobalAddressA = (uint)(StartLogoRAM) + 8192;
 				DrawBox(65,200,190,16,0,0,0,175);
-				KWSpriteDiv(160,210,(ushort*)(GlobalAddressA),256,16,8);			
-				*(uint*)0x800B0508 = 0x0C02CED6;
+				KWSpriteDiv(160,210,(ushort*)(GlobalAddressA),256,16,8);
 			}
 			break;
 		}
 		case 12:
 		{
 			DrawPlayerSelect(SaveGame.GameSettings.StatsMode);
-			if (MenuToggle)
-			{
-				GameOptionsHandler();
-				*(uint*)0x800B0508 = 0;
-			}
-			else
+			break;
+			if (!MenuToggle)
 			{
 				//Press R for Options Message
-				GlobalAddressA = (uint)(&ok_Storage) + 8192;
+				GlobalAddressA = (uint)(StartLogoRAM) + 8192;
 				DrawBox(65,200,190,16,0,0,0,175);
-				KWSpriteDiv(160,210,(ushort*)(GlobalAddressA),256,16,8);			
-				*(uint*)0x800B0508 = 0x0C02CED6;
+				KWSpriteDiv(160,210,(ushort*)(GlobalAddressA),256,16,8);
 			}
 			break;
 
@@ -983,18 +958,12 @@ void PrintMenuFunction()
 		case 13:
 		{
 			DrawMapSelect();
-			if (MenuToggle)
-			{
-				GameOptionsHandler();
-				*(uint*)0x800B0508 = 0;
-			}
-			else
+			if (!MenuToggle)
 			{
 				//Press R for Options Message
-				GlobalAddressA = (uint)(&ok_Storage) + 8192;
+				GlobalAddressA = (uint)(StartLogoRAM) + 8192;
 				DrawBox(65,200,190,16,0,0,0,175);
-				KWSpriteDiv(160,210,(ushort*)(GlobalAddressA),256,16,8);			
-				*(uint*)0x800B0508 = 0x0C02CED6;
+				KWSpriteDiv(160,210,(ushort*)(GlobalAddressA),256,16,8);
 			}
 			break;
 

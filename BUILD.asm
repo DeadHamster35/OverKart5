@@ -15,6 +15,7 @@
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
 .definelabel OKBuild, 1
+.definelabel ColdMeiser, 1
 
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
@@ -47,12 +48,9 @@ LI $a3, 1
 .org 0x095CB8
 LI $a3, 1
 
-//Disable Option and Data UI from Game Select Menu
-.org 0x095D30
-LI $a3, 1
-.org 0x095D44
-LI $a3, 1
-
+//Disable GameSelectMenu
+.org 0x095CA4
+//LI $a3, 15
 
 //Map Select Time Trial Ghost Info
 .org 0x0960D0
@@ -65,6 +63,27 @@ LI $a3, 1
 //Map Select GP CC Label
 .org 0x096118
 LI $a3, 1
+
+
+
+
+
+
+.org 0x0B10C0
+//TitleController
+JAL TitleMenuSwitch
+
+.org 0x0B10D8
+//Game Select
+////JAL GameSelectSwitch
+
+.org 0x0B10F0
+//Player Select
+//JAL PlayerSelectSwitch
+
+.org 0x0B1108
+//Map Select
+JAL MapSelectSwitch
 
 .endif
 
@@ -183,11 +202,6 @@ EndRAMData:
      BigFontROM:
      .import "data/Newfont.MIO0"
 
-     .align 0x10
-     MenuIconsROM:
-     .import "data/Menu/MenuGFX.MIO0"
-     .align 0x10
-     MenuIconsEnd:
 
      
 //END ROM DATA
@@ -195,7 +209,7 @@ EndRAMData:
 
 
     
-
+.include "CustomMenu\MenuBuild.asm"
 
 
 .align 0x10

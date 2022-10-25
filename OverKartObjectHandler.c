@@ -37,7 +37,7 @@ void DrawPerScreen(Camera* LocalCamera)
 		}
 		else
 		{
-			if ((HotSwapID > 0) && (OverKartHeader.GoalBannerToggle != 0))
+			if ( ((HotSwapID > 0) && (OverKartHeader.GoalBannerToggle != 0)) || (HotSwapID == 0) )
 			{	
 				DisplayFlagGate(LocalCamera);
 			}
