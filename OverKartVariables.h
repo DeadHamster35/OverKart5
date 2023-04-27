@@ -26,7 +26,6 @@ extern OKOption OKRenderOptions[];
 extern uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 
 extern char* gameMode;
-extern char* modMode;
 extern char* renderMode;
 extern char* battleMode;
 
@@ -36,23 +35,19 @@ extern char *menuNames[];
 extern int menuChar[];
 
 extern char *gameOptions[];
-extern char *gameParameters[][4];
+extern char *gameParameters[][14];
 extern int gameLimits[];
-extern int gameChar[][4];
+extern int gameChar[][14];
 extern int battleLimits[];
 extern int battleChar[][3];
 
-extern char *modOptions[];
-extern char *modParameters[][14];
-extern int modLimits[];
-extern int modChar[][14];
 
 extern char *renderOptions[];
-extern char *renderParameters[][2];
+extern char *renderParameters[][3];
 extern char *battleOptions[];
 extern char *battleParameters[][3];
 extern int renderLimits[];
-extern int renderChar[][2];
+extern int renderChar[][3];
 extern int SaveStateCourseID;
 extern int pageLimit[];
 

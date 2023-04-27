@@ -9,7 +9,6 @@
 SaveData SaveGame;
 
 char* gameMode = (char*)&SaveGame.GameSettings;
-char* modMode = (char*)&SaveGame.ModSettings;
 char* renderMode = (char*)&SaveGame.RenderSettings;
 char* battleMode = (char*)&SaveGame.BattleSettings;
 
@@ -95,54 +94,134 @@ short baseTurn, addTurn = 0;
 
 
 int SaveStateCourseID;
-int pageLimit[] = {6,4,7,5,2};  // GAME - MOD - RENDER - CUP EDITOR  -  BATTLE
+int pageLimit[] = {7,9,5,2};  // GAME - RENDER - CUP EDITOR  -  BATTLE
 
-OKPanel RacePanel, BattlePanel, ModPanel, RenderPanel;
-OKOption OKGameOptions[6];
-OKOption OKModOptions[4];
-OKOption OKRenderOptions[7];
+__attribute__((aligned(16)))
+OKPanel RacePanel, BattlePanel, RenderPanel;
+__attribute__((aligned(16)))
+OKOption OKGameOptions[7];
+__attribute__((aligned(16)))
+OKOption OKRenderOptions[9];
 
+__attribute__((aligned(16)))
 OKMenu GameOKMenu;
 
-
+__attribute__((aligned(16)))
 uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
-
-int menuChar[] = {12,11,14,10};
-int gameLimits[] = {4,3,2,2,2,2};
-int gameChar[][4] = {{7,12,8,9}, {7,5,8} ,{3,2}, {3,2}, {3,2}, {7,4}};
-
+__attribute__((aligned(16)))
 int battleLimits[] = {3,2};
+__attribute__((aligned(16)))
 int battleChar[][3] = {{7,3,6}, {3,2}};
 
-int modLimits[] = {2,2,2,2};
-int modChar[][14] = {{3,2,3,3}, {3,2}, {3,2}, {3,2,8}, {7,3,3,3,3,3,3,3,3,6,10,10,4,8}};
 
-int renderLimits[] = {2,2,2,2,2,2,2};
-int renderChar[][2] = {{3,2}, {3,2}, {3,2}, {10,8}, {7,8}, {7,8}, {3,2} };
+__attribute__((aligned(16)))
+char *menuNames[] = {"Game Options", "Render Options","Cup Editor"};	
+__attribute__((aligned(16)))
+int menuChar[] = {12,14,10};
 
+__attribute__((aligned(16)))
+char *gameOptions[] = {
+	"Game Mode", 
+	"Racer Stats", 
+	"Mirror Mode", 
+	"GP Always Advance", 
+	"All Cup", 
+	"Items",
+	"Multiplayer"
+};
 
+__attribute__((aligned(16)))
+char *gameParameters[][14] = {
+	{"Default", "Red Coin", "Gold Coin", "Practice"}, 
+	{"Classic", "Equal", "Enhanced"}, 
+	{"Off" , "On"}, 
+	{"Off" , "On"}, 
+	{"Off" , "On"}, 
+	{"Default","8th","7th","6th","5th","4th","3rd","2nd","1st","Banana","3 G. Shell", "3 R. Shell", "Star", "3 Shroom"},
+	{"Classic" , "Bots"} 
+};
 
-char *menuNames[] = {"Game Options", "Mod Options","Render Options","Cup Editor"};	
-
-char *gameOptions[] = {"Game Mode", "Racer Stats", "Mirror Mode", "GP Always Advance", "All Cup", "Multiplayer"};
-char *gameParameters[][4] = {{"Default", "OK64 T.Trial", "Red Coin", "Gold Coin"}, {"Classic", "Equal", "Enhanced"}, {"Off" , "On"}, {"Off" , "On"}, {"Off" , "On"}, {"Classic" , "Bots"} };
-
-char *battleOptions[] = {"Game Mode", "Mirror Mode"};
-char *battleParameters[][3] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}};
-
-
-char *modOptions[] = {"Practice Mode", "Flycam", "Input Display", "Details", "Force Items"};
-char *modParameters[][14] = {{"Off", "On", "Map", "Dev"}, {"Off" , "On"}, {"Off" , "On"}, {"Off","On","Shortcut"},
-{"Default","8th","7th","6th","5th","4th","3rd","2nd","1st","Banana","3 G. Shell", "3 R. Shell", "Star", "3 Shroom"}
+__attribute__((aligned(16)))
+int gameLimits[] = {
+	4,
+	2,
+	2,
+	2,
+	2,
+	9,
+	2
+};
+__attribute__((aligned(16)))
+int gameChar[][14] = {
+	{7,8,9,8}, 
+	{7,5,8},
+	{3,2}, 
+	{3,2}, 
+	{3,2}, 
+	{7,3,3,3,3,3,3,3,3,6,10,10,4,8},
+	{7,4}
 };
 
 
+__attribute__((aligned(16)))
+char *battleOptions[] = {"Game Mode", "Mirror Mode"};
+__attribute__((aligned(16)))
+char *battleParameters[][3] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}};
 
-char *renderOptions[] = { "Audio Mode", "Widescreen", "Anti-Alias",  "Screen Split", "Draw Dist.", "Game Tempo", "Show FPS"};
-char *renderParameters[][2] = {{"USA", "JP"},  {"Off" , "On"}, {"Off" , "On"},  {"Horizontal", "Vertical"}, {"Default","Extended"}, {"Console","Emulator"},  {"Off" , "On"}};
+
+__attribute__((aligned(16)))
+char *renderOptions[] = { 
+	"Audio Mode", 
+	"Widescreen", 
+	"Anti-Alias",  
+	"Screen Split", 
+	"Draw Dist.", 
+	"Game Tempo", 
+	"Show FPS", 
+	"Input Disp.",
+	"Detail Disp."
+};
+__attribute__((aligned(16)))
+char *renderParameters[][3] = {
+	{"USA", "JP"},  
+	{"Off" , "On"}, 
+	{"Off" , "On"},  
+	{"Horizontal", "Vertical"}, 
+	{"Default","Extended"}, 
+	{"Console","Emulator"},  
+	{"Off" , "On"},
+	{"Off" , "On"},
+	{"Off" , "On", "Shortcut"}
+};
+
+__attribute__((aligned(16)))
+int renderLimits[] = {
+	2,
+	2,
+	2,
+	2,
+	2,
+	2,
+	2,
+	2,
+	3
+};
+__attribute__((aligned(16)))
+int renderChar[][3] = {
+	{3,2}, 
+	{3,2}, 
+	{3,2}, 
+	{10,8}, 
+	{7,8}, 
+	{7,8},
+	{3,2},
+	{3,2},
+	{3,2,8} 
+};
 
 
 //InputDisplay Variables
+__attribute__((aligned(16)))
 char *names[] = {
 	"A", "B", "Z", "S",
 	"U", "D", "L", "R", // draw d-pad
@@ -150,7 +229,7 @@ char *names[] = {
 	"L", "R",
 	"U", "D", "L", "R" //C buttons
 };
-
+__attribute__((aligned(16)))
 char *stickNames[] = {
 	"U", "D", "L", "R","S"
 };

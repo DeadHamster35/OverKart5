@@ -1,9 +1,11 @@
 #ifndef BuildH
 #define BuildH
 
-#define ColdMeiser      1
-#define OverKartBuild   1
-#define DebugMode       1
+#define CFLG_LapCounter      1
+#define CFLG_PlayerSelect   1
+#define OverKartBuild   0
+#define DebugMode       0
 #define ProtectMode     1
+#define DEBUGBUILD      false
 
 #endif

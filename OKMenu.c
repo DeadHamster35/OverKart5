@@ -47,7 +47,7 @@ void printDetails()
           printString(MenuPosition[0],MenuPosition[1]+20,"Z:");
           printString(MenuPosition[0],MenuPosition[1]+30,"A:");
 
-          if (SaveGame.ModSettings.DetailMode == 1)
+          if (SaveGame.RenderSettings.DetailMode == 1)
           {
                printString(MenuPosition[0]+87,MenuPosition[1]," SX:");
                printString(MenuPosition[0]+87,MenuPosition[1]+10," SY:");
@@ -167,7 +167,7 @@ void printDetails()
                {
                     case 0x00:
                     {
-                         if (SaveGame.ModSettings.DetailMode == 1)
+                         if (SaveGame.RenderSettings.DetailMode == 1)
                          {
                               wholeNumber = (int) g_player1SpeedX;
                               decimalNumber = (int) ((g_player1SpeedX - wholeNumber) * 1000);
@@ -181,7 +181,7 @@ void printDetails()
                     }
                     case 0x01:
                     {
-                         if (SaveGame.ModSettings.DetailMode == 1)
+                         if (SaveGame.RenderSettings.DetailMode == 1)
                          {
                               wholeNumber = (int) g_player1SpeedY;
                               decimalNumber = (int) ((g_player1SpeedY - wholeNumber) * 1000);
@@ -195,7 +195,7 @@ void printDetails()
                     }
                     case 0x02:
                     {
-                         if (SaveGame.ModSettings.DetailMode == 1)
+                         if (SaveGame.RenderSettings.DetailMode == 1)
                          {
                               wholeNumber = (int) g_player1SpeedZ;
                               decimalNumber = (int) ((g_player1SpeedZ - wholeNumber) * 1000);
@@ -247,13 +247,13 @@ void printDetails()
                {
                     printOffsetB = printOffsetB + 8;
                }
-               if ((loop == 2) && (SaveGame.ModSettings.DetailMode == 2))
+               if ((loop == 2) && (SaveGame.RenderSettings.DetailMode == 2))
                {
                     printOffsetB = printOffsetB + 8;
                }
                printOffsetA = 48;
 
-               if ((SaveGame.ModSettings.DetailMode == 1) | (loop == 3))
+               if ((SaveGame.RenderSettings.DetailMode == 1) | (loop == 3))
                {
                     if (decimalNumber < 100)
                     {
@@ -267,7 +267,7 @@ void printDetails()
                }
 
                printStringNumber(MenuPosition[0]+printOffsetB,MenuPosition[1],"",wholeNumber);
-               if ((SaveGame.ModSettings.DetailMode == 1) | (loop == 3))
+               if ((SaveGame.RenderSettings.DetailMode == 1) | (loop == 3))
                {
                     printString(MenuPosition[0]+printOffsetA,MenuPosition[1],".");
                     printStringNumber(MenuPosition[0]+printOffsetA-4+printOffsetC,MenuPosition[1],"",decimalNumber);
@@ -286,7 +286,7 @@ void printAnticheat()
 {
      loadPosition();
      
-     if (SaveGame.ModSettings.PracticeMode == 0x01)
+     if (SaveGame.GameSettings.GameMode == 3)
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (12 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
@@ -294,7 +294,7 @@ void printAnticheat()
           printString(MenuPosition[0],MenuPosition[1], "Practice  ON");
 
      }     
-     if (SaveGame.ModSettings.ItemMode > 0)
+     if (SaveGame.GameSettings.ItemMode > 0)
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (11 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
@@ -323,7 +323,7 @@ void printAnticheat()
                }
           }
      }
-     else if ((SaveGame.GameSettings.StatsMode == 1) && ((SaveGame.GameSettings.GameMode != 1) || (HotSwapID == 0)) )
+     else if ((SaveGame.GameSettings.StatsMode == 1) && (HotSwapID == 0) )
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (11 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
@@ -414,8 +414,6 @@ void swapParameter(OKMenu OptionsMenu, int directionIndex)
 
 void GameOptionsHandler(short PlayerIndex)
 {
-     
-    
      CheckMenuButton(PlayerIndex);
           
      //MenuButtonHeld is set to 0x01 when a button is held down.
@@ -479,7 +477,7 @@ void GameOptionsHandler(short PlayerIndex)
                     ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[MenuIndex].OptionCount) //currentParameter
                     {
-                         if ((ParameterIndex == 4) && (MenuIndex < 3))
+                         if ((ParameterIndex == 7) && (MenuIndex < 3))
                          {
                               MenuOverflow++;
                          }
@@ -519,17 +517,9 @@ void GameOptionsHandler(short PlayerIndex)
      }
 
      // Now print the menu using the menuFlag and parameterFlag options above.
-     if ((SaveGame.GameSettings.StatsMode == 1) || (SaveGame.GameSettings.GameMode == 1))
-     {
-          checkStats(1);
-     }
-     else
-     {
-          checkStats(0);
-     }
+     
 
      //OptionsMenu(235,0,1);
-     ModularMenu(235, GameOKMenu);
 }
 
 void TitleMenuHandler(short PlayerIndex)
@@ -658,7 +648,7 @@ void TitleMenuHandler(short PlayerIndex)
                case BTN_DDOWN :
                {
                     ButtonHolding[PlayerIndex] = true;
-                    if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[0].OptionCount) //currentParameter
+                    if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[MenuIndex].OptionCount) //currentParameter
                     {
                          if ((ParameterIndex == 4) && (MenuIndex < 3))
                          {
@@ -700,39 +690,9 @@ void TitleMenuHandler(short PlayerIndex)
 
      }
 
-     // Now print the menu using the menuFlag and parameterFlag options above.
-     if ((SaveGame.GameSettings.StatsMode == 1) || (SaveGame.GameSettings.GameMode == 1))
-     {
-          checkStats(1);
-     }
-     else
-     {
-          checkStats(0);
-     }
-     if (MenuIndex < 3)
-     {
-          ModularMenu(175,GameOKMenu);
-          
-          if (MenuIndex == 2)  //filthy hack
-          {
-               KWSprite(240,22,16,16,(ushort*)&lit_arrowsprite_r);
-          }
-     }
-     else
-     {
-          CourseMenu(175);
-     }
+     
      
 
-
-     loadFont();
-     printStringUnsignedNumber(0,10,"",GlobalController[0]->AnalogHeld);
-     printStringUnsignedNumber(0,20,"",GlobalController[0]->AnalogPressed);
-     printStringUnsignedNumber(0,30,"",GlobalController[0]->ButtonHeld);
-     printStringUnsignedNumber(0,40,"",GlobalController[0]->ButtonPressed);
-     printStringUnsignedNumber(0,50,"",ButtonTimer[0]);
-     printStringUnsignedNumber(0,60,"",ButtonHolding[0]);
-     printStringUnsignedNumber(0,70,"",MenuButtonHeld[0]);
      //OptionsMenu(175,2,1);
 }
 
@@ -753,7 +713,7 @@ void titleMenu()
 
      
      g_mracewayTime = 0;
-     
+
      #if OverKartBuild
           
           GlobalAddressA = 0x8018DABC;
@@ -765,17 +725,18 @@ void titleMenu()
           KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
           KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
           
-          guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
+          guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 25000, 1.0f);
           gSPPerspNormalize(GraphPtrOffset++, PerspectiveValue);
           gSPMatrix(GraphPtrOffset++, K0_TO_PHYS((u32) &(gDynamicP->projection1)),G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
           //gSPMatrix(GraphPtrOffset++, K0_TO_PHYS((u32) &(gDynamicP->viewing)),G_MTX_PROJECTION|G_MTX_MUL|G_MTX_NOPUSH);
           GULookAt(&gDynamicP->viewing,
                0, 0,0,
-               0, 0,100000,
+               0, 0,50000,
                0,1,0);
           
           LoadIdentAffineMtx(AffineMatrix);
           SetMatrix(AffineMatrix,0);
+          
           /*
           guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
           gSPPerspNormalize(*graphPointer, PerspectiveValue);
@@ -873,23 +834,10 @@ void titleMenu()
                objectAngle[1] = 0;
                objectAngle[2] = MenuAngle[0] * -1 * DEG1;
                DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.45);
-               if (!MenuToggle)
-               {               
-                    if (MenuBlink > 15)
-                    {
-                         KWSpriteDiv(160,180,(ushort*)StartLogoRAM,256,32,8);
-                    }
-               }
+               
           }
-     #else
-          g_mpressstartID = 0;
-          TitleMenuHandler(4);
-     #endif
-     // Reset the MenuButtonHeld timer. This is set to 0x01 when a button is held down.
-     // Used for advancing menu when direction is held.
 
-     
-          
+     #endif
 
 
      
@@ -1329,6 +1277,24 @@ void MapSelectMenu(short PlayerIndex)
      {
           GlobalShortA = 1;
      }
+
+     if (ROptionPressed != 0)
+     {    
+          if (ROptionPressed + 2 <= GlobalFrameCount)
+          {
+               ROptionPressed = 0;                 
+               KBGNumber = 6;
+               KBGNumberNext = 6;
+               KBGChange = 1;
+               SetFadeOutTaData();
+          }
+     }
+     if ((GlobalController[PlayerIndex]->ButtonPressed & BTN_R) == BTN_R)
+     {
+          playSound(0x49009010);   
+          ROptionPressed = GlobalFrameCount;
+     }
+
      if (menuScreenA == GlobalShortA)
      {
           if ((GlobalController[PlayerIndex]->ButtonPressed & BTN_CLEFT) == BTN_CLEFT)
@@ -1382,13 +1348,19 @@ void DrawGameSelect()
 {
      
      DrawBox(65,18,190,25,0,0,0,175);
-     PrintBigText(95,16, 0.9f,"Game Setup");
+     PrintBigText(90,16, 1.0f,"GAME SETUP");
+     
+     if (ROptionPressed > 0)
+     {
+          KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM + 0x1000, (void*)&V64x32, 64, 32, 64, 32);
+     }
+     else
+     {
+          KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM, (void*)&V64x32, 64, 32, 64, 32);
+     }
      
 
-     
-     
-
-     #ifndef ColdMeiser
+     #ifndef CFLG_LapCounter
 
 
 
@@ -1471,6 +1443,15 @@ void DrawMapSelect()
      {
           PrintBigTextNumberNoGap(80,16, 0.9f,"Custom Set",HotSwapID);
      }
+     
+     if (ROptionPressed > 0)
+     {
+          KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM + 0x1000, (void*)&V64x32, 64, 32, 64, 32);
+     }
+     else
+     {
+          KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM, (void*)&V64x32, 64, 32, 64, 32);
+     }
      SpriteBtnCLeft(45,35,1.0,false);
      SpriteBtnCRight(279,35,1.0,false);
      
@@ -1485,7 +1466,7 @@ void DrawPlayerSelect(short StatsMode)
      
      
 
-     #ifndef ColdMeiser
+     #ifndef CFLG_PlayerSelect
 
 
           for (int CurrentPlayer = 0; CurrentPlayer < g_playerCount; CurrentPlayer++)
@@ -1705,43 +1686,51 @@ void PlayerSelectSwitch(OSContPad *pad,u16 i, u16 newbutton)
 
 void MapSelectSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
-     GlobalIntD++;
-     if ((GlobalController[i]->ButtonPressed & BTN_R) == BTN_R)
-     {
-          MenuToggle = !MenuToggle;
-     }
-	if (MenuToggle)
-     {
-		GameOptionsHandler(i);
-     }
-     else
-     {
-          MapSelectMenu(i);
-          MSelController(pad,i,newbutton);
-     }
+     
+     MapSelectMenu(i);
+     MSelController(pad,i,newbutton);
+     
      
 }
 
 void GameSelectSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
-     
+     if (ROptionPressed != 0)
+     {    
+          if (ROptionPressed + 2 <= GlobalFrameCount)
+          {
+               ROptionPressed = 0;                 
+               KBGNumber = 6;
+               KBGNumberNext = 6;
+               KBGChange = 1;
+               SetFadeOutTaData();
+          }
+     }
      if ((GlobalController[i]->ButtonPressed & BTN_R) == BTN_R)
      {
-          MenuToggle = !MenuToggle;
-     }
-
-
-     if (MenuToggle)
-     {
-		GameOptionsHandler(i);
+          playSound(0x49009010);   
+          ROptionPressed = GlobalFrameCount;
      }
      else
      {
-          //GameSelectMenu(i);    
+          //GameSelectMenu(i);
+          GSelController(pad, i, newbutton);
+
      }
+     
 }
 
-
+void DataMenuController(OSContPad *pad, u16 i, u16 NewButton)
+{
+     ROptionPressed = 0;
+     if ((GlobalController[i]->ButtonPressed & BTN_B) == BTN_B)
+     {
+          KBGNumber = LastMenuID;
+          KBGNumberNext = LastMenuID;
+          KBGChange = 1;
+          SetFadeOutB();
+     }
+}
 
 void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
@@ -1755,6 +1744,48 @@ void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
      }
      else
      {
+          
           TitleController(pad,i,newbutton);
      }
 };
+
+
+
+void MiniMapDraw()
+{    
+
+     if (SaveGame.GameSettings.GameMode == 1)
+     {
+          int CoinCount = 0;
+          for (int ThisObject = 0; ThisObject < 100; ThisObject++)
+          {
+               if (g_SimpleObjectArray[ThisObject].category == 47)
+               {
+                    
+                    CoinCount++;
+                    float fx = (float)(g_SimpleObjectArray[ThisObject].position[0]) * g_mapScale; //Scale object positions down to map size
+                    float fz = (float)(g_SimpleObjectArray[ThisObject].position[2]) * g_mapScale;
+
+                    //Player 1 Radar
+                    short DrawX = g_mapX + *(short*)(0x8018D2F0) - (*(short*)(0x8018D2B0)/2) +  *(short*)(0x8018D2E0) + (short)fx;
+                    short DrawY = g_mapY + *(short*)(0x8018D2F8) - (*(short*)(0x8018D2B8)/2) +  *(short*)(0x8018D2E8) + (short)fz;
+                    //KWSprite(DrawX,DrawY,8,8,(ushort*)&RCIconMap);
+                    //Player 2 Radar
+                    //x = *(short*)(&g_mapX+0x1) + *(short*)(0x8018D2F0) - (*(short*)(0x8018D2B0)/2) +  *(short*)(0x8018D2E0) + (short)fx;
+                    //y = *(short*)(&g_mapY+0x1) + *(short*)(0x8018D2F8) - (*(short*)(0x8018D2B8)/2) +  *(short*)(0x8018D2E8) + (short)fz;
+                    KWSpriteScale(DrawX,DrawY,0.5,(ushort*)&RCIconMap,8,8);
+
+                    if (CoinCount == 8)
+                    {
+                         break;
+                    }
+               }
+               
+          }
+          
+     }
+     
+     
+     KWReturnViewport();
+     KawanoDrawFinal();
+}

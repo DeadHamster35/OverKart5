@@ -5,31 +5,33 @@
 
 extern unsigned short net[];
 
-
-
 int DPRTester;
 int RandomDPR;
+short MapModeCheck = 0;
+short LastMenuID = 0;
+uint ROptionPressed = 0;
 
-#if OverKartBuild
+
 void loadLogo()
 {
 
 	
-	SetSegment(8,(int)(&ok_Logo));
+	
+	//804CCB9C
+	SetSegment(0x8,(int)(&ok_Logo));
+	
 	*sourceAddress = (int)(&LogoROM);
 	*targetAddress = (int)(&ok_FreeSpace);
-	dataLength = 0x38AC;
+	dataLength = 0x38C0;
 	runDMA();
 	*sourceAddress = (int)(&ok_FreeSpace);
 	*targetAddress = (int)(&ok_Logo);
 	runMIO();
+
 	g_NintendoLogoOffset = 0x08005A70;
 	g_NintendoLogoBorder = 0x256B9478;
-
-	
 	
 }
-#endif
 
 
 void SetMenuPanels(int SwitchMode)
@@ -41,19 +43,14 @@ void SetMenuPanels(int SwitchMode)
 	GameOKMenu.PanelAddress = (OKPanel*)(uint)&RacePanel;
 	GameOKMenu.PanelAddress[0].NameAddress = (uint)menuNames[0];
 	GameOKMenu.PanelAddress[1].NameAddress = (uint)menuNames[1];
-	GameOKMenu.PanelAddress[2].NameAddress = (uint)menuNames[2];
 	GameOKMenu.PanelAddress[0].NameLength = menuChar[0];
 	GameOKMenu.PanelAddress[1].NameLength = menuChar[1];
-	GameOKMenu.PanelAddress[2].NameLength = menuChar[2];
 	
 	GameOKMenu.PanelAddress[1].OptionCount = pageLimit[1];
-	GameOKMenu.PanelAddress[2].OptionCount = pageLimit[2];
 	
-	GameOKMenu.PanelAddress[1].ParameterToggles = (char*)&modMode[0];
-	GameOKMenu.PanelAddress[2].ParameterToggles = (char*)&renderMode[0];
+	GameOKMenu.PanelAddress[1].ParameterToggles = (char*)&renderMode[0];
 	GameOKMenu.PanelAddress[0].Options = (OKOption*)&OKGameOptions;
-	GameOKMenu.PanelAddress[1].Options = (OKOption*)&OKModOptions;
-	GameOKMenu.PanelAddress[2].Options = (OKOption*)&OKRenderOptions;
+	GameOKMenu.PanelAddress[1].Options = (OKOption*)&OKRenderOptions;
 
 	
 	switch(SwitchMode)
@@ -86,68 +83,34 @@ void SetMenuPanels(int SwitchMode)
 			break;
 		}
 	}
-
-
-
 	for (int ThisLoop = 0; ThisLoop < pageLimit[1]; ThisLoop++)
 	{
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterCount = modLimits[ThisLoop];
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterNames = (uint*)&modParameters[ThisLoop];
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterLengths = (int*)modChar[ThisLoop];
-		GameOKMenu.PanelAddress[1].Options[ThisLoop].OptionName = (uint)modOptions[ThisLoop];
-	}
-	for (int ThisLoop = 0; ThisLoop < pageLimit[2]; ThisLoop++)
-	{
-		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterCount = renderLimits[ThisLoop];
-		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
-		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
-		GameOKMenu.PanelAddress[2].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterCount = renderLimits[ThisLoop];
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
+		GameOKMenu.PanelAddress[1].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
 	}
 }
 void okSetup(void)
 {
-
-	//DPRTester = osGetTime();
-	SaveFunc800B45E0 = 0x03E0000800000000;
-	SaveFunc800B4670 = 0x03E0000800000000;
-	SaveFunc800B559C = 0x03E0000800000000;
-	SaveFunc800B5948 = 0x03E0000800000000;
-	LoadFunc800B4A10 = 0x03E0000800000000;
+	
+	
 	
 	ConsolePlatform = CheckPlatform();
 	EmulatorPlatform = CheckEmulator();	
 	
 	
 	
-
+	//8047CBA0
+	loadLogo();
+	loadArrows();
 	loadHeaderOffsets();
 	loadHudButtons();
 	SetupFontF3D();
-	if (SwopCheck == 0x11342067)
-	{
-		StopSwop = true;
-	}
-	else
-	{
-		StopSwop = false;		
-	}
-	SwopCheck = 0x11342067;
 	
-	
-	*(short*)(0x800DC6FE) = 0xFFFF;
-
-	
-	loadEEPROM((uint)&SaveGame);	
+	loadEEPROM((uint)&SaveGame);
 	CheckContPackMenu();
 	
-	if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
-	{
-		if ((GlobalController[0]->ButtonHeld & BTN_DDOWN) == BTN_DDOWN)
-		{	
-			SaveGame.GameSettings.GameMode = 2;
-			SaveGame.ModSettings.PracticeMode = 2;			
-		}
-	}
 
 	
 	dataLength = 8;
@@ -164,35 +127,36 @@ void okSetup(void)
 	dataLength = 0xA8;
 	runRAM();
 	
-	#if OverKartBuild
-	loadLogo();
-	#endif
+	
+
+	
 	loadBigFont();
 	copyCourseTable(1);
 	NopSplashCheckCode();
-	FlyCamInit();
-	nopASM = 0;
+	//FlyCamInit();
 	HotSwapID = 0;
+	raceStatus = 0xFF;
 	asm_SongA = 0x240E0001;
 	asm_SongB = 0x240E0001;
+
 	g_sfxPause = 0; //Just for Amped Up (To fix some mute sfx when pausing the game)
 	hsGP = 0;
-	FlyCamSpeed = 5;
-	ok_Knowledge = (long)(&ok_Target);
+	MapModeCheck = 0;
+	//FlyCamSpeed = 5;
+	//ok_Knowledge = (long)(&ok_Target);
 
 	
 	
 	//PlayerSelectSetup();
-	
 
-	RandomDPR = MakeRandom();
+	
 	*(long*)(&ok_USAudio) = *(long*)(&g_RawAudio + 1);
 	*(long*)(&ok_USAudio + 1) = *(long*)(&g_InstrumentTable + 1);
 
 
 	*(long*)(&ok_MRSong) = *(long*)(&g_SequenceTable + (3 * 2) + 1);
 	*(long*)(&ok_MRSong + 1) = *(long*)(&g_InstrumentTable + (3 * 2) + 1);
-
+	
 	
 	
 	FreeSpaceAddress = (int)&ok_Storage;
@@ -251,7 +215,7 @@ void startRace()
 		}		
 		if (SaveGame.BattleSettings.GameMode == BTL_SOCCER)
 		{
-			PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);
+			PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);  //lol
 		}
 
 	}
@@ -261,7 +225,10 @@ void startRace()
 		{
 			gpCourseIndex = 0;
 		}
-		
+		if (g_gameMode != GAMEMODE_TT)
+		{
+			PlaceSIBox(GetRealAddress(0x06000668));
+		}
 		if (g_gameMode != GAMEMODE_BATTLE)
 		{
 			EmptyActionData();
@@ -270,16 +237,18 @@ void startRace()
 			setWater();
 			loadMinimap();	
 		}
-		if ((SaveGame.GameSettings.GameMode == GAMEMODE_VS))
-		{        	
-			RedCoinChallenge(GetRealAddress(0x060009D8));
+		if ((SaveGame.GameSettings.GameMode == 1))  
+		{     
+			//Red Coin Challenge   	
+			RedCoinChallenge(GetRealAddress(0x06000620));
 			CoinCount[0] = 0;
 			CoinCount[1] = 0;
 			CoinCount[2] = 0;
 			CoinCount[3] = 0;
 		}
-		if ((SaveGame.GameSettings.GameMode == GAMEMODE_BATTLE))
-		{        	
+		if ((SaveGame.GameSettings.GameMode == 2))  
+		{      
+			//Gold Coin Challenge  	
 			GoldCoinChallenge(GetRealAddress(pathOffset));
 			CoinCount[0] = 0;
 			CoinCount[1] = 0;
@@ -416,32 +385,17 @@ void CheckBattleCDown()
 void gameCode(void)
 {	
 
-
-	
-	switch (GlobalController[0]->ButtonPressed)
+	#if(DEBUGBUILD==TRUE)
 	{
-		case BTN_DLEFT:
-		{
-			playSound(0x49008027);
-			break;
-		}
-		case BTN_DRIGHT:
-		{
-			playSound(0x49008028);
-			break;
-		}
-		case BTN_DUP:
-		{
-			playSound(0x49008018);
-			break;
-		}
-		case BTN_DDOWN:
-		{
-			playSound(0x49008019);
-			break;
-		}
+		loadFont();
+		//OverKartHeader.ScrollROM
+		printStringUnsignedHex(0,0,"SFC", (uint)&OverKartHeader.SurfaceMapPosition);
+		printStringUnsignedHex(0,10,"SVW", (uint)&OverKartHeader.SectionViewPosition);
+		printStringUnsignedHex(0,20,"SXLU", (uint)&OverKartHeader.XLUSectionViewPosition);
 		
 	}
+	#endif
+
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -475,16 +429,16 @@ void gameCode(void)
 			}
 		}
 
-		if (SaveGame.ModSettings.PracticeMode > 0 || SaveGame.ModSettings.FlycamMode > 0)
+		if (MapModeCheck || (SaveGame.GameSettings.GameMode == 3))
 		{
 			practiceHack();		
 		}
-		if (SaveGame.ModSettings.InputMode > 0x00)
+		if (SaveGame.RenderSettings.InputMode > 0x00)
 		{
 			drawInputDisplay();
 		}
 
-		if (SaveGame.ModSettings.DetailMode > 0x00)
+		if (SaveGame.RenderSettings.DetailMode > 0x00)
 		{
 			printDetails();
 		}
@@ -553,7 +507,7 @@ void gameCode(void)
 						printString( (140 - (GlobalIntA * 4)), 150, (char*)(&ok_Credits + 1));
 					}
 					GlobalIntA = *(long*)(&ok_SerialKey);
-					if ((SaveGame.GameSettings.GameMode == 1) & (GlobalIntA != 0))
+					if ((g_gameMode == GAMEMODE_TT) && (GlobalIntA != 0))
 					{
 						printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
 						printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
@@ -570,11 +524,6 @@ void gameCode(void)
 				
 
 				GlobalShortD += 1;
-			}
-			else if (GlobalShortD < 99)
-			{
-				copyCourseTable(0);
-				GlobalShortD = 100;
 			}
 			
 			
@@ -615,7 +564,7 @@ void gameCode(void)
 		}
 		
 
-		#ifndef ColdMeiser
+		#ifndef CFLG_LapCounter
 			DrawLapCounter();	
 		#endif
 	}
@@ -627,13 +576,29 @@ void resetMap()
 }
 
 
+uint SearchJRK0()
+{
+	uint Address = 0x80000000;
 
+	do 
+	{
+		if ( (*(uint*)(Address)) == 0x03400008)
+		{
+			return Address;
+		}
+		
+		Address+=4;
+	} while(Address < 0x80800000);
+	
+	return 0;
+}
 //
 //
 //
+
 void allRun()
 {
-
+	
 	
 	GlobalIntD = 0;
 	ClockCycle[0] = osGetCount();
@@ -648,6 +613,11 @@ void allRun()
 		break;
 
 		case 1:
+		
+		if ((GlobalController[0]->ButtonPressed & BTN_L) == BTN_L)
+		{
+			MapModeCheck = 1;
+		}
 		break;
 		
 		case 2:
@@ -712,6 +682,16 @@ void allRun()
 	
 	switch(KBGNumber)
 	{
+		case 6:
+		{
+			if (MenuChanged != 6)
+			{
+				LastMenuID = MenuChanged;
+				MenuChanged = 6;
+			}
+			GameOptionsHandler(4);
+			break;
+		}
 		case 10:
 		{			
 			scrollLock = false;
@@ -719,6 +699,7 @@ void allRun()
 			if (MenuChanged != 10)
 			{	
 				//MenuToggle = 0;
+				LastMenuID = MenuChanged;
 				MenuChanged = 10;
 				
 				MenuIndex = 0;
@@ -766,6 +747,8 @@ void allRun()
 				
 				GlobalUIntB = (uint)GlobalAddressA;
 				#endif
+
+				
 				startupSwitch = 2;
 
 				#if ProtectMode
@@ -779,9 +762,12 @@ void allRun()
 					for (int This = 0; This < 8; This++)
 					{
 						renderMode[This] = 0;
-						modMode[This] = 0;
 						gameMode[This] = 0;
 						battleMode[This] = 0;
+					}
+					for (int This = 8; This < 16; This++)
+					{
+						renderMode[This]  = 0;
 					}
 					SaveGame.RenderSettings.AliasMode = 1;
 
@@ -798,13 +784,14 @@ void allRun()
 		
 		case 11:
 		{
-			scrollLock = false;
-			g_startingIndicator = 0;
 			if (MenuChanged != 11)
 			{
+				menuScreenB = 3; //resets mode selection to start screen.
+				LastMenuID = MenuChanged;
+				MenuChanged = 11;
 				//MenuToggle = 0;
 				
-
+				/*
 				*sourceAddress = (int)(&MenuIconsROM);
 				*targetAddress = (int)(&ok_FreeSpace);
 				dataLength = (int)&MenuIconsEnd - (int)&MenuIconsROM;
@@ -813,10 +800,21 @@ void allRun()
 				*targetAddress = (int)(&ok_Storage);
 				MenuIconsRAM = (int)(&ok_Storage);
 				GlobalAddressA = runMIO();
+				*/
+				*sourceAddress = (int)(&ROptionROM);
+				*targetAddress = (int)(&ok_FreeSpace);
+				dataLength = (int)&ROptionEnd - (int)&ROptionROM;
+				runDMA();
+				*sourceAddress = (int)(&ok_FreeSpace);
+				*targetAddress = (int)(&ok_Storage);
+				MenuIconsRAM = (int)(&ok_Storage);
+				GlobalAddressA = runMIO();
 
-				MenuChanged = 11;
 				saveEEPROM((uint)&SaveGame);
 			}
+			
+			scrollLock = false;
+			g_startingIndicator = 0;
 			HotSwapID = 0;
 			break;
 		}
@@ -840,6 +838,8 @@ void allRun()
 				MenuProgress[1] = 0;
 				MenuProgress[2] = 0;
 				MenuProgress[3] = 0;
+
+				LastMenuID = MenuChanged;
 				MenuChanged = 12;   
 				//menuScreenC = 0;       
 			}
@@ -854,18 +854,29 @@ void allRun()
 			if (MenuChanged != 13)
 			{
 				//MenuToggle = 0;
+
+				LastMenuID = MenuChanged;
 				MenuChanged = 13;
 				
-				//PlayerSelectMenuAfter();
-				//reload the R options
 				
-				*sourceAddress = (int)(&StartLogo);
+				//PlayerSelectMenuAfter();
+
+				
+				//
+				//
+				//reload the R options graphic 
+				*sourceAddress = (int)(&ROptionROM);
 				*targetAddress = (int)(&ok_FreeSpace);
-				dataLength = (int)&StartEnd - (int)&StartLogo;
+				dataLength = (int)&ROptionEnd - (int)&ROptionROM;
 				runDMA();
 				*sourceAddress = (int)(&ok_FreeSpace);
 				*targetAddress = (int)(&ok_Storage);
-				runMIO();
+				MenuIconsRAM = (int)(&ok_Storage);
+				GlobalAddressA = runMIO();
+				// finish loading Press R graphic
+				//
+				//
+
 				MenuIndex = 0;
 				resetMap();
 				setAlwaysAdvance();				
@@ -900,15 +911,25 @@ void allRun()
 
 void PrintMenuFunction()
 {
+	
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
+	#if(DEBUGBUILD==TRUE)
+	{
+		loadFont();
+		printStringUnsignedHex(0,0,"SFC", (uint)&OverKartHeader.SurfaceMapPosition);
+		printStringUnsignedHex(0,10,"SVW", (uint)&OverKartHeader.SectionViewPosition);
+		printStringUnsignedHex(0,20,"SXLU", (uint)&OverKartHeader.XLUSectionViewPosition);
+		
+	}
+	#endif
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
 	{
 		DrawFPS(220,10);	
 	}
-
+	
 	#if ProtectMode
 	if(SaveGame.TENNES == 1)
 	{		
@@ -924,10 +945,30 @@ void PrintMenuFunction()
 			runMIO();
 		}
 		KWSpriteDiv(256,120,(ushort*)&ok_Storage,512,240,4);
+		return;
 	}
 	#endif
 	switch (MenuChanged)
 	{
+		case 6:
+		{
+			//Draw OptionsMenu
+			
+			if (MenuIndex < 2)
+			{
+				ModularMenu((OKMenu*)&GameOKMenu);
+				
+				if (MenuIndex == 2)  //filthy hack
+				{
+					KWSprite(240,22,16,16,(ushort*)&lit_arrowsprite_r);
+				}
+			}
+			else
+			{
+				CourseMenu(175);
+			}
+			break;
+		}
 		case 11:
 		{
 			DrawGameSelect();
@@ -958,13 +999,6 @@ void PrintMenuFunction()
 		case 13:
 		{
 			DrawMapSelect();
-			if (!MenuToggle)
-			{
-				//Press R for Options Message
-				GlobalAddressA = (uint)(StartLogoRAM) + 8192;
-				DrawBox(65,200,190,16,0,0,0,175);
-				KWSpriteDiv(160,210,(ushort*)(GlobalAddressA),256,16,8);
-			}
 			break;
 
 		}

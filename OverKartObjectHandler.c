@@ -39,7 +39,7 @@ void DrawPerScreen(Camera* LocalCamera)
 		{
 			if ( ((HotSwapID > 0) && (OverKartHeader.GoalBannerToggle != 0)) || (HotSwapID == 0) )
 			{	
-				DisplayFlagGate(LocalCamera);
+				//DisplayFlagGate(LocalCamera);
 			}
 		}
 		
@@ -50,7 +50,7 @@ void DrawPerScreen(Camera* LocalCamera)
 
 void loadCoin()
 {
-	SetSegment(8,(int)(&ok_ModelData));
+	SetSegment(0x8,(int)(&ok_ModelData));
 	*sourceAddress = (int)(&ModelDataStart);
 	*targetAddress = (int)(&ok_FreeSpace);
 	dataLength = (int)ModelData_CompressedSize;
@@ -95,6 +95,7 @@ void CheckHit(int PlayerIndex, int HitType)
 {
 	if (SaveGame.GameSettings.GameMode == 2)
 	{
+		//GoldCoinChallenge
 		DropCoins(PlayerIndex);
 	}
 	if (g_gameMode == GAMEMODE_BATTLE)
@@ -144,12 +145,14 @@ void Draw3DRacer(uint ModelAddress, uint Player)
 
 void DisplayObject(void *Car, Object *InputObject)
 {
+	
 	switch (InputObject->category)
 	{
 		case (47):
 		{
-			return;
-			GlobalAddressB = (long)&RedCoin;
+			
+			GlobalAddressB = (long)RedCoin;
+			*(uint*)(0x80653900) = (uint)GlobalAddressB;
 			objectPosition[0] = InputObject->position[0];
 			objectPosition[1] = InputObject->position[1];
 			objectPosition[2] = InputObject->position[2];
@@ -161,12 +164,12 @@ void DisplayObject(void *Car, Object *InputObject)
 			objectAngle[2] = InputObject->angle[2];
 
 
-			DrawGeometryScale(objectPosition,objectAngle,GlobalAddressB, 0.10);
+			DrawGeometryScale(objectPosition,objectAngle,GlobalAddressB, 0.10f);
 			break;
 		}
 		case 48:
 		{
-			GlobalAddressB = (long)&GoldCoin;
+			GlobalAddressB = (long)GoldCoin;
 			UpdateObjectGravity(InputObject);
 			UpdateObjectVelocity(InputObject);
 			
@@ -194,7 +197,7 @@ void DisplayObject(void *Car, Object *InputObject)
 		}
 		case 49:
 		{
-			GlobalAddressB = (long)&GoldCoin;
+			GlobalAddressB = (long)GoldCoin;
 			objectPosition[0] = InputObject->position[0];
 			objectPosition[1] = InputObject->position[1];
 			objectPosition[2] = InputObject->position[2];
@@ -261,34 +264,34 @@ int GoldCoinCollide(Player *Car, Object *Coin)
 }
 
 
-int CollideObject(Player *Car, Object *Target)
+void CollideObject(Player *Car, Object *Target)
 {
-	
-	objectIndex = (short)((*(long*)(*(long*)(&Target)) >> 16) & 0x0000FFFF);
-
-
-	switch (objectIndex)
+	switch (Target->category)
 	{
+		case 12:
+		{
+			ItemboxCollideCheck(Car,Target);
+			break;
+		}
 		case 47:
 		{
-			return RedCoinCollide(Car,Target);
+			RedCoinCollide(Car,Target);
 
 			break;
 		}
 		case 48:
 		case 49:
 		{
-			return GoldCoinCollide(Car,Target);
+			GoldCoinCollide(Car,Target);
 
 			break;
 		}
 		default:
 		{
-			return 0;
+			return;
 			break;
 		}
 	}
-	return -1;
 	
 }
 void RedCoinChallenge(long CoinOffset)
@@ -307,6 +310,31 @@ void RedCoinChallenge(long CoinOffset)
 		objectPosition[0] = objectPosition[0] * GlobalShortD;
 		CreateObject(objectPosition,47);
 		CoinOffset += 8;
+	}
+}
+
+
+void PlaceSIBox(long BoxOffset)
+{
+	GlobalShortD = 1;
+	if (g_mirrorMode == 1)
+	{
+		GlobalShortD = -1;
+	}
+	for (int CurrentBox = 0; CurrentBox < 8; CurrentBox++)
+	{		
+		objectPosition[0] = (float)*(short*)(BoxOffset);
+		objectPosition[1] = (float)*(short*)(BoxOffset + 2);		
+		objectPosition[2] = (float)*(short*)(BoxOffset + 4);
+
+		if (objectPosition[0] == 0x8000)
+		{
+			return;
+		}
+
+		objectPosition[0] = objectPosition[0] * GlobalShortD;
+		CreateObject(objectPosition,43);
+		BoxOffset += 8;
 	}
 }
 

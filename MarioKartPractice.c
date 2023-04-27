@@ -79,11 +79,11 @@ void modCheck()
 		}		
 		InitMKCode();
 	}
-	if ((SaveGame.GameSettings.MirrorMode > 0x00) && (SaveGame.GameSettings.GameMode != 1))
+	if (SaveGame.GameSettings.MirrorMode > 0x00)
 	{
-			g_mirrorMode = 0x0001;
+		g_mirrorMode = 0x0001;
 	}
-	if ((SaveGame.GameSettings.AIMode > 0x00) && (SaveGame.GameSettings.GameMode != 1))
+	if ((SaveGame.GameSettings.AIMode > 0x00) && (g_gameMode != GAMEMODE_TT))
 	{
 		aiSetup();
 	}
@@ -144,9 +144,9 @@ void modCheck()
 
 
 
-	if (SaveGame.ModSettings.ItemMode > 0x00)
+	if (SaveGame.GameSettings.ItemMode > 0x00)
 	{
-		if (SaveGame.ModSettings.ItemMode < 0x09)
+		if (SaveGame.GameSettings.ItemMode < 0x09)
 		{
 			asm_itemJump1B = (0x84A5 | (itemChanceLo + 2));
 			asm_itemJump2B = (0x84A5 | (itemChanceLo + 2));
@@ -160,7 +160,7 @@ void modCheck()
 			}
 			for (int currentPlayer = 0; currentPlayer < g_playerCount; g_playerCount++)
 			{
-				*(long*)(&GlobalAddressA) = 8 - SaveGame.ModSettings.ItemMode;
+				*(long*)(&GlobalAddressA) = 8 - SaveGame.GameSettings.ItemMode;
 				GlobalAddressA += 4;
 			}
 		}
@@ -452,7 +452,7 @@ void practiceHack()
 	GlobalCharB = (p_Input & 0xF0) >> 4;  //LR Trigger
 	GlobalCharC = (d_Input & 0xF0) >> 4;  //AB Button
 	GlobalCharD = (p_Input & 0x0F);  //Cpad
-	if (SaveGame.ModSettings.PracticeMode == 1)
+	if (SaveGame.GameSettings.GameMode == 3)
 	{
 		
 		if (SplitTimerToggle > 0x00)
@@ -510,6 +510,7 @@ void practiceHack()
 	
 		}
 	}
+	/*
 	if (SaveGame.ModSettings.FlycamMode == 1)
 	{
 
@@ -699,7 +700,7 @@ void practiceHack()
 
 	
 	}
-
+	*/
 
 
 
@@ -707,30 +708,24 @@ void practiceHack()
 
 	//devmode
 
-	if (SaveGame.ModSettings.PracticeMode == 2)
+	if (MapModeCheck == 1)
 	{
 		printMap(MapMode);
-		if (GlobalCharB == 0x01)
+
+		if ((GlobalController[0]->ButtonHeld & BTN_R) == BTN_R)
 		{
-
-			switch(GlobalCharA)
+			if ((GlobalController[0]->ButtonPressed & BTN_DDOWN) == BTN_DDOWN)
 			{
-				case 0x08 :
+				if (MapMode < 2)
 				{
-					if (MapMode > 0)
-					{
-						MapMode--;
-					}
-					break;
+					MapMode++;
 				}
-
-				case 0x04 :
+			}
+			if ((GlobalController[0]->ButtonPressed & BTN_DUP) == BTN_DUP)
+			{
+				if (MapMode > 0)
 				{
-					if (MapMode < 3)
-					{
-						MapMode++;
-					}
-					break;
+					MapMode--;
 				}
 			}
 		}
@@ -742,35 +737,36 @@ void practiceHack()
 				{
 					//map
 
-					switch(GlobalCharA)
+					switch(GlobalController[0]->ButtonHeld)
 					{
 
-						case 0x01 :
+						case BTN_DRIGHT :
 						{
 							g_mapX++;
 							break;
 						}
 
 
-						case 0x02 :
+						case BTN_DLEFT :
 						{
 
 							g_mapX--;
 							break;
 						}
 
-						case 0x04 :
+						case BTN_DUP :
 						{
 							g_mapY++;
 							break;
 						}
 
-						case 0x08 :
+						case BTN_DDOWN :
 						{
 							g_mapY--;
 							break;
 						}
 					}
+
 					break;
 				}
 
@@ -779,36 +775,39 @@ void practiceHack()
 				case 1:
 				{
 					//map
-					switch(GlobalCharA)
+					switch(GlobalController[0]->ButtonHeld)
 					{
 
-						case 0x01 :
+						case BTN_DRIGHT :
 						{
 							g_startX++;
 							break;
 						}
 
 
-						case 0x02 :
+						case BTN_DLEFT :
 						{
 
 							g_startX--;
 							break;
 						}
 
-						case 0x04 :
+						case BTN_DUP :
 						{
 							g_startY++;
 							break;
 						}
 
-						case 0x08 :
+						case BTN_DDOWN :
 						{
 							g_startY--;
 							break;
 						}
 					}
+
+
 					break;
+
 				}
 
 
@@ -816,23 +815,36 @@ void practiceHack()
 				case 2:
 				{
 					//map
-					switch(GlobalCharA)
+					switch(GlobalController[0]->ButtonHeld)
 					{
 
-						case 0x01 :
+						case BTN_DRIGHT :
 						{
 							g_mapScale = g_mapScale + .0001;
 							break;
 						}
 
 
-						case 0x02 :
+						case BTN_DLEFT :
 						{
 
 							g_mapScale = g_mapScale - .0001;
 							break;
 						}
+
+						case BTN_DUP :
+						{
+							g_mapScale = g_mapScale + .00001;
+							break;
+						}
+
+						case BTN_DDOWN :
+						{
+							g_mapScale = g_mapScale - .00001;
+							break;
+						}
 					}
+
 					break;
 				}
 

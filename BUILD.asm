@@ -6,17 +6,15 @@
 .open "ROM\stock.z64", "ROM\BASE.z64", 0
 .definelabel PAYLOAD_ROM, 		0x00D00000
 .definelabel PAYLOAD_RAM, 		0x80400000
-.definelabel DMA_FUNC,    		0x80001158
 .definelabel RAM_END,           org(EndRAMData)
 
 .definelabel DMA_MAX_LENGTH,       org(EndRAMData) - org(StartRAMData)
 .definelabel Printf, 			0x800D6420
-.definelabel ok_ModelDataRawSize,     filesize("data\ModelData\ModelData.raw")
+.definelabel ok_ModelDataRawSize,     filesize("data\ModelData\Binary\ModelData.raw")
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
-.definelabel OKBuild, 1
-.definelabel ColdMeiser, 1
-
+.definelabel OKBuild, 0
+.definelabel CFLG_LapCounter, 1
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
 .include "..\library\GameVariables\NTSC\StatsOffsets.asm"
@@ -26,15 +24,24 @@
 .org 0xBFFFFC
 .word 0xF00000
 
+
+
+
 .if OKBuild
 //fix the flip and stop that shit
 .org 0x095C64
 NOP
+
 //Remove the default Title Screen Image
 .org 0x09F8C4
 NOP
+.endif
 
 
+
+///
+/// UI Elements 
+///
 
 //Disable Map Select Texture
 .org 0x095F40
@@ -52,6 +59,14 @@ LI $a3, 1
 .org 0x095CA4
 //LI $a3, 15
 
+
+///
+///
+///
+
+
+
+//Disable the UI Overlay Labels
 //Map Select Time Trial Ghost Info
 .org 0x0960D0
 LI $a3, 1
@@ -60,38 +75,79 @@ LI $a3, 1
 .org 0x0960F8
 LI $a3, 1
 
-//Map Select GP CC Label
+//Map Select GP CC Overlay Label
 .org 0x096118
 LI $a3, 1
 
 
 
 
+//Disable the DATA menu
+//Only loads the Background image
+.org 0x9593C
+.word 0x100001FC   //Hardcode Branch Command. 
+NOP
 
 
+//Disable Options/Data Menu Icons
+.org 0x095D2C
+NOP
+.org 0x095D40
+NOP
+
+
+//This is a weird hack to disable the Game Select Menu's Option/Data Menu Toggles.
+//It changes the button-check to an invalid value of unused bits- impossible to press.
+.org 0x0B3806
+.halfword 0x0080
+.org 0x0B385E
+.halfword 0x0080
+
+
+//NOP Options/Data Sound Calls
+.org 0x0B386C
+NOP
+.org 0x0B38C4
+NOP
+
+
+
+.org 0xB105C
+//DATA Controller
+JAL DataMenuController
 .org 0x0B10C0
 //TitleController
 JAL TitleMenuSwitch
-
 .org 0x0B10D8
 //Game Select
-////JAL GameSelectSwitch
-
+JAL GameSelectSwitch
 .org 0x0B10F0
 //Player Select
 //JAL PlayerSelectSwitch
-
 .org 0x0B1108
 //Map Select
 JAL MapSelectSwitch
 
-.endif
+
+///
+/// - BUILD ROUTINE LIBRARY
+///
+
+.include "..\Library\LIBRARYBUILD1.asm"
+
+///
+///
+///
 
 
-//BUILD ROUTINE LIBRARY
-.include "..\Library\LIBRARYBUILD3.asm"
 
 
+
+
+
+///
+/// - Local OverKart Custom Code
+///
 
 .headersize PAYLOAD_RAM - PAYLOAD_ROM
 .org PAYLOAD_RAM
@@ -115,11 +171,13 @@ StartRAMData:
      .importobj "OverKartObjectHandler.o"
      .align 0x10
      .importobj "ModelData.o"
+     RCIconMap:
+     .import "data\\RedSquare.png.RAW"
+     .align 0x10
 
 
-
-     .include "..\Library\LIBRARYBUILD.asm"
-
+     .include "..\Library\LIBRARYBUILD2.asm"
+.align 0x10
 EndRAMData:
 
 
@@ -158,7 +216,7 @@ EndRAMData:
      BackgroundEnd:
 
      StartLogo:
-     .import "data\\SplashLogo\\PressStart.bin"
+     .import "data\\SplashLogo\\output\\PressStart.png.RAW.MIO0"
      .align 0x10
      StartEnd:
      Pirate:
@@ -167,10 +225,12 @@ EndRAMData:
      PirateEnd:
 
      ModelDataStart:
-     .import "data\\ModelData\\ModelData.bin"
+     .import "data\\ModelData\\Binary\\ModelData.bin"
      .align 0x10
      ModelDataEnd:
 
+
+     
      RCSpriteROM:
      .import "data\\RedCoinSprite16.png.MIO0" ;; 0x4F0
      .align 0x10
@@ -202,10 +262,19 @@ EndRAMData:
      BigFontROM:
      .import "data/Newfont.MIO0"
 
+     .align 0x10
+     ROptionROM:
+     .import "data\ROption.MIO0"
+     .align 0x10
+     ROptionEnd:
+
 
      
 //END ROM DATA
 
+///
+/// - End Custom OverKart Code
+///
 
 
     
@@ -213,10 +282,15 @@ EndRAMData:
 
 
 .align 0x10
-.include "..\Library\LIBRARYBUILD2.asm"
+.include "..\Library\LIBRARYBUILD3.asm"
 
 .include "..\Library\LIBRARYBUILD4.asm"
 .headersize 0
+
+.org 0x20
+.ascii "TARMAC64 BASE 6.0   "
+
+
 .org 0xEFFFF8
 .word DMA_MAX_LENGTH
 .word 0xFFFFFFFF
