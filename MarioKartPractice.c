@@ -488,10 +488,10 @@ void practiceHack()
 			{
 				*(int*)(0x8007AC54) = 0;
 				g_gameLapPlayer1 = 0x00;
-				GlobalHud[0]->finlineAnim2 = 0x00;
-				GlobalHud[0]->lapCount = 0x00;				
-				GlobalHud[0]->item1 = 0;
-				GlobalHud[0]->item2 = 0;
+				GlobalHud[0]->goalsw = 0x00;
+				GlobalHud[0]->lapcnt = 0x00;				
+				GlobalHud[0]->item = 0;
+				GlobalHud[0]->sp_item = 0;
 				g_gameTimer = 90;
 				GlobalPlayer[0].item = 0;				
 				RouletteStart(0,14);

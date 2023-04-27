@@ -219,6 +219,17 @@ void startRace()
 		}
 
 	}
+	
+	
+	if ((SaveGame.GameSettings.StatsMode == 1) || (g_gameMode == GAMEMODE_TT))
+	{
+		checkStats(1);
+	}
+	else
+	{
+		checkStats(0);
+	}
+	
 	if (HotSwapID > 0)
 	{
 		if (g_gameMode != GAMEMODE_GP)
