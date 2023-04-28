@@ -465,7 +465,7 @@ void gameCode(void)
 
 				//Dynamic WaveRace Water 
 				runWaterVertex();
-
+				LavaFloorRecoil();
 				CheckPaths();
 				
 			}	
