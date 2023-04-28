@@ -1,3 +1,4 @@
 /ROM/
 *.o
 !Protec.o
+/.vs
