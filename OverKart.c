@@ -229,7 +229,7 @@ void startRace()
 	{
 		checkStats(0);
 	}
-	
+
 	if (HotSwapID > 0)
 	{
 		if (g_gameMode != GAMEMODE_GP)
@@ -662,9 +662,6 @@ void allRun()
 			HotSwapID = 0;
 		}
 	}
-
-	SetCloudType((char)OverKartHeader.SkyType);
-	SetWeatherType((char)OverKartHeader.WeatherType);
 	SetWeather3D(OverKartHeader.SkyType == 3);
 	SetWaterType((char)OverKartHeader.WaterType);
 	

@@ -321,20 +321,19 @@ void PlaceSIBox(long BoxOffset)
 	{
 		GlobalShortD = -1;
 	}
+	Marker *BoxArray = (Marker*)(BoxOffset);
 	for (int CurrentBox = 0; CurrentBox < 8; CurrentBox++)
 	{		
-		objectPosition[0] = (float)*(short*)(BoxOffset);
-		objectPosition[1] = (float)*(short*)(BoxOffset + 2);		
-		objectPosition[2] = (float)*(short*)(BoxOffset + 4);
-
-		if (objectPosition[0] == 0x8000)
+		if (BoxArray[CurrentBox].Position[0] == 0x8000)
 		{
 			return;
 		}
+		objectPosition[0] = (float)BoxArray[CurrentBox].Position[0];
+		objectPosition[1] = (float)BoxArray[CurrentBox].Position[1];
+		objectPosition[2] = (float)BoxArray[CurrentBox].Position[2];
 
 		objectPosition[0] = objectPosition[0] * GlobalShortD;
 		CreateObject(objectPosition,43);
-		BoxOffset += 8;
 	}
 }
 
