@@ -206,7 +206,7 @@ void startRace()
 	setZoomLevel(1); //Just for Amped Up (All races start zoomed out)
 	g_loadedcourseFlag = 0xF0;
 
-	
+	InitialCustomParticleBuffer();
 	if (g_gameMode == GAMEMODE_BATTLE)
 	{
 		if (SaveGame.BattleSettings.GameMode == BTL_CTF)
