@@ -324,7 +324,7 @@ void PlaceSIBox(long BoxOffset)
 	Marker *BoxArray = (Marker*)(BoxOffset);
 	for (int CurrentBox = 0; CurrentBox < 8; CurrentBox++)
 	{		
-		if (BoxArray[CurrentBox].Position[0] == 0x8000)
+		if (BoxArray[CurrentBox].Position[0] == -32768)
 		{
 			return;
 		}
