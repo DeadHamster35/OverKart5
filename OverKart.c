@@ -400,9 +400,9 @@ void gameCode(void)
 	{
 		loadFont();
 		//OverKartHeader.ScrollROM
-		printStringUnsignedHex(0,0,"SFC", (uint)&OverKartHeader.SurfaceMapPosition);
-		printStringUnsignedHex(0,10,"SVW", (uint)&OverKartHeader.SectionViewPosition);
-		printStringUnsignedHex(0,20,"SXLU", (uint)&OverKartHeader.XLUSectionViewPosition);
+		printStringUnsignedHex(0,0,"OBJTYPE", (uint)&OverKartRAMHeader.ObjectTypeList);
+		printStringUnsignedHex(0,10,"OBJ", (uint)&OverKartRAMHeader.ObjectList);
+		printStringUnsignedHex(0,20,"OKRAM", (uint)&OverKartRAMHeader);
 		
 	}
 	#endif
