@@ -102,7 +102,7 @@ void modCheck()
 	}
 	else
 	{
-		if (g_ScreenSplitA != 0)
+		if ((g_ScreenSplitA != 0) && (g_playerCount == 2))
 		{
 			g_aspectRatio = 2.6666667;
 		}
