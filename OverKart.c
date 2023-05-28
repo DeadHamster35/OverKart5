@@ -461,6 +461,11 @@ void gameCode(void)
 			RouletteStart(0,7);
 		}
 		
+
+		if (GlobalController[0]->ButtonPressed & BTN_DLEFT)
+		{
+			RouletteStart(0,7);
+		}
 	}
 	#endif
 
