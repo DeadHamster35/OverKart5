@@ -403,6 +403,14 @@ void gameCode(void)
 		printStringUnsignedHex(0,0,"OBJTYPE", (uint)&OverKartRAMHeader.ObjectTypeList);
 		printStringUnsignedHex(0,10,"OBJ", (uint)&OverKartRAMHeader.ObjectList);
 		printStringUnsignedHex(0,20,"OKRAM", (uint)&OverKartRAMHeader);
+		printStringNumber(0,30,"TCNT", OverKartRAMHeader.ObjectTypeCount);
+		printStringNumber(0,40,"OCNT", OverKartRAMHeader.ObjectCount);
+
+
+		if (GlobalController[0]->ButtonPressed & BTN_DUP)
+		{
+			RouletteStart(0,7);
+		}
 		
 	}
 	#endif
