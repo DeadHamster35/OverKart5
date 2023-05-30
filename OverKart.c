@@ -96,8 +96,8 @@ void okSetup(void)
 	
 	
 	
-	ConsolePlatform = CheckPlatform();
-	EmulatorPlatform = CheckEmulator();	
+	//ConsolePlatform = CheckPlatform();
+	//EmulatorPlatform = CheckEmulator();	
 	
 	
 	
@@ -425,7 +425,18 @@ void gameCode(void)
 
 
 		CheckIFrames();
-		DynamicTempo();
+
+		if (SaveGame.RenderSettings.Platform == 0)
+		{
+			//Console
+			DynamicTempo();
+		}
+		else
+		{
+			//emulator
+			StaticTempo();
+		}
+		
 		
 		if (g_gameMode == GAMEMODE_BATTLE)
 		{
@@ -618,7 +629,18 @@ uint SearchJRK0()
 void allRun()
 {
 	
-	
+	if (SaveGame.RenderSettings.Platform == 0)
+	{
+		//Console
+		CullDL_Parameters = 0x0000000E;
+	}
+	else
+	{
+		//Emulators
+		CullDL_Parameters = 0x00000140;
+	}
+
+
 	GlobalIntD = 0;
 	ClockCycle[0] = osGetCount();
 	CycleCount[0] = (ClockCycle[0] - OldCycle[0]);
@@ -786,11 +808,8 @@ void allRun()
 						renderMode[This]  = 0;
 					}
 					SaveGame.RenderSettings.AliasMode = 1;
-
-					if (!ConsolePlatform)
-					{
-						SaveGame.RenderSettings.TempoMode = 1;
-					}
+					SaveGame.RenderSettings.Platform = 1;
+					
 					
 					
 				}
@@ -927,7 +946,8 @@ void allRun()
 
 void PrintMenuFunction()
 {
-	
+
+
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
@@ -984,6 +1004,33 @@ void PrintMenuFunction()
 				CourseMenu(175);
 			}
 			break;
+		}
+		case 10:
+		{
+			
+			DrawBox(92,142,140,25, 0, 0, 0, 200);
+
+			if (SaveGame.RenderSettings.Platform == 0)
+			{
+				PrintBigText(125, 142, 0.8f, "CONSOLE" );
+				
+				
+			}
+			else
+			{
+				PrintBigText(117, 142, 0.8f, "EMULATOR" );
+			}
+			
+			
+			KWSprite(221,156,16,16,(ushort*)&lit_arrowsprite_r);
+			KWSprite(103,156,16,16,(ushort*)&lit_arrowsprite_l);
+
+			
+			loadFont();
+			printString(0,200,VersionString);
+
+			break;
+
 		}
 		case 11:
 		{

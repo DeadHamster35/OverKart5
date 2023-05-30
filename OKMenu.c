@@ -696,6 +696,8 @@ void TitleMenuHandler(short PlayerIndex)
      //OptionsMenu(175,2,1);
 }
 
+
+
 void titleMenu()
 {
      if (MenuBlink > 30)
@@ -838,33 +840,6 @@ void titleMenu()
           }
 
      #endif
-
-
-     
-
-     
-     /*
-     loadFont();
-     if (ConsolePlatform)
-     {
-          printString(24,190,"N64 ");
-     }
-     else
-     {
-          if (EmulatorPlatform)
-          {               
-               PROJECT64  ");               
-          }
-          else
-          {
-               printString(16,190,"MUPEN   ");
-          }
-     }
-        
-
-     printString(0,200,"BUILD 5.1   ");
-     */
-     
 
 
 
@@ -1734,19 +1709,27 @@ void DataMenuController(OSContPad *pad, u16 i, u16 NewButton)
 
 void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
-     if ((GlobalController[i]->ButtonPressed & BTN_R) == BTN_R)
-     {
-          MenuToggle = !MenuToggle;
-     }
-     if (MenuToggle)
-     {
-		TitleMenuHandler(i);
-     }
-     else
+     if 
+     ( 
+          ((BTN_DLEFT == (GlobalController[i]->ButtonPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->ButtonPressed & BTN_DRIGHT))) ||
+          ((BTN_DLEFT == (GlobalController[i]->AnalogPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->AnalogPressed & BTN_DRIGHT)))
+     )
      {
           
-          TitleController(pad,i,newbutton);
+          if (SaveGame.RenderSettings.Platform == 1)
+          {
+               SaveGame.RenderSettings.Platform = 0;
+          }
+          else
+          {
+               SaveGame.RenderSettings.Platform = 1;
+          }
      }
+
+     
+          
+     TitleController(pad,i,newbutton);
+     
 };
 
 

@@ -131,14 +131,6 @@ void modCheck()
 			g_ScreenSplitB = 2;
 		}
 	}
-	if (SaveGame.RenderSettings.TempoMode > 0x00)
-	{
-		TempoBool = 1;
-	}
-	else
-	{
-		TempoBool = 0;
-	}
 
 
 
