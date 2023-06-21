@@ -9,6 +9,10 @@
 #define BATTLESWITCH	1
 
 
+#define IM_DEFAULT 	0
+#define IM_RANDOM 	1
+#define IM_BALANCE	2
+#define IM_NONE		3
 
 #define BTL_BATTLE 	0
 #define BTL_CTF		1
@@ -28,6 +32,7 @@ extern uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 extern char* gameMode;
 extern char* renderMode;
 extern char* battleMode;
+extern char* levelMode;
 
 extern int LoadedProgress;
 

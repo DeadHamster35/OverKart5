@@ -114,11 +114,11 @@ void okSetup(void)
 
 	
 	dataLength = 8;
-	*sourceAddress = (long)((long)(&g_SequenceTable) + (3 * 8) + 4);	
+	*sourceAddress = (long)((long)(&g_SequenceTable) + (3 * 8));	
 	*targetAddress = (long)&ok_Sequence;
 	runRAM();
 
-	*sourceAddress = (long)((long)(&g_InstrumentTable) + (3 * 8) + 4);
+	*sourceAddress = (long)((long)(&g_InstrumentTable) + (3 * 8));
 	*targetAddress = (long)&ok_Instrument;
 	runRAM();
 
@@ -230,6 +230,8 @@ void startRace()
 		checkStats(0);
 	}
 
+
+	
 	if (HotSwapID > 0)
 	{
 		if (g_gameMode != GAMEMODE_GP)
@@ -257,10 +259,19 @@ void startRace()
 			CoinCount[2] = 0;
 			CoinCount[3] = 0;
 		}
+		
 		if ((SaveGame.GameSettings.GameMode == 2))  
 		{      
 			//Gold Coin Challenge  	
-			GoldCoinChallenge(GetRealAddress(pathOffset));
+			
+			
+			GlobalIntA = (int)(8 * g_playerCount); // CoinCount
+			
+			if (GlobalIntA < 10)
+			{
+				GlobalIntA = 10;
+			}
+			GoldCoinChallenge(GetRealAddress(pathOffset), GlobalIntA);
 			CoinCount[0] = 0;
 			CoinCount[1] = 0;
 			CoinCount[2] = 0;
@@ -270,7 +281,6 @@ void startRace()
 			CoinCount[6] = 0;
 			CoinCount[7] = 0;
 		}
-		
 		if (VersionNumber > 4)
 		{
 			for (int This = 0; This < 100; This++)
@@ -279,6 +289,45 @@ void startRace()
 			}
 			loadOKObjects();
 			setOKObjects();					
+		}
+	}
+	else
+	{
+		
+		if ((SaveGame.GameSettings.GameMode == 2))  
+		{      
+			//Gold Coin Challenge  	
+			
+			
+			GlobalIntA = (int)(8 * g_playerCount); // CoinCount
+			
+			if (GlobalIntA < 10)
+			{
+				GlobalIntA = 10;
+			}
+
+
+			if (g_courseID != 4)
+			{
+				GoldCoinChallenge(GetRealAddress(PathTable[g_courseID][0]), GlobalIntA);
+			}
+			else
+			{
+				GlobalIntA = (int)(GlobalIntA * 0.3f);
+				GoldCoinChallenge(GetRealAddress(PathTable[g_courseID][0]), GlobalIntA);
+				GoldCoinChallenge(GetRealAddress(PathTable[g_courseID][1]), GlobalIntA);
+				GoldCoinChallenge(GetRealAddress(PathTable[g_courseID][2]), GlobalIntA);
+				GoldCoinChallenge(GetRealAddress(PathTable[g_courseID][3]), GlobalIntA);
+			}
+			
+			CoinCount[0] = 0;
+			CoinCount[1] = 0;
+			CoinCount[2] = 0;
+			CoinCount[3] = 0;
+			CoinCount[4] = 0;
+			CoinCount[5] = 0;
+			CoinCount[6] = 0;
+			CoinCount[7] = 0;
 		}
 	}
 	
@@ -395,7 +444,6 @@ void CheckBattleCDown()
 
 void gameCode(void)
 {	
-
 	#if(DEBUGBUILD==TRUE)
 	{
 		loadFont();
@@ -628,7 +676,13 @@ uint SearchJRK0()
 
 void allRun()
 {
-	
+	MakeRandom();
+
+	if (GlobalController[4]->ButtonPressed != 0)
+	{
+		MakeRandom();
+	}
+
 	if (SaveGame.RenderSettings.Platform == 0)
 	{
 		//Console
@@ -794,14 +848,15 @@ void allRun()
 					DPRSave();
 				#endif
 
-				if ((SaveGame.SaveVersion != 3) && (SaveGame.SaveVersion != 99))
+				if ((SaveGame.SaveVersion != 6) && (SaveGame.SaveVersion != 99))
 				{
-					SaveGame.SaveVersion = 3;	
+					SaveGame.SaveVersion = 6;	
 					for (int This = 0; This < 8; This++)
 					{
 						renderMode[This] = 0;
 						gameMode[This] = 0;
 						battleMode[This] = 0;
+						levelMode[This] = 0;
 					}
 					for (int This = 8; This < 16; This++)
 					{
@@ -810,7 +865,9 @@ void allRun()
 					SaveGame.RenderSettings.AliasMode = 1;
 					SaveGame.RenderSettings.Platform = 1;
 					
-					
+					SaveGame.LevelSettings.ScaleXMode = 5;
+					SaveGame.LevelSettings.ScaleYMode = 2;
+					SaveGame.LevelSettings.ScaleZMode = 5;
 					
 				}
 			}
@@ -916,7 +973,7 @@ void allRun()
 				resetMap();
 				setAlwaysAdvance();				
 				HotSwapID = 0;
-				stockASM();
+				//stockASM();
 				setPreviews();
 				previewRefresh();
 				setBanners();
@@ -990,7 +1047,7 @@ void PrintMenuFunction()
 		{
 			//Draw OptionsMenu
 			
-			if (MenuIndex < 2)
+			if (MenuIndex < GameOKMenu.PanelCount)
 			{
 				ModularMenu((OKMenu*)&GameOKMenu);
 				

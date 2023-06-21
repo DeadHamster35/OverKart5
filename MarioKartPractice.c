@@ -81,8 +81,13 @@ void modCheck()
 	}
 	if (SaveGame.GameSettings.MirrorMode > 0x00)
 	{
-		g_mirrorMode = 0x0001;
+		g_ScreenFlip = 0x0001;
 	}
+
+	ScaleXMode = SaveGame.LevelSettings.ScaleXMode;
+	ScaleYMode = SaveGame.LevelSettings.ScaleYMode;
+	ScaleZMode = SaveGame.LevelSettings.ScaleZMode;
+
 	if ((SaveGame.GameSettings.AIMode > 0x00) && (g_gameMode != GAMEMODE_TT))
 	{
 		aiSetup();
@@ -132,38 +137,19 @@ void modCheck()
 		}
 	}
 
-
-
-
-
-	if (SaveGame.GameSettings.ItemMode > 0x00)
+	if (SaveGame.GameSettings.ItemMode == IM_NONE)
 	{
-		if (SaveGame.GameSettings.ItemMode < 0x09)
-		{
-			asm_itemJump1B = (0x84A5 | (itemChanceLo + 2));
-			asm_itemJump2B = (0x84A5 | (itemChanceLo + 2));
-			asm_itemJump1A = (0x3C05 | itemChanceHi);
-			asm_itemJump2A = (0x3C05 | itemChanceHi);
-			GlobalAddressA = (long)(&ok_ItemTable);
-			for (int currentPlayer = 0; currentPlayer < 8; currentPlayer++)
-			{
-				*(long*)(&GlobalAddressA) = *(long*)(&g_playerPosition1 + currentPlayer);
-				GlobalAddressA += 4;
-			}
-			for (int currentPlayer = 0; currentPlayer < g_playerCount; g_playerCount++)
-			{
-				*(long*)(&GlobalAddressA) = 8 - SaveGame.GameSettings.ItemMode;
-				GlobalAddressA += 4;
-			}
-		}
+		g_ItemSetFlag = 0;
 	}
 	else
 	{
-		asm_itemJump1B = 0x84A543BA;
-		asm_itemJump2B = 0x84A543BA;
-		asm_itemJump1A = 0x3C058016;
-		asm_itemJump2A = 0x3C058016;
+		g_ItemSetFlag = 1;
 	}
+
+
+
+
+
 }
 
 void saveState()
@@ -668,7 +654,7 @@ void practiceHack()
 			}
 		}
 
-		if(g_mirrorMode == 1)
+		if(g_ScreenFlip == 1)
 		{
 			GlobalUShortA=(ushort)FlyCamDirection;
 			if(GlobalUShortA< DEG1 * 45)     FlyCamViewCheck=2;          

@@ -37,15 +37,14 @@ void DrawPerScreen(Camera* LocalCamera)
 		}
 		else
 		{
-			if ( ((HotSwapID > 0) && (OverKartHeader.GoalBannerToggle != 0)) || (HotSwapID == 0) )
-			{	
-				//DisplayFlagGate(LocalCamera);
-			}
+			
 		}
 		
 	}
 	
 }
+
+
 
 
 void loadCoin()
@@ -105,6 +104,177 @@ void CheckHit(int PlayerIndex, int HitType)
 }
 
 
+
+
+//Balanced Item Sets
+char BalancedItemSetA[] =
+{
+	ib_banana,
+	ib_banana,
+	ib_banana,
+	ib_banana,
+	ib_bananas,
+	ib_kinoko1,
+	ib_kinoko1,
+	ib_kinoko2,
+	ib_gkame,
+	ib_gkame,
+	ib_imbox,
+	ib_imbox,
+	ib_imbox,
+	ib_imbox,
+	ib_tellesa,
+	ib_tellesa,
+};
+
+char BalancedItemSetB[] =
+{
+	ib_banana,
+	ib_banana,
+	ib_bananas,
+	ib_bananas,
+	ib_gskame,
+	ib_gskame,
+	ib_rkame,
+	ib_rkame,
+	ib_rskame,
+	ib_kinoko2,
+	ib_kinoko2,
+	ib_kinoko3,
+	ib_gkame,
+	ib_imbox,
+	ib_tellesa,
+	ib_tellesa,
+};
+
+char BalancedItemSetC[] =
+{
+	ib_gskame,
+	ib_gskame,
+	ib_gskame,
+	ib_rskame,
+	ib_rskame,
+	ib_rskame,
+	ib_kinoko3,
+	ib_kinoko3,
+	ib_kinokoc,
+	ib_kinokoc,
+	ib_star,
+	ib_thunder,
+	ib_tkame,
+	ib_tkame,
+	ib_tkame,
+	ib_tkame,
+};
+
+
+char BalancedItemSetD[] =
+{
+	ib_rskame,
+	ib_rskame,
+	ib_rskame,
+	ib_rskame,
+	ib_star,
+	ib_star,
+	ib_star,
+	ib_star,
+	ib_star,
+	ib_star,
+	ib_star,
+	ib_star,
+	ib_thunder,
+	ib_thunder,
+	ib_kinokoc,
+	ib_kinokoc,
+};
+
+
+
+
+void ItemboxCollideCheck(Player* Car, Object* Target)
+{
+	int PlayerID = (*(long*)&Car - (long)&g_PlayerStructTable) / 0xDD8;
+	if (CollisionSphere(Car, Target))
+	{
+		Target->sparam = 3;
+		Target->flag = EXISTOBJ;
+		Target->counter = 0;
+			
+		if (Car->flag & IS_PLAYER)
+		{
+			if (Target->bump.dummy != 0)
+			{
+				RouletteStart(PlayerID, Target->bump.dummy);
+			}
+			else
+			{
+				switch (SaveGame.GameSettings.ItemMode)
+				{
+					case IM_DEFAULT:
+					{
+						RouletteStart(PlayerID, 0);
+						break;
+					}
+
+					case IM_RANDOM:
+					{
+						GlobalShortA = MakeRandomLimmit(14);
+						if (GlobalShortA < 14)
+						{
+							GlobalShortA += 1;
+						}
+						RouletteStart(PlayerID, GlobalShortA);
+						break;
+					}
+
+					case IM_BALANCE:
+					{
+						switch (Car->rank)
+						{
+							case 0:
+							{
+								GlobalShortA = 	BalancedItemSetA[MakeRandomLimmit(16)];
+								break;
+							}
+							case 1:
+							case 2:
+							{
+								GlobalShortA = 	BalancedItemSetB[MakeRandomLimmit(16)];
+								break;
+							}
+							case 3:
+							case 4:
+							case 5:
+							{
+								GlobalShortA = 	BalancedItemSetC[MakeRandomLimmit(16)];
+								break;
+							}
+							case 6:
+							case 7:
+							{
+								GlobalShortA = 	BalancedItemSetD[MakeRandomLimmit(16)];
+								break;
+							}
+						}
+						RouletteStart(PlayerID, GlobalShortA);
+						break;
+					}
+					
+				}
+			}
+			
+		}
+	}
+	else
+	{
+		if (Target->sparam == 0)
+		{
+			Target->sparam = 1;
+			Target->flag = EXISTOBJ;
+		}
+	}
+
+}
 
 
 
@@ -297,7 +467,7 @@ void CollideObject(Player *Car, Object *Target)
 void RedCoinChallenge(long CoinOffset)
 {
 	GlobalShortD = 1;
-	if (g_mirrorMode == 1)
+	if (g_ScreenFlip == 1)
 	{
 		GlobalShortD = -1;
 	}
@@ -317,7 +487,7 @@ void RedCoinChallenge(long CoinOffset)
 void PlaceSIBox(long BoxOffset)
 {
 	GlobalShortD = 1;
-	if (g_mirrorMode == 1)
+	if (g_ScreenFlip == 1)
 	{
 		GlobalShortD = -1;
 	}
@@ -338,25 +508,19 @@ void PlaceSIBox(long BoxOffset)
 }
 
 
-void GoldCoinChallenge(uint PathOffset)
+void GoldCoinChallenge(uint PathOffset, int CoinCount)
 {
 	GlobalShortD = 1;
-	if (g_mirrorMode == 1)
+	if (g_ScreenFlip == 1)
 	{
 		GlobalShortD = -1;
 	}
-	GlobalIntA = (int)(8 * g_playerCount); // CoinCount
-	
-	if (GlobalIntA < 10)
-	{
-		GlobalIntA = 10;
-	}
-	GlobalIntB = (g_pathLength / GlobalIntA);
+	GlobalIntB = (g_pathLength / CoinCount);
 	Marker* Path = (Marker*)(PathOffset);
 	objectAngle[0] = 0;
 	objectAngle[1] = 0;
 	objectAngle[2] = 0;
-	for (int currentCoin = 0; currentCoin < GlobalIntA; currentCoin++)
+	for (int currentCoin = 0; currentCoin < CoinCount; currentCoin++)
 	{		
 		objectPosition[0] = (float)Path[currentCoin * GlobalIntB].Position[0];
 		objectPosition[1] = (float)Path[currentCoin * GlobalIntB].Position[1] + 5;

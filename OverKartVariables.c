@@ -11,7 +11,7 @@ SaveData SaveGame;
 char* gameMode = (char*)&SaveGame.GameSettings;
 char* renderMode = (char*)&SaveGame.RenderSettings;
 char* battleMode = (char*)&SaveGame.BattleSettings;
-
+char* levelMode = (char*)&SaveGame.LevelSettings;
 int LoadedProgress;
 
 
@@ -115,7 +115,7 @@ int battleChar[][3] = {{7,3,6}, {3,2}};
 
 
 __attribute__((aligned(16)))
-char *menuNames[] = {"Game Options", "Render Options","Cup Editor"};	
+char *menuNames[] = {"Game Options", "Render Options","Level Options", "Cup Editor"};	
 __attribute__((aligned(16)))
 int menuChar[] = {12,14,10};
 
@@ -137,7 +137,7 @@ char *gameParameters[][14] = {
 	{"Off" , "On"}, 
 	{"Off" , "On"}, 
 	{"Off" , "On"}, 
-	{"Default","8th","7th","6th","5th","4th","3rd","2nd","1st","Banana","3 G. Shell", "3 R. Shell", "Star", "3 Shroom"},
+	{"Default","Random","Balanced", "None"},
 	{"Classic" , "Bots"} 
 };
 
@@ -148,7 +148,7 @@ int gameLimits[] = {
 	2,
 	2,
 	2,
-	9,
+	4,
 	2
 };
 __attribute__((aligned(16)))
@@ -158,7 +158,7 @@ int gameChar[][14] = {
 	{3,2}, 
 	{3,2}, 
 	{3,2}, 
-	{7,3,3,3,3,3,3,3,3,6,10,10,4,8},
+	{7,6,8,4},
 	{7,4}
 };
 
@@ -217,6 +217,34 @@ int renderChar[][3] = {
 	{3,2},
 	{3,2},
 	{3,2,8} 
+};
+
+
+
+__attribute__((aligned(16)))
+char *menulevelOptions[] = { 
+	"X-Scale",
+	"Y-Scale",
+	"Z-Scale"
+};
+__attribute__((aligned(16)))
+char *menulevelParameters[][7] = {	
+	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
+	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
+	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
+};
+
+__attribute__((aligned(16)))
+int menulevelLimits[] = {
+	7,
+	7,
+	7
+};
+__attribute__((aligned(16)))
+int menulevelChar[][7] = {
+	{3, 3, 3, 3, 3, 3, 3},
+	{3, 3, 3, 3, 3, 3, 3},
+	{3, 3, 3, 3, 3, 3, 3}
 };
 
 

@@ -201,12 +201,6 @@ EndRAMData:
      .align 0x10
      RAMCheckEnd:
 
-     previewN:
-     .import "textures\\preview_n.mio0.bin"       ;;  c10
-     .align 0x10
-     previewU:
-     .import "textures\\preview_U.mio0.bin"       ;;  c64
-     .align 0x10
      LogoROM:
      .import "data\\ModelData\\Logo\\Logo.bin" ;; 0xD388
      .align 0x10

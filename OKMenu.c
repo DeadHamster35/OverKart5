@@ -292,14 +292,16 @@ void printAnticheat()
           loadFont();
 
           printString(MenuPosition[0],MenuPosition[1], "Practice  ON");
-
+          MenuPosition[1] +=10;
      }     
+     
      if (SaveGame.GameSettings.ItemMode > 0)
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (11 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
 
           printString(MenuPosition[0],MenuPosition[1], "Force Items");
+          MenuPosition[1] +=10;
      }
      else if (SaveGame.GameSettings.AIMode > 0x00)
      {
@@ -322,12 +324,14 @@ void printAnticheat()
                     break;
                }
           }
+          MenuPosition[1] +=10;
      }
      else if ((SaveGame.GameSettings.StatsMode == 1) && (HotSwapID == 0) )
      {
           GraphPtr = FillRect1ColorF(GraphPtr, MenuPosition[0] + 18, MenuPosition[1] + 18, MenuPosition[0] + (11 * 8) + 19, MenuPosition[1] + 28, 0, 0,0, 175);
           loadFont();
           printString(MenuPosition[0],MenuPosition[1], "Force Stats");
+          MenuPosition[1] +=10;
      }
 
 
@@ -429,7 +433,39 @@ void GameOptionsHandler(short PlayerIndex)
                     ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
-                         swapParameter(GameOKMenu,1);
+                         if (MenuIndex < GameOKMenu.PanelCount)
+                         {
+                              swapParameter(GameOKMenu,1);
+                         }
+                         else
+                         {
+                              if (ParameterIndex == 1) //currentParameter
+                              {
+                                   if (MenuCup < 3)  //cupSelect
+                                   {
+                                        MenuCup++;
+                                   }
+                              }
+                              else
+                              {
+                                   if (SYSTEM_Region == 0x00)
+                                   {
+                                        GlobalAddressA = (cup_PAL + (MenuCup * 8) + ((ParameterIndex - 2) * 2));
+                                   }
+                                   else
+                                   {
+                                        GlobalAddressA = (cup_NTSC + (MenuCup * 8) + ((ParameterIndex - 2) * 2));
+                                   }
+
+                                   short *l_courseID = (short *)GlobalAddressA;
+
+                                   if (*l_courseID < 19)
+                                   {
+                                        *l_courseID = *l_courseID + 1;
+                                        copyCourseTable(1);
+                                   }
+                              }
+                         }
                     }
                     else
                     {
@@ -453,7 +489,37 @@ void GameOptionsHandler(short PlayerIndex)
                     ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
-                         swapParameter(GameOKMenu,0);
+                         if (MenuIndex < GameOKMenu.PanelCount)
+                         {
+                              swapParameter(GameOKMenu,0);
+                         }
+                         else
+                         {
+                              if (ParameterIndex == 1) //currentParameter
+                              {
+                                   if (MenuCup > 0)  //cupSelect
+                                   {
+                                        MenuCup--;
+                                   }
+                              }
+                              else
+                              {
+                                   if (SYSTEM_Region == 0x00)
+                                   {
+                                        GlobalAddressA = (cup_PAL + (MenuCup * 8) + ((ParameterIndex - 2) * 2));
+                                   }
+                                   else
+                                   {
+                                        GlobalAddressA = (cup_NTSC + (MenuCup * 8) + ((ParameterIndex - 2) * 2));
+                                   }
+                                   short *l_courseID = (short *)GlobalAddressA;
+                                   if (*l_courseID > 0)
+                                   {
+                                        *l_courseID = *l_courseID - 1;
+                                        copyCourseTable(1);
+                                   }
+                              }
+                         }
                     }
                     else
                     {
@@ -475,9 +541,17 @@ void GameOptionsHandler(short PlayerIndex)
                case BTN_DDOWN :
                {
                     ButtonHolding[PlayerIndex] = true;
-                    if (ParameterIndex + MenuOverflow < GameOKMenu.PanelAddress[MenuIndex].OptionCount) //currentParameter
+                    if (MenuIndex < GameOKMenu.PanelCount)
                     {
-                         if ((ParameterIndex == 7) && (MenuIndex < 3))
+                         GlobalIntA = GameOKMenu.PanelAddress[MenuIndex].OptionCount;
+                    }
+                    else
+                    {
+                         GlobalIntA = 4; //cup editor
+                    }
+                    if (ParameterIndex + MenuOverflow < GlobalIntA) //currentParameter
+                    {
+                         if ((ParameterIndex == 7) && (MenuIndex < GameOKMenu.PanelCount))
                          {
                               MenuOverflow++;
                          }
@@ -497,7 +571,7 @@ void GameOptionsHandler(short PlayerIndex)
                     ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex + MenuOverflow > 0) //currentParameter
                     {
-                         if ((ParameterIndex == 1) && (MenuIndex < 3) && (MenuOverflow > 0))
+                         if ((ParameterIndex == 1) && (MenuIndex < GameOKMenu.PanelCount) && (MenuOverflow > 0))
                          {
                               MenuOverflow--;
                          }
@@ -516,10 +590,6 @@ void GameOptionsHandler(short PlayerIndex)
 
      }
 
-     // Now print the menu using the menuFlag and parameterFlag options above.
-     
-
-     //OptionsMenu(235,0,1);
 }
 
 void TitleMenuHandler(short PlayerIndex)
@@ -538,7 +608,7 @@ void TitleMenuHandler(short PlayerIndex)
                     ButtonHolding[PlayerIndex] = true;
                     if (ParameterIndex > 0) //currentParameter
                     {
-                         if (MenuIndex < 3)
+                         if (MenuIndex < 2)
                          {
                               swapParameter(GameOKMenu,1);
                          }
@@ -927,7 +997,7 @@ void PlayerSelectMenu(short StatsMode, short PlayerIndex)
 
      *(int*)(long)&PlayerShowStats = 0;
      HotSwapID = 0;
-     stockASM();
+     //stockASM();
      hsLabel = -1;
 
      asm_BlinkCheck = 0x1420000E;
