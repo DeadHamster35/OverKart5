@@ -145,7 +145,8 @@ void okSetup(void)
 	//FlyCamSpeed = 5;
 	//ok_Knowledge = (long)(&ok_Target);
 
-	
+	YFLIP = 0;
+	ZFLIP = 0;
 	
 	//PlayerSelectSetup();
 
@@ -603,19 +604,18 @@ void gameCode(void)
 
 				GlobalShortD += 1;
 			}
-			
-			
 
 			
 		}
 		if (g_startingIndicator == 0x03)
 		{
 			raceStatus = 0x03;
-
 			if ((SaveGame.GameSettings.GameMode == 2) && (HotSwapID > 0) && (g_menuMultiplayerSelection == 1))
 			{
 				DisplayCoinSprite();			
 			}
+			
+			
 		}
 		
 		if (g_startingIndicator == 0x05)
@@ -865,10 +865,9 @@ void allRun()
 					SaveGame.RenderSettings.AliasMode = 1;
 					SaveGame.RenderSettings.Platform = 1;
 					
-					SaveGame.LevelSettings.ScaleXMode = 5;
+					SaveGame.LevelSettings.ScaleXMode = 2;
 					SaveGame.LevelSettings.ScaleYMode = 2;
-					SaveGame.LevelSettings.ScaleZMode = 5;
-					
+					SaveGame.LevelSettings.ScaleZMode = 2;
 				}
 			}
 			break;
