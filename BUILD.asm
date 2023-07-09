@@ -4,7 +4,7 @@
 
 
 .open "ROM\stock.z64", "ROM\BASE.z64", 0
-.definelabel PAYLOAD_ROM, 		0x00D00000
+.definelabel PAYLOAD_ROM, 		0x00F00000
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
