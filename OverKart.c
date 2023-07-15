@@ -43,14 +43,19 @@ void SetMenuPanels(int SwitchMode)
 	GameOKMenu.PanelAddress = (OKPanel*)(uint)&RacePanel;
 	GameOKMenu.PanelAddress[0].NameAddress = (uint)menuNames[0];
 	GameOKMenu.PanelAddress[1].NameAddress = (uint)menuNames[1];
+	GameOKMenu.PanelAddress[2].NameAddress = (uint)menuNames[2];
 	GameOKMenu.PanelAddress[0].NameLength = menuChar[0];
 	GameOKMenu.PanelAddress[1].NameLength = menuChar[1];
+	GameOKMenu.PanelAddress[2].NameLength = menuChar[2];
 	
 	GameOKMenu.PanelAddress[1].OptionCount = pageLimit[1];
+	GameOKMenu.PanelAddress[2].OptionCount = pageLimit[2];
 	
 	GameOKMenu.PanelAddress[1].ParameterToggles = (char*)&renderMode[0];
+	GameOKMenu.PanelAddress[2].ParameterToggles = (char*)&mapMode[0];
 	GameOKMenu.PanelAddress[0].Options = (OKOption*)&OKGameOptions;
 	GameOKMenu.PanelAddress[1].Options = (OKOption*)&OKRenderOptions;
+	GameOKMenu.PanelAddress[2].Options = (OKOption*)&OKMapOptions;
 
 	
 	switch(SwitchMode)
@@ -89,6 +94,14 @@ void SetMenuPanels(int SwitchMode)
 		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterNames = (uint*)&renderParameters[ThisLoop];
 		GameOKMenu.PanelAddress[1].Options[ThisLoop].ParameterLengths = (int*)renderChar[ThisLoop];
 		GameOKMenu.PanelAddress[1].Options[ThisLoop].OptionName = (uint)renderOptions[ThisLoop];
+	}
+
+	for (int ThisLoop = 0; ThisLoop < pageLimit[2]; ThisLoop++)
+	{
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterCount = mapLimits[ThisLoop];
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterNames = (uint*)&mapParameters[ThisLoop];
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].ParameterLengths = (int*)mapChar[ThisLoop];
+		GameOKMenu.PanelAddress[2].Options[ThisLoop].OptionName = (uint)mapOptions[ThisLoop];
 	}
 }
 void okSetup(void)
@@ -163,7 +176,7 @@ void okSetup(void)
 	FreeSpaceAddress = (int)&ok_Storage;
 	SaveGame.TENNES = false;
 
-	GameOKMenu.PanelCount = 2;
+	GameOKMenu.PanelCount = 3;
 	
 	SetMenuPanels(RACESWITCH);
 	startupSwitch = 1;
@@ -860,8 +873,8 @@ void allRun()
 					{
 						renderMode[This] = 0;
 						gameMode[This] = 0;
+						mapMode[This] = 0;
 						battleMode[This] = 0;
-						levelMode[This] = 0;
 					}
 					for (int This = 8; This < 16; This++)
 					{

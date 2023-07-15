@@ -21,9 +21,9 @@
 
 extern SaveData SaveGame;
 extern OKMenu   GameOKMenu;
-extern OKPanel RacePanel, BattlePanel, ModPanel, RenderPanel;
+extern OKPanel RacePanel, BattlePanel, MapPanel, RenderPanel;
 extern OKOption OKGameOptions[];
-extern OKOption OKModOptions[];
+extern OKOption OKMapOptions[];
 extern OKOption OKRenderOptions[];
 
 
@@ -32,7 +32,7 @@ extern uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 extern char* gameMode;
 extern char* renderMode;
 extern char* battleMode;
-extern char* levelMode;
+extern char* mapMode;
 
 extern int LoadedProgress;
 
@@ -42,14 +42,18 @@ extern int menuChar[];
 extern char *gameOptions[];
 extern char *gameParameters[][14];
 extern int gameLimits[];
-extern int gameChar[][14];
+extern int mapLimits[];
+extern int gameChar[][4];
+extern int mapChar[][7];
 extern int battleLimits[];
 extern int battleChar[][3];
 
 
 extern char *renderOptions[];
 extern char *renderParameters[][3];
+extern char *mapParameters[][7];
 extern char *battleOptions[];
+extern char *mapOptions[];
 extern char *battleParameters[][3];
 extern int renderLimits[];
 extern int renderChar[][3];
@@ -72,7 +76,7 @@ extern short FlyCamDirection;
 extern float FlyCamLook[2][2];
 extern int LocalInput[2];
 extern int InputColor[4];
-extern char GenericInput, MapMode;
+extern char GenericInput, MiniMapMode;
 extern short FlyCamSpeed;
 
 

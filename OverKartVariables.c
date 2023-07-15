@@ -11,7 +11,7 @@ SaveData SaveGame;
 char* gameMode = (char*)&SaveGame.GameSettings;
 char* renderMode = (char*)&SaveGame.RenderSettings;
 char* battleMode = (char*)&SaveGame.BattleSettings;
-char* levelMode = (char*)&SaveGame.LevelSettings;
+char* mapMode = (char*)&SaveGame.LevelSettings;
 int LoadedProgress;
 
 
@@ -25,7 +25,7 @@ int ItemChance[8];
 
 int FlyCamPosition[3];
 
-char GenericInput, MapMode = 0, FlyCamToggle, FlyCamCheck;
+char GenericInput, MiniMapMode = 0, FlyCamToggle, FlyCamCheck;
 short FlyCamSection, FlyCamSectionCheck;
 short FlyCamView, FlyCamViewCheck;
 short FlyCamPilot,FlyCamDirection;
@@ -94,14 +94,16 @@ short baseTurn, addTurn = 0;
 
 
 int SaveStateCourseID;
-int pageLimit[] = {7,9,5,2};  // GAME - RENDER - CUP EDITOR  -  BATTLE
+int pageLimit[] = {7,9,6,5,2};  // GAME - RENDER - MAP - CUP EDITOR  -  BATTLE
 
 __attribute__((aligned(16)))
-OKPanel RacePanel, BattlePanel, RenderPanel;
+OKPanel RacePanel, BattlePanel, RenderPanel, MapPanel;
 __attribute__((aligned(16)))
 OKOption OKGameOptions[7];
 __attribute__((aligned(16)))
 OKOption OKRenderOptions[9];
+__attribute__((aligned(16)))
+OKOption OKMapOptions[9];
 
 __attribute__((aligned(16)))
 OKMenu GameOKMenu;
@@ -115,9 +117,9 @@ int battleChar[][3] = {{7,3,6}, {3,2}};
 
 
 __attribute__((aligned(16)))
-char *menuNames[] = {"Game Options", "Render Options","Level Options", "Cup Editor"};	
+char *menuNames[] = {"Game Options", "Render Options","Map Options", "Cup Editor"};	
 __attribute__((aligned(16)))
-int menuChar[] = {12,14,10};
+int menuChar[] = {12,14,11,10};
 
 __attribute__((aligned(16)))
 char *gameOptions[] = {
@@ -133,12 +135,12 @@ char *gameOptions[] = {
 __attribute__((aligned(16)))
 char *gameParameters[][14] = {
 	{"Default", "Red Coin", "Gold Coin", "Practice"}, 
-	{"Classic", "Equal", "Enhanced"}, 
-	{"Off" , "On"}, 
-	{"Off" , "On"}, 
-	{"Off" , "On"}, 
+	{"Classic", "Equal", "Enhanced", ""}, 
+	{"Off" , "On", "", ""}, 
+	{"Off" , "On", "", ""}, 
+	{"Off" , "On", "", ""}, 
 	{"Default","Random","Balanced", "None"},
-	{"Classic" , "Bots"} 
+	{"Classic" , "Bots", "", ""} 
 };
 
 __attribute__((aligned(16)))
@@ -152,14 +154,14 @@ int gameLimits[] = {
 	2
 };
 __attribute__((aligned(16)))
-int gameChar[][14] = {
+int gameChar[][4] = {
 	{7,8,9,8}, 
-	{7,5,8},
-	{3,2}, 
-	{3,2}, 
-	{3,2}, 
+	{7,5,8,0},
+	{3,2,0,0}, 
+	{3,2,0,0}, 
+	{3,2,0,0}, 
 	{7,6,8,4},
-	{7,4}
+	{7,4,0,0}
 };
 
 
@@ -183,14 +185,14 @@ char *renderOptions[] = {
 };
 __attribute__((aligned(16)))
 char *renderParameters[][3] = {
-	{"USA", "JP"},  
-	{"Off" , "On"}, 
-	{"Off" , "On"},  
-	{"Horizontal", "Vertical"}, 
-	{"Default","Extended"}, 
-	{"Console","Emulator"},  
-	{"Off" , "On"},
-	{"Off" , "On"},
+	{"USA", "JP", ""},  
+	{"Off" , "On", ""}, 
+	{"Off" , "On", ""},  
+	{"Horizontal", "Vertical", ""}, 
+	{"Default","Extended", ""}, 
+	{"Console","Emulator", ""},  
+	{"Off" , "On", ""},
+	{"Off" , "On", ""},
 	{"Off" , "On", "Shortcut"}
 };
 
@@ -208,44 +210,56 @@ int renderLimits[] = {
 };
 __attribute__((aligned(16)))
 int renderChar[][3] = {
-	{3,2}, 
-	{3,2}, 
-	{3,2}, 
-	{10,8}, 
-	{7,8}, 
-	{7,8},
-	{3,2},
-	{3,2},
+	{3,2,0}, 
+	{3,2,0}, 
+	{3,2,0}, 
+	{10,8,0}, 
+	{7,8,0}, 
+	{7,8,0},
+	{3,2,0},
+	{3,2,0},
 	{3,2,8} 
 };
 
 
+__attribute__((aligned(16)))
+char *mapOptions[] = { 
+	"X Scale", 
+	"Y Scale", 
+	"Z Scale", 
+	"X Mirror", 
+	"Y Mirror", 
+	"Z Mirror"
+};
+__attribute__((aligned(16)))
+char *mapParameters[][7] = {
+	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
+	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
+	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
+	{"Off" , "On","","","","",""}, 
+	{"Off" , "On","","","","",""},  
+	{"Off" , "On","","","","",""}
+};
 
 __attribute__((aligned(16)))
-char *menulevelOptions[] = { 
-	"X-Scale",
-	"Y-Scale",
-	"Z-Scale"
+int mapLimits[] = {
+	7,
+	7,
+	7,
+	2,
+	2,
+	2
 };
 __attribute__((aligned(16)))
-char *menulevelParameters[][7] = {	
-	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
-	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
-	{"0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0"},
+int mapChar[][7] = {
+	{3,3,3,3,3,3,3}, 
+	{3,3,3,3,3,3,3}, 
+	{3,3,3,3,3,3,3}, 
+	{3,2,0,0,0,0,0}, 
+	{3,2,0,0,0,0,0}, 
+	{3,2,0,0,0,0,0} 
 };
 
-__attribute__((aligned(16)))
-int menulevelLimits[] = {
-	7,
-	7,
-	7
-};
-__attribute__((aligned(16)))
-int menulevelChar[][7] = {
-	{3, 3, 3, 3, 3, 3, 3},
-	{3, 3, 3, 3, 3, 3, 3},
-	{3, 3, 3, 3, 3, 3, 3}
-};
 
 
 //InputDisplay Variables

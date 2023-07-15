@@ -88,11 +88,14 @@ void modCheck()
 	ScaleYMode = SaveGame.LevelSettings.ScaleYMode;
 	ScaleZMode = SaveGame.LevelSettings.ScaleZMode;
 
+	g_ScreenFlip = SaveGame.LevelSettings.MirrorX;
+	YFLIP = SaveGame.LevelSettings.MirrorY;
+	ZFLIP = SaveGame.LevelSettings.MirrorZ;
+
 	if ((SaveGame.GameSettings.AIMode > 0x00) && (g_gameMode != GAMEMODE_TT))
 	{
 		aiSetup();
 	}
-	//gameMode[1] handled in Menu
 
 	if (SaveGame.RenderSettings.ScreenMode > 0x00)
 	{
@@ -688,28 +691,28 @@ void practiceHack()
 
 	if (MapModeCheck == 1)
 	{
-		printMap(MapMode);
+		printMap(MiniMapMode);
 
 		if ((GlobalController[0]->ButtonHeld & BTN_R) == BTN_R)
 		{
 			if ((GlobalController[0]->ButtonPressed & BTN_DDOWN) == BTN_DDOWN)
 			{
-				if (MapMode < 2)
+				if (MiniMapMode < 2)
 				{
-					MapMode++;
+					MiniMapMode++;
 				}
 			}
 			if ((GlobalController[0]->ButtonPressed & BTN_DUP) == BTN_DUP)
 			{
-				if (MapMode > 0)
+				if (MiniMapMode > 0)
 				{
-					MapMode--;
+					MiniMapMode--;
 				}
 			}
 		}
 		else
 		{
-			switch(MapMode)
+			switch(MiniMapMode)
 			{
 				case 0:
 				{

@@ -18,16 +18,16 @@ typedef struct RenderOptions{
 } RenderOptions;
 
 typedef struct LevelOptions{
-     char ScaleXMode, ScaleYMode, ScaleZMode, PAD, PAD2, PAD3, PAD4, PAD5;
+     char ScaleXMode, ScaleYMode, ScaleZMode, MirrorX, MirrorY, MirrorZ, PAD4, PAD5;
 } LevelOptions;
 
 typedef struct SaveData{
      RaceOptions    GameSettings;
      RenderOptions  RenderSettings;    
      BattleOptions  BattleSettings; 
-     bool           TENNES;
-     char           SaveVersion;
      LevelOptions   LevelSettings;
+     bool           TENNES;
+     char           SaveVersion;     
      char           PAD[458];
 } SaveData;
 
