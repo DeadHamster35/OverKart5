@@ -462,11 +462,7 @@ void gameCode(void)
 	{
 		loadFont();
 		//OverKartHeader.ScrollROM
-		printStringUnsignedHex(0,0,"OBJTYPE", (uint)&OverKartRAMHeader.ObjectTypeList);
-		printStringUnsignedHex(0,10,"OBJ", (uint)&OverKartRAMHeader.ObjectList);
-		printStringUnsignedHex(0,20,"OKRAM", (uint)&OverKartRAMHeader);
-		printStringNumber(0,30,"TCNT", OverKartRAMHeader.ObjectTypeCount);
-		printStringNumber(0,40,"OCNT", OverKartRAMHeader.ObjectCount);
+		printStringNumber(0,10,"",GlobalPlayer[0].jugemu_flag);
 
 
 		if (GlobalController[0]->ButtonPressed & BTN_DUP)

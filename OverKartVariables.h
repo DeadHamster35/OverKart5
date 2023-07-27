@@ -40,7 +40,7 @@ extern char *menuNames[];
 extern int menuChar[];
 
 extern char *gameOptions[];
-extern char *gameParameters[][14];
+extern char *gameParameters[][4];
 extern int gameLimits[];
 extern int mapLimits[];
 extern int gameChar[][4];

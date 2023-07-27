@@ -94,16 +94,16 @@ short baseTurn, addTurn = 0;
 
 
 int SaveStateCourseID;
-int pageLimit[] = {7,9,6,5,2};  // GAME - RENDER - MAP - CUP EDITOR  -  BATTLE
+int pageLimit[] = {8,9,6,5,2};  // GAME - RENDER - MAP - CUP EDITOR  -  BATTLE
 
 __attribute__((aligned(16)))
 OKPanel RacePanel, BattlePanel, RenderPanel, MapPanel;
 __attribute__((aligned(16)))
-OKOption OKGameOptions[7];
+OKOption OKGameOptions[8];
 __attribute__((aligned(16)))
 OKOption OKRenderOptions[9];
 __attribute__((aligned(16)))
-OKOption OKMapOptions[9];
+OKOption OKMapOptions[6];
 
 __attribute__((aligned(16)))
 OKMenu GameOKMenu;
@@ -129,18 +129,20 @@ char *gameOptions[] = {
 	"GP Always Advance", 
 	"All Cup", 
 	"Items",
-	"Multiplayer"
+	"Multiplayer",
+	"Explorer Mode"
 };
 
 __attribute__((aligned(16)))
-char *gameParameters[][14] = {
+char *gameParameters[][4] = {
 	{"Default", "Red Coin", "Gold Coin", "Practice"}, 
 	{"Classic", "Equal", "Enhanced", ""}, 
 	{"Off" , "On", "", ""}, 
 	{"Off" , "On", "", ""}, 
 	{"Off" , "On", "", ""}, 
 	{"Default","Random","Balanced", "None"},
-	{"Classic" , "Bots", "", ""} 
+	{"Classic" , "Bots", "", ""},
+	{"Off" , "On", "", ""}
 };
 
 __attribute__((aligned(16)))
@@ -151,6 +153,7 @@ int gameLimits[] = {
 	2,
 	2,
 	4,
+	2,
 	2
 };
 __attribute__((aligned(16)))
@@ -161,7 +164,8 @@ int gameChar[][4] = {
 	{3,2,0,0}, 
 	{3,2,0,0}, 
 	{7,6,8,4},
-	{7,4,0,0}
+	{7,4,0,0},
+	{3,2,0,0}
 };
 
 
