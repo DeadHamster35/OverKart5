@@ -738,8 +738,15 @@ void allRun()
 	gMatrixCount = 0;
 	
 	
-
-	gBackgroundFlag = 1;
+	if ((HotSwapID == 0) || (OverKartHeader.BackgroundToggle == 1))
+	{
+		gBackgroundFlag = 1;
+	}
+	else
+	{
+		gBackgroundFlag = 1;
+	}
+	
 
 	if (SaveGame.GameSettings.CupMode > 0x00)
 	{
