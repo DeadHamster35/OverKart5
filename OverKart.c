@@ -740,11 +740,11 @@ void allRun()
 	
 	if ((HotSwapID == 0) || (OverKartHeader.BackgroundToggle == 1))
 	{
-		gBackgroundFlag = 1;
+		gBackgroundFlag = 0;
 	}
 	else
 	{
-		gBackgroundFlag = 1;
+		gBackgroundFlag = 0;
 	}
 	
 
