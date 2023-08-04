@@ -526,6 +526,10 @@ void gameCode(void)
 		{
 			practiceHack();		
 		}
+		if (SaveGame.GameSettings.FlycamMode == 1)
+		{
+			RunFlyCam();
+		}
 		if (SaveGame.RenderSettings.InputMode > 0x00)
 		{
 			drawInputDisplay();
@@ -740,7 +744,7 @@ void allRun()
 	
 	if ((HotSwapID == 0) || (OverKartHeader.BackgroundToggle == 1))
 	{
-		gBackgroundFlag = 0;
+		gBackgroundFlag = 1;
 	}
 	else
 	{

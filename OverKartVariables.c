@@ -125,12 +125,12 @@ __attribute__((aligned(16)))
 char *gameOptions[] = {
 	"Game Mode", 
 	"Racer Stats", 
-	"Mirror Mode", 
 	"GP Always Advance", 
 	"All Cup", 
 	"Items",
 	"Multiplayer",
-	"Explorer Mode"
+	"Explorer Mode",
+	"Flycam Mode"
 };
 
 __attribute__((aligned(16)))
@@ -139,9 +139,9 @@ char *gameParameters[][4] = {
 	{"Classic", "Equal", "Enhanced", ""}, 
 	{"Off" , "On", "", ""}, 
 	{"Off" , "On", "", ""}, 
-	{"Off" , "On", "", ""}, 
 	{"Default","Random","Balanced", "None"},
 	{"Classic" , "Bots", "", ""},
+	{"Off" , "On", "", ""},	
 	{"Off" , "On", "", ""}
 };
 
@@ -151,8 +151,8 @@ int gameLimits[] = {
 	2,
 	2,
 	2,
-	2,
 	4,
+	2,
 	2,
 	2
 };
@@ -162,9 +162,9 @@ int gameChar[][4] = {
 	{7,5,8,0},
 	{3,2,0,0}, 
 	{3,2,0,0}, 
-	{3,2,0,0}, 
 	{7,6,8,4},
 	{7,4,0,0},
+	{3,2,0,0},	
 	{3,2,0,0}
 };
 
