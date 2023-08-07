@@ -322,7 +322,6 @@ void DisplayObject(void *Car, Object *InputObject)
 		{
 			
 			GlobalAddressB = (long)RedCoin;
-			*(uint*)(0x80653900) = (uint)GlobalAddressB;
 			objectPosition[0] = InputObject->position[0];
 			objectPosition[1] = InputObject->position[1];
 			objectPosition[2] = InputObject->position[2];
