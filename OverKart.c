@@ -500,7 +500,7 @@ void gameCode(void)
 			{
 				if (HotSwapID > 0)
 				{
-					StaticTempo(OverKartHeader.ManualTempo)
+					StaticTempo(OverKartHeader.ManualTempo);
 				}
 				else
 				{
