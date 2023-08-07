@@ -492,12 +492,27 @@ void gameCode(void)
 		if (SaveGame.RenderSettings.Platform == 0)
 		{
 			//Console
-			DynamicTempo();
+			if (g_gameMode != GAMEMODE_TT)
+			{
+				DynamicTempo();
+			}
+			else
+			{
+				if (HotSwapID > 0)
+				{
+					StaticTempo(OverKartHeader.ManualTempo)
+				}
+				else
+				{
+					StaticTempo(2);
+				}
+			}
+			
 		}
 		else
 		{
 			//emulator
-			StaticTempo();
+			StaticTempo(2);
 		}
 		
 		
@@ -530,6 +545,9 @@ void gameCode(void)
 		{
 			RunFlyCam();
 		}
+		
+		SurfaceExplorerMode = SaveGame.GameSettings.ExploreMode;
+
 		if (SaveGame.RenderSettings.InputMode > 0x00)
 		{
 			drawInputDisplay();
