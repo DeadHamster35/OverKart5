@@ -254,15 +254,15 @@ void startRace()
 		}
 		if (g_gameMode != GAMEMODE_TT)
 		{
-			PlaceSIBox(GetRealAddress(0x06000668));
+			//PlaceSIBox(GetRealAddress(0x06000668));
 		}
 		if (g_gameMode != GAMEMODE_BATTLE)
 		{
-			EmptyActionData();
+			//EmptyActionData();
 		
-			setSky();
-			setWater();
-			loadMinimap();	
+			//setSky();
+			//setWater();
+			//loadMinimap();	
 		}
 		if ((SaveGame.GameSettings.GameMode == 1))  
 		{     
@@ -299,10 +299,10 @@ void startRace()
 		{
 			for (int This = 0; This < 100; This++)
 			{
-				ClearOKObject(This);
+				//ClearOKObject(This);
 			}
-			loadOKObjects();
-			setOKObjects();					
+			//loadOKObjects();
+			//setOKObjects();					
 		}
 	}
 	else
@@ -350,17 +350,12 @@ void startRace()
 
 void endRace()
 {
+	scrollLock = false;
 	if (g_gameMode == GAMEMODE_GP)
-	{
-		if (checkEndGame())
-		{
-			scrollLock = false;
-		}
-		if (!scrollLock)
-		{	
-			gpTotalTime += g_TrialTime;
-			gpCourseIndex++;
-		}
+	{		
+		gpTotalTime += g_TrialTime;
+		gpCourseIndex++;
+		
 	}
 }
 
@@ -462,19 +457,11 @@ void gameCode(void)
 	{
 		loadFont();
 		//OverKartHeader.ScrollROM
-		printStringNumber(0,10,"",GlobalPlayer[0].jugemu_flag);
+		printStringNumber(0,10,"",gpCourseIndex);
+		printStringNumber(0,20,"",courseValue);
+		printStringNumber(0,30,"",g_startingIndicator);
 
 
-		if (GlobalController[0]->ButtonPressed & BTN_DUP)
-		{
-			RouletteStart(0,7);
-		}
-		
-
-		if (GlobalController[0]->ButtonPressed & BTN_DLEFT)
-		{
-			RouletteStart(0,10);
-		}
 	}
 	#endif
 
@@ -488,7 +475,7 @@ void gameCode(void)
 
 
 		CheckIFrames();
-
+		/*
 		if (SaveGame.RenderSettings.Platform == 0)
 		{
 			//Console
@@ -515,7 +502,7 @@ void gameCode(void)
 			StaticTempo(2);
 		}
 		
-		
+		*/
 		if (g_gameMode == GAMEMODE_BATTLE)
 		{
 			switch(SaveGame.BattleSettings.GameMode)
@@ -558,7 +545,7 @@ void gameCode(void)
 			printDetails();
 		}
 
-		
+		/*
 		if (HotSwapID > 0)   //Version 4 Texture Scroll Function
 		{			
 			if ((g_gamePausedFlag == 0) && (scrollLock))
@@ -574,7 +561,7 @@ void gameCode(void)
 				
 			}	
 		}
-
+		*/
 
 		if ((HotSwapID > 0) || (SaveGame.RenderSettings.DrawMode == 1))
 		{
@@ -586,7 +573,7 @@ void gameCode(void)
 		}
 
 
-		if (g_startingIndicator == 0x01)
+		if (g_startingIndicator == 1)
 		{
 				// Version 5 and Above.
 			// Adds Scrolling Textures.
@@ -643,9 +630,9 @@ void gameCode(void)
 
 			
 		}
-		if (g_startingIndicator == 0x03)
+		if (g_startingIndicator == 3)
 		{
-			raceStatus = 0x03;
+			raceStatus = 3;
 			if ((SaveGame.GameSettings.GameMode == 2) && (HotSwapID > 0) && (g_menuMultiplayerSelection == 1))
 			{
 				DisplayCoinSprite();			
@@ -654,11 +641,12 @@ void gameCode(void)
 			
 		}
 		
-		if (g_startingIndicator == 0x05)
+		if (g_startingIndicator == 5)
 		{
-			if (raceStatus != 0x05)
+			if (raceStatus != 5)
 			{
-				raceStatus = 0x05;
+				raceStatus = 5;
+				endRace();
 			}
 			if (g_gameMode == GAMEMODE_GP)
 			{
@@ -666,10 +654,20 @@ void gameCode(void)
 			}
 		}
 
-		if (g_startingIndicator == 0x07)
+		if (g_startingIndicator == 6)
+		{	
+			raceStatus = 6;
+		}
+
+		if (g_startingIndicator == 7)
 		{
-			raceStatus = 0x07;
-			endRace();
+			if (raceStatus != 7)
+			{
+				raceStatus = 7;	
+			}
+			
+
+			
 		}
 		
 		if(SaveGame.RenderSettings.DisplayFPS == 1)
