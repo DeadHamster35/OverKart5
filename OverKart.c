@@ -254,15 +254,15 @@ void startRace()
 		}
 		if (g_gameMode != GAMEMODE_TT)
 		{
-			//PlaceSIBox(GetRealAddress(0x06000668));
+			PlaceSIBox(GetRealAddress(0x06000668));
 		}
 		if (g_gameMode != GAMEMODE_BATTLE)
 		{
-			//EmptyActionData();
+			EmptyActionData();
 		
-			//setSky();
-			//setWater();
-			//loadMinimap();	
+			setSky();
+			setWater();
+			loadMinimap();	
 		}
 		if ((SaveGame.GameSettings.GameMode == 1))  
 		{     
@@ -299,10 +299,10 @@ void startRace()
 		{
 			for (int This = 0; This < 100; This++)
 			{
-				//ClearOKObject(This);
+				ClearOKObject(This);
 			}
-			//loadOKObjects();
-			//setOKObjects();					
+			loadOKObjects();
+			setOKObjects();					
 		}
 	}
 	else
@@ -475,7 +475,7 @@ void gameCode(void)
 
 
 		CheckIFrames();
-		/*
+		
 		if (SaveGame.RenderSettings.Platform == 0)
 		{
 			//Console
@@ -502,7 +502,7 @@ void gameCode(void)
 			StaticTempo(2);
 		}
 		
-		*/
+		
 		if (g_gameMode == GAMEMODE_BATTLE)
 		{
 			switch(SaveGame.BattleSettings.GameMode)
@@ -545,7 +545,7 @@ void gameCode(void)
 			printDetails();
 		}
 
-		/*
+		
 		if (HotSwapID > 0)   //Version 4 Texture Scroll Function
 		{			
 			if ((g_gamePausedFlag == 0) && (scrollLock))
@@ -561,7 +561,7 @@ void gameCode(void)
 				
 			}	
 		}
-		*/
+		
 
 		if ((HotSwapID > 0) || (SaveGame.RenderSettings.DrawMode == 1))
 		{
@@ -661,6 +661,10 @@ void gameCode(void)
 
 		if (g_startingIndicator == 7)
 		{
+			for (int This = 0; This < 100; This++)
+			{
+				ClearOKObject(This);
+			}
 			if (raceStatus != 7)
 			{
 				raceStatus = 7;	
