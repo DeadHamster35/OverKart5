@@ -27,6 +27,16 @@
 
 
 
+
+
+
+
+
+.org 0x009400
+JAL RubberBandMan
+
+
+
 .if OKBuild
 //fix the flip and stop that shit
 .org 0x095C64

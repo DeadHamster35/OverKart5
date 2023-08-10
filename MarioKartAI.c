@@ -198,3 +198,22 @@ void aiSetup()
 
      //
 }
+
+
+
+
+
+void RubberBandMan(int EnemyID, Player* EnemyKart)
+{
+     short ThisIndex = (short)g_playerPathPointTable[EnemyID];
+     short TargetIndex = (short)g_playerPathPointTable[g_EnemyTargetPlayer];
+
+     if (ThisIndex > TargetIndex)
+     {
+          AccelOff(EnemyKart, 1);
+     }
+     else
+     {
+          AccelOn(EnemyKart);
+     }
+}
