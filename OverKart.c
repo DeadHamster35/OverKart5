@@ -244,6 +244,10 @@ void startRace()
 		checkStats(0);
 	}
 
+	if (g_gameMode == GAMEMODE_GP)
+	{
+		SetAIDifficulty(g_raceClass);
+	}
 
 	
 	if (HotSwapID > 0)
@@ -457,11 +461,18 @@ void gameCode(void)
 	{
 		loadFont();
 		//OverKartHeader.ScrollROM
-		printStringNumber(0,10,"",gpCourseIndex);
-		printStringNumber(0,20,"",courseValue);
-		printStringNumber(0,30,"",g_startingIndicator);
+		
+		for (int ThisChar = 0; ThisChar < 8; ThisChar++)
+		{
+			printStringNumber(150, 10 * ThisChar, stockCharacterNames[GlobalPlayer[ThisChar].kart], GlobalPlayer[ThisChar].accelcount);
+			printStringNumber(220, 10 * ThisChar, "", (int)RubberChar[ThisChar]);
+		}
 
-
+		if ((GlobalController[0]->ButtonPressed & BTN_DUP) == BTN_DUP)
+		{
+			GlobalPlayer[0].rap = 2;
+			*GlobalLap[0] = 2;
+		}
 	}
 	#endif
 
@@ -893,9 +904,9 @@ void allRun()
 					DPRSave();
 				#endif
 
-				if ((SaveGame.SaveVersion != 6) && (SaveGame.SaveVersion != 99))
+				if ((SaveGame.SaveVersion != 7) && (SaveGame.SaveVersion != 99))
 				{
-					SaveGame.SaveVersion = 6;	
+					SaveGame.SaveVersion = 7;	
 					for (int This = 0; This < 8; This++)
 					{
 						renderMode[This] = 0;

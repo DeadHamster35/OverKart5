@@ -31,10 +31,14 @@
 
 
 
+//jump past minimum speed requirements
+.org 0x0090CC
+.word 0x100000CA
+//branch to 0x800087FE
 
+//0x80008800
 .org 0x009400
 JAL RubberBandMan
-
 
 
 .if OKBuild

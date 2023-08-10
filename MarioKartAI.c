@@ -200,20 +200,66 @@ void aiSetup()
 }
 
 
+short RubberCheck[4] = {10, 20, 25, 28};  //doubles for distance and speed
 
-
-
+char RubberChar[8];
 void RubberBandMan(int EnemyID, Player* EnemyKart)
 {
      short ThisIndex = (short)g_playerPathPointTable[EnemyID];
      short TargetIndex = (short)g_playerPathPointTable[g_EnemyTargetPlayer];
-
-     if (ThisIndex > TargetIndex)
-     {
-          AccelOff(EnemyKart, 1);
-     }
-     else
+     
+     if (EnemyKart->speed < SPEED_KM(RubberCheck[g_raceClass]))
      {
           AccelOn(EnemyKart);
+          RubberChar[EnemyID] = 0;
+          return;
+     }
+
+     if (g_GameLapTable[EnemyID] < g_GameLapTable[g_EnemyTargetPlayer])
+     {
+          AccelOn(EnemyKart);
+          RubberChar[EnemyID] = 1;
+          return;
+     }
+
+     if (g_GameLapTable[EnemyID] == g_GameLapTable[g_EnemyTargetPlayer])
+     {
+          if (ThisIndex < TargetIndex + RubberCheck[g_raceClass])
+          {    
+               AccelOn(EnemyKart);
+               RubberChar[EnemyID] = 2;
+               return;
+          }
+          else
+          {
+               AccelOff(EnemyKart, 1);
+               RubberChar[EnemyID] = 3;
+               return;
+          }
+     }
+
+     if (g_GameLapTable[EnemyID] > g_GameLapTable[g_EnemyTargetPlayer])
+     {
+          if (ThisIndex < RubberCheck[g_raceClass])
+          {    
+               AccelOn(EnemyKart);
+               RubberChar[EnemyID] = 4;
+               return;
+          }
+          else
+          {
+               AccelOff(EnemyKart, 1);
+               RubberChar[EnemyID] = 5;
+               return;
+          }
+     }
+}
+
+short DifficultyCurve[4] = {0,5,10,12};
+void SetAIDifficulty(int Difficulty)
+{
+     for (int ThisPlayer = g_playerCount; ThisPlayer < 8; ThisPlayer++)
+     {
+          GlobalPlayer[ThisPlayer].acc_maxcount += DifficultyCurve[Difficulty];
      }
 }
