@@ -758,9 +758,13 @@ void allRun()
 
 		case 1:
 		
-		if ((GlobalController[0]->ButtonPressed & BTN_L) == BTN_L)
+		if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
 		{
-			MapModeCheck = 1;
+			if ((GlobalController[0]->ButtonPressed & BTN_DDOWN) == BTN_DDOWN)
+			{
+				MapModeCheck = 1;	
+			}
+			
 		}
 		break;
 		
@@ -1067,9 +1071,7 @@ void PrintMenuFunction()
 	#if(DEBUGBUILD==TRUE)
 	{
 		loadFont();
-		printStringUnsignedHex(0,0,"SFC", (uint)&OverKartHeader.SurfaceMapPosition);
-		printStringUnsignedHex(0,10,"SVW", (uint)&OverKartHeader.SectionViewPosition);
-		printStringUnsignedHex(0,20,"SXLU", (uint)&OverKartHeader.XLUSectionViewPosition);
+		printStringNumber(0,10,"MMC",MapModeCheck);
 		
 	}
 	#endif

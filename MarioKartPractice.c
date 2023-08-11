@@ -500,7 +500,7 @@ void practiceHack()
 		{
 			if ((GlobalController[0]->ButtonPressed & BTN_DDOWN) == BTN_DDOWN)
 			{
-				if (MiniMapMode < 2)
+				if (MiniMapMode < 3)
 				{
 					MiniMapMode++;
 				}
@@ -558,7 +558,7 @@ void practiceHack()
 
 				case 1:
 				{
-					//map
+					//start
 					switch(GlobalController[0]->ButtonHeld)
 					{
 
@@ -598,7 +598,7 @@ void practiceHack()
 
 				case 2:
 				{
-					//map
+					//scale
 					switch(GlobalController[0]->ButtonHeld)
 					{
 
@@ -630,6 +630,44 @@ void practiceHack()
 					}
 
 					break;
+				}
+
+				case 3:
+				{
+					//line
+					switch(GlobalController[0]->ButtonHeld)
+					{
+
+						case BTN_DRIGHT :
+						{
+							RadarLineX++;
+							break;
+						}
+
+
+						case BTN_DLEFT :
+						{
+
+							RadarLineX--;
+							break;
+						}
+
+						case BTN_DUP :
+						{
+							RadarLineY++;
+							break;
+						}
+
+						case BTN_DDOWN :
+						{
+							RadarLineY--;
+							break;
+						}
+					}
+
+
+					break;
+
 				}
 
 			}
