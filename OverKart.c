@@ -724,7 +724,6 @@ void allRun()
 		MakeRandom();
 	}
 
-	if (GlobalController[4]->ButtonPressed & BTN_DLEFT)
 	if (SaveGame.RenderSettings.Platform == 1)
 	{
 		//Emulator
