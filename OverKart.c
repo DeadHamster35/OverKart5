@@ -725,19 +725,14 @@ void allRun()
 	}
 
 	if (GlobalController[4]->ButtonPressed & BTN_DLEFT)
+	if (SaveGame.RenderSettings.Platform == 1)
 	{
-		g_NewSequenceMode = 1;
-		KBGNumber = 11;
-	}
-
-	if (SaveGame.RenderSettings.Platform == 0)
-	{
-		//Console
+		//Emulator
 		CullDL_Parameters = 0x0000000E;
 	}
 	else
 	{
-		//Emulators
+		//Console
 		CullDL_Parameters = 0x00000140;
 	}
 
