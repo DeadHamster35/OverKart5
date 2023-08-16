@@ -252,10 +252,6 @@ void startRace()
 	
 	if (HotSwapID > 0)
 	{
-		if (g_gameMode != GAMEMODE_GP)
-		{
-			gpCourseIndex = 0;
-		}
 		if (g_gameMode != GAMEMODE_TT)
 		{
 			PlaceSIBox(GetRealAddress(0x06000668));
@@ -357,9 +353,8 @@ void endRace()
 	scrollLock = false;
 	if (g_gameMode == GAMEMODE_GP)
 	{		
-		gpTotalTime += g_TrialTime;
 		gpCourseIndex++;
-		
+		g_loadedcourseFlag = 0xF0;
 	}
 }
 
@@ -656,8 +651,8 @@ void gameCode(void)
 		{
 			if (raceStatus != 5)
 			{
+				gpTotalTime += g_TrialTime;
 				raceStatus = 5;
-				endRace();
 			}
 			if (g_gameMode == GAMEMODE_GP)
 			{
@@ -672,16 +667,13 @@ void gameCode(void)
 
 		if (g_startingIndicator == 7)
 		{
-			for (int This = 0; This < 100; This++)
-			{
-				ClearOKObject(This);
-			}
+			
 			if (raceStatus != 7)
 			{
 				raceStatus = 7;	
+				
+				endRace();
 			}
-			
-
 			
 		}
 		
@@ -730,6 +722,12 @@ void allRun()
 	if (GlobalController[4]->ButtonPressed != 0)
 	{
 		MakeRandom();
+	}
+
+	if (GlobalController[4]->ButtonPressed & BTN_DLEFT)
+	{
+		g_NewSequenceMode = 1;
+		KBGNumber = 11;
 	}
 
 	if (SaveGame.RenderSettings.Platform == 0)
@@ -792,18 +790,20 @@ void allRun()
 
 		asm_CupCount = 15;
 
-		if (gpCourseIndex == 12)
+		if ((g_startingIndicator >= 6) && (gpCourseIndex == 16))
 		{
-			HotSwapID = 0;
+			g_NewSequenceMode = 1; //trophy sequence is brokens
+			KBGNumber = 11;
 		}
 	}
 	else
 	{
 		asm_CupCount = 3;
 
-		if (gpCourseIndex == 4)
+		if ((g_startingIndicator >= 6) && (gpCourseIndex == 4))
 		{
-			HotSwapID = 0;
+			g_NewSequenceMode = 1; //trophy sequence is brokens
+			KBGNumber = 11;
 		}
 	}
 	SetWeather3D(OverKartHeader.SkyType == 3);
@@ -821,13 +821,14 @@ void allRun()
 			{
 				g_courseID = 15;
 			}
-			
-			if (g_courseID == 0x14)
-			{
-				g_player1ScreenWidth = 0x0240;
-			}
 
 			
+		}
+		
+			
+		if (g_courseID == 0x14)
+		{
+			g_player1ScreenWidth = 0x0240;
 		}
 		
 	}
@@ -1071,7 +1072,7 @@ void PrintMenuFunction()
 	#if(DEBUGBUILD==TRUE)
 	{
 		loadFont();
-		printStringNumber(0,10,"MMC",MapModeCheck);
+		printStringUnsignedHex(0,10,"HSWID",(uint)&HotSwapID);
 		
 	}
 	#endif

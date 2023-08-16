@@ -496,6 +496,16 @@ void practiceHack()
 	{
 		printMap(MiniMapMode);
 
+		if (g_startingIndicator >= 3)
+		{
+			g_GameLapTable[0] = 1;
+			for (int ThisPlayer = 1; ThisPlayer < 8; ThisPlayer++)
+			{
+				g_GameLapTable[ThisPlayer] = 0;
+			}
+		}
+		
+
 		if ((GlobalController[0]->ButtonHeld & BTN_R) == BTN_R)
 		{
 			if ((GlobalController[0]->ButtonPressed & BTN_DDOWN) == BTN_DDOWN)
@@ -540,13 +550,13 @@ void practiceHack()
 
 						case BTN_DUP :
 						{
-							g_mapY++;
+							g_mapY--;
 							break;
 						}
 
 						case BTN_DDOWN :
 						{
-							g_mapY--;
+							g_mapY++;
 							break;
 						}
 					}
@@ -578,13 +588,13 @@ void practiceHack()
 
 						case BTN_DUP :
 						{
-							g_startY++;
+							g_startY--;
 							break;
 						}
 
 						case BTN_DDOWN :
 						{
-							g_startY--;
+							g_startY++;
 							break;
 						}
 					}
@@ -604,7 +614,7 @@ void practiceHack()
 
 						case BTN_DRIGHT :
 						{
-							g_mapScale = g_mapScale + .0001;
+							g_mapScale = g_mapScale + .001;
 							break;
 						}
 
@@ -612,19 +622,19 @@ void practiceHack()
 						case BTN_DLEFT :
 						{
 
-							g_mapScale = g_mapScale - .0001;
+							g_mapScale = g_mapScale - .001;
 							break;
 						}
 
 						case BTN_DUP :
 						{
-							g_mapScale = g_mapScale + .00001;
+							g_mapScale = g_mapScale + .0001;
 							break;
 						}
 
 						case BTN_DDOWN :
 						{
-							g_mapScale = g_mapScale - .00001;
+							g_mapScale = g_mapScale - .0001;
 							break;
 						}
 					}
