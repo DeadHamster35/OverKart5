@@ -353,8 +353,12 @@ void endRace()
 	scrollLock = false;
 	if (g_gameMode == GAMEMODE_GP)
 	{		
-		gpCourseIndex++;
-		g_loadedcourseFlag = 0xF0;
+		if (checkEndGame())
+		{
+			gpCourseIndex++;
+			g_loadedcourseFlag = 0xF0;		
+		}
+		
 	}
 }
 
