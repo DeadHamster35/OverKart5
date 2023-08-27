@@ -140,7 +140,7 @@ char *gameParameters[][4] = {
 	{"Off" , "On", "", ""}, 
 	{"Off" , "On", "", ""}, 
 	{"Default","Random","Balanced", "None"},
-	{"Classic" , "Bots", "", ""},
+	{"Classic" , "Bots 2-4", "Bots 3+4", "Bot 4"},
 	{"Off" , "On", "", ""},	
 	{"Off" , "On", "", ""}
 };
@@ -152,7 +152,7 @@ int gameLimits[] = {
 	2,
 	2,
 	4,
-	2,
+	4,
 	2,
 	2
 };
@@ -163,7 +163,7 @@ int gameChar[][4] = {
 	{3,2,0,0}, 
 	{3,2,0,0}, 
 	{7,6,8,4},
-	{7,4,0,0},
+	{7,8,8,5},
 	{3,2,0,0},	
 	{3,2,0,0}
 };

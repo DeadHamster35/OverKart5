@@ -166,9 +166,11 @@ JAL MapSelectSwitch
 .headersize PAYLOAD_RAM - PAYLOAD_ROM
 .org PAYLOAD_RAM
 StartRAMData:
-
+     
      .align 0x10
      .importobj "OverKartVariables.o"
+     .align 0x10
+     .importobj "grayscaleB.o"
      .align 0x10
      .importobj "MarioKartAI.o"
      .align 0x10

@@ -104,99 +104,46 @@ void fastAI()
 
 
 
-void checkAI()
-{
-     if (GlobalCharB > 0x00)
-	{
-		switch (SaveGame.GameSettings.AIMode)
-		{
-			case 0x01 :
-			{
-				GlobalShortA = 0x9100;
-				break;
-			}
-			case 0x02 :
-			{
-				GlobalShortA = 0xD100;
-				break;
-			}
-		}
-
-
-		switch(g_playerCount)
-		{
-			case 0x01 :
-			{
-				GlobalPlayer[1].flag = GlobalShortA;
-				GlobalPlayer[2].flag = GlobalShortA;
-				GlobalPlayer[3].flag = GlobalShortA;
-				break;
-			}
-			case 0x02 :
-			{
-				GlobalPlayer[1].flag = GlobalShortA;
-				break;
-			}
-			case 0x03 :
-			{
-				GlobalPlayer[1].flag = GlobalShortA;
-				GlobalPlayer[2].flag = GlobalShortA;
-				break;
-			}
-			case 0x04 :
-			{
-				GlobalPlayer[1].flag = GlobalShortA;
-				GlobalPlayer[2].flag = GlobalShortA;
-				GlobalPlayer[3].flag = GlobalShortA;
-				break;
-			}
-		}
-
-	}
-
-
-
-
-}
-
-
-
 void aiSetup()
 {
-     if (SaveGame.GameSettings.AIMode > 0x00)
+     switch (SaveGame.GameSettings.AIMode)
 	{
-		player2OK = 0X01;
-		player3OK = 0x01;
-		player4OK = 0x01;
+          case 0:
+          {
+               return;
+               break;
+          }
+          case 1:
+          {
+               player2OK = 0X01;
+               player3OK = 0x01;
+               player4OK = 0x01;
+               break;
+          }
+          case 2:
+          {
+               player3OK = 0x01;
+               player4OK = 0x01;
+               break;
+          }
+          case 3:
+          {
+               player4OK = 0x01;
+               break;
+          }
+		
 	}
-	else
-	{
-
-	}
-
-
-
-	if ((SaveGame.GameSettings.AIMode > 0x00) && (g_startingIndicator >= 0x02))
-	{
-		GlobalCharB = 0x01;
-	}
-	if ((g_loadedcourseFlag == 0xFF) || (g_startingIndicator < 0x02))
-	{
-		GlobalCharB = 0x00;
-	}
-     if ((g_loadedcourseFlag == 0xFF) || (g_startingIndicator > 3))
+     if ((g_startingIndicator >= 3) && (g_startingIndicator < 7))
      {
-          GlobalCharB = 0x00;
+          for (int ThisPlayer = SaveGame.GameSettings.AIMode; ThisPlayer < 4; ThisPlayer++)
+          {
+               if (*GlobalLap[ThisPlayer] < 3)
+               {
+                    GlobalPlayer[ThisPlayer].flag = 0x9000;
+               }
+          }
      }
 
-     if (SaveGame.GameSettings.AIMode == 0x02)
-     {
-          fastAI();
-     }
-
-     checkAI();
-
-     //
 }
 
 

@@ -11,7 +11,6 @@ short MapModeCheck = 0;
 short LastMenuID = 0;
 uint ROptionPressed = 0;
 
-
 void loadLogo()
 {
 
@@ -477,6 +476,8 @@ void gameCode(void)
 	}
 	#endif
 
+
+	grayscale();
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -1070,7 +1071,7 @@ void allRun()
 void PrintMenuFunction()
 {
 
-
+	grayscale();
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
