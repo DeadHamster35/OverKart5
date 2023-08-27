@@ -127,16 +127,16 @@ void okSetup(void)
 
 	
 	dataLength = 8;
-	*sourceAddress = (long)((long)(&g_SequenceTable) + (3 * 8));	
-	*targetAddress = (long)&ok_Sequence;
+	*sourceAddress = (int)&g_MUSSequenceTable.pointer[3].address;
+	*targetAddress = (int)&ok_Sequence;
 	runRAM();
 
-	*sourceAddress = (long)((long)(&g_InstrumentTable) + (3 * 8));
-	*targetAddress = (long)&ok_Instrument;
+	*sourceAddress = (int)&g_MUSInstrumentTable.pointer[3];
+	*targetAddress = (int)&ok_Instrument;
 	runRAM();
 
 	*sourceAddress = (int)&g_BombTable;
-	*targetAddress = (long)&ok_Bomb;	
+	*targetAddress = (int)&ok_Bomb;	
 	dataLength = 0xA8;
 	runRAM();
 	
@@ -147,7 +147,10 @@ void okSetup(void)
 	copyCourseTable(1);
 	NopSplashCheckCode();
 	//FlyCamInit();
+
 	HotSwapID = 0;
+
+    copyCourseTable(0);
 	raceStatus = 0xFF;
 	asm_SongA = 0x240E0001;
 	asm_SongB = 0x240E0001;
@@ -164,14 +167,12 @@ void okSetup(void)
 	//PlayerSelectSetup();
 
 	
-	*(long*)(&ok_USAudio) = *(long*)(&g_RawAudio + 1);
-	*(long*)(&ok_USAudio + 1) = *(long*)(&g_InstrumentTable + 1);
+	*(long*)(&ok_USAudio) = g_MUSRawAudioTable.pointer[0].address;
+	*(long*)(&ok_USAudio + 1) = g_MUSInstrumentTable.pointer[0].address;
 
 
-	*(long*)(&ok_MRSong) = *(long*)(&g_SequenceTable + (3 * 2) + 1);
-	*(long*)(&ok_MRSong + 1) = *(long*)(&g_InstrumentTable + (3 * 2) + 1);
-	
-	
+	*(long*)(&ok_MRSong) = g_MUSSequenceTable.pointer[3].address;
+	*(long*)(&ok_MRSong + 1) = g_MUSSequenceTable.pointer[3].length;
 	
 	FreeSpaceAddress = (int)&ok_Storage;
 	SaveGame.TENNES = false;
@@ -459,6 +460,7 @@ void gameCode(void)
 	#if(DEBUGBUILD==TRUE)
 	{
 		loadFont();
+		
 		//OverKartHeader.ScrollROM
 		
 		for (int ThisChar = 0; ThisChar < 8; ThisChar++)
@@ -719,6 +721,8 @@ uint SearchJRK0()
 //
 //
 
+
+
 void allRun()
 {
 	MakeRandom();
@@ -728,7 +732,7 @@ void allRun()
 		MakeRandom();
 	}
 
-	if (SaveGame.RenderSettings.Platform == 1)
+	if (SaveGame.RenderSettings.CullMode == 1)
 	{
 		//Emulator
 		CullDL_Parameters = 0x0000000E;
@@ -923,6 +927,7 @@ void allRun()
 					}
 					SaveGame.RenderSettings.AliasMode = 1;
 					SaveGame.RenderSettings.Platform = 1;
+					SaveGame.RenderSettings.CullMode = 1;
 					
 					SaveGame.LevelSettings.ScaleXMode = 2;
 					SaveGame.LevelSettings.ScaleYMode = 2;
@@ -966,6 +971,7 @@ void allRun()
 			scrollLock = false;
 			g_startingIndicator = 0;
 			HotSwapID = 0;
+			copyCourseTable(0);
 			break;
 		}
 		case 12:
@@ -995,6 +1001,7 @@ void allRun()
 			}
 			scrollLock = false;
 			HotSwapID = 0;
+			copyCourseTable(0);
 			break;
 		}			
 		case 13:
@@ -1031,7 +1038,7 @@ void allRun()
 				resetMap();
 				setAlwaysAdvance();				
 				HotSwapID = 0;
-				//stockASM();
+				copyCourseTable(0);
 				setPreviews();
 				previewRefresh();
 				setBanners();
@@ -1059,6 +1066,7 @@ void allRun()
 }
 
 
+
 void PrintMenuFunction()
 {
 
@@ -1070,7 +1078,9 @@ void PrintMenuFunction()
 	#if(DEBUGBUILD==TRUE)
 	{
 		loadFont();
-		printStringUnsignedHex(0,10,"HSWID",(uint)&HotSwapID);
+		
+		
+		printStringUnsignedHex(0,10,"7",(uint)7);
 		
 	}
 	#endif
@@ -1121,22 +1131,35 @@ void PrintMenuFunction()
 		case 10:
 		{
 			
-			DrawBox(92,142,140,25, 0, 0, 0, 200);
+			DrawBox(102,130,120,55, 0, 0, 0, 200);
 
-			if (SaveGame.RenderSettings.Platform == 0)
+			if (SaveGame.RenderSettings.CullMode == 0)
 			{
-				PrintBigText(125, 142, 0.8f, "CONSOLE" );
-				
-				
+				PrintBigText(115, 132, 0.6f, "CULL MODE A" );
 			}
 			else
 			{
-				PrintBigText(117, 142, 0.8f, "EMULATOR" );
+				PrintBigText(115, 132, 0.6f, "CULL MODE B" );
+			}
+			if (SaveGame.RenderSettings.Platform == 0)
+			{
+				PrintBigText(115, 162, 0.6f, "N64 CONSOLE" );
+			}
+			else
+			{
+				PrintBigText(130, 162, 0.6f, "EMULATOR" );
 			}
 			
-			
-			KWSprite(221,156,16,16,(ushort*)&lit_arrowsprite_r);
-			KWSprite(103,156,16,16,(ushort*)&lit_arrowsprite_l);
+			if (TitleSwitch == 0)
+			{
+				GlobalIntA = 140;
+			}
+			else
+			{
+				GlobalIntA = 175;
+			}
+			KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
+			KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);
 
 			
 			loadFont();

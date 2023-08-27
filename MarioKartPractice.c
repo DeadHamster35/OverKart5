@@ -63,19 +63,21 @@ void modCheck()
 		AudioLanguage = SaveGame.RenderSettings.AudioMode;
 		if (AudioLanguage == 0)
 		{
-			*(long*)(&g_RawAudio + 1) = *(long*)&ok_USAudio;
-			*(long*)(&g_RawAudio + 2) = 0x24C3F0;
-			*(long*)(&g_InstrumentTable + 1) = *(long*)(&ok_USAudio + 1);
-			*(long*)(&g_InstrumentTable + 2) = 0x44D0;
+			g_MUSRawAudioTable.pointer[0].address = *(long*)&ok_USAudio;
+			g_MUSRawAudioTable.pointer[0].length = 0x24C3F0;
+
+			g_MUSInstrumentTable.pointer[0].address = *(long*)(&ok_USAudio + 1);
+			g_MUSInstrumentTable.pointer[0].length = 0x44D0;
 
 		}
 		else
 		{
+			g_MUSRawAudioTable.pointer[0].address = (long)&JP_Audio;
+			g_MUSRawAudioTable.pointer[0].length = 0x24C580;
+
+			g_MUSInstrumentTable.pointer[0].address = (long)&JP_Bank;
+			g_MUSInstrumentTable.pointer[0].length = 0x4540;
 			
-			*(long*)(&g_RawAudio + 1) = (long)&JP_Audio;
-			*(long*)(&g_RawAudio + 2) = 0x24C580;
-			*(long*)(&g_InstrumentTable + 1) = (long)&JP_Bank;
-			*(long*)(&g_InstrumentTable + 2) = 0x4540;
 		}		
 		InitMKCode();
 	}
