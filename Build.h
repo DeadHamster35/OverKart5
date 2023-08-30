@@ -6,7 +6,7 @@
 #define OverKartBuild   0
 #define DebugMode       0
 #define ProtectMode     1
-#define DEBUGBUILD      true
-#define VersionString "08222023"
+#define DEBUGBUILD      false
+#define VersionString "08272023"
 
 #endif

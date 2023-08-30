@@ -477,7 +477,6 @@ void gameCode(void)
 	#endif
 
 
-	grayscale();
 	if(SaveGame.TENNES == 1)
 	{
 		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
@@ -728,6 +727,8 @@ void allRun()
 {
 	MakeRandom();
 
+	
+
 	if (GlobalController[4]->ButtonPressed != 0)
 	{
 		MakeRandom();
@@ -759,13 +760,9 @@ void allRun()
 
 		case 1:
 		
-		if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
+		if (((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L) && ((GlobalController[0]->ButtonPressed & BTN_DDOWN) == BTN_DDOWN))
 		{
-			if ((GlobalController[0]->ButtonPressed & BTN_DDOWN) == BTN_DDOWN)
-			{
-				MapModeCheck = 1;	
-			}
-			
+			MapModeCheck = 1;	
 		}
 		break;
 		
@@ -1071,7 +1068,6 @@ void allRun()
 void PrintMenuFunction()
 {
 
-	grayscale();
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];

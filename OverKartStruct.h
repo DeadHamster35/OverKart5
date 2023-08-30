@@ -13,8 +13,8 @@ typedef struct BattleOptions{
 
 
 typedef struct RenderOptions{
-     char AudioMode, ScreenMode, AliasMode, SplitMode, DrawMode, Platform, DisplayFPS, InputMode;
-     char DetailMode, CullMode, PAD2, PAD3, PAD4, PAD5, PAD6, PAD7;
+     char AudioMode, ScreenMode, AliasMode, SplitMode, DrawMode, Platform, CullMode, DisplayFPS;
+     char InputMode, DetailMode, PAD2, PAD3, PAD4, PAD5, PAD6, PAD7;
 } RenderOptions;
 
 typedef struct LevelOptions{

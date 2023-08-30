@@ -12,7 +12,13 @@ char MenuOverflow;   A/B Buttons
 
 
 
+typedef struct SaveState
+{
+	//todo
+}
 
+float SaveState_WaterLevel = 0;
+uint SaveState_KeystockCounter = 0;
 char SplitTimerToggle, SplitTimerToggleSave = 0x00;
 float SaveTimer, SplitTimer = 0;
 
@@ -206,6 +212,8 @@ void saveState()
 
 	SaveTimer = g_gameTimer;
 	SplitTimerToggleSave = SplitTimerToggle;
+	SaveState_WaterLevel = g_waterHeight;
+	SaveState_KeystockCounter = KeystockCounter;
 }
 
 void loadState()
@@ -261,6 +269,8 @@ void loadState()
 
 	g_gameTimer = SaveTimer;
 	SplitTimerToggle = SplitTimerToggleSave;
+	g_waterHeight = SaveState_WaterLevel;
+	KeystockCounter = SaveState_KeystockCounter;
 }
 
 
@@ -269,28 +279,6 @@ void drawInputDisplay()
 {
 	
 	GlobalUShortA = 0x8000;
-	/*
-	if ( ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L) && ((GlobalController[0]->ButtonHeld & BTN_R) == BTN_R) )
-	{
-		if((GlobalController[0]->ButtonHeld & BTN_DUP) == BTN_DUP)
-		{
-			ControllerInputY--;
-		}
-		if((GlobalController[0]->ButtonHeld & BTN_DDOWN) == BTN_DDOWN)
-		{
-			ControllerInputY++;
-		}
-		if((GlobalController[0]->ButtonHeld & BTN_DLEFT) == BTN_DLEFT)
-		{
-			ControllerInputX--;
-		}
-		if((GlobalController[0]->ButtonHeld & BTN_DRIGHT) == BTN_DRIGHT)
-		{
-			ControllerInputX++;
-		}
-	}
-	*/
-
 	GraphPtr = FillRect1ColorF(GraphPtr,
 	ControllerInputX, ControllerInputY, ControllerInputX + 43, ControllerInputY + 16, //x1, y1, x2, y2
 	0, 0, 0, 128); //r, g, b, a

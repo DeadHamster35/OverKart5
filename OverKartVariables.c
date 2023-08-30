@@ -39,7 +39,7 @@ short FlyCamSpeed = 5;
 
 
 
-char colors[][3] = {
+short colors[][3] = {
 	{  0, 192, 255}, //A: blue
 	{  0, 255,   0}, //B: green
 	{255, 255, 255}, //Z: white
@@ -51,7 +51,7 @@ char colors[][3] = {
 	{255, 255,   0}, {255, 255,   0}, //C up, down
 	{255, 255,   0}, {255, 255,   0}  //C left, right
 };
-char coords[][2] = {
+short coords[][2] = {
 	{3, 1}, //A
 	{3, 2}, //B
 	{5, 1}, //Z
@@ -65,14 +65,14 @@ char coords[][2] = {
 	{4, 1}, //C left
 	{6, 1}  //C right
 };
-char stickColor[][3] = {
+short stickColor[][3] = {
 	{192, 192, 192},
 	{192, 192, 192},
 	{192, 192, 192},
 	{192, 192, 192},
 	{255, 255, 255}
 };
-char stickCoord[][2] = {
+short stickCoord[][2] = {
 	{1, 0}, //U
 	{1, 2}, //D
 	{0, 1}, //L
@@ -182,7 +182,8 @@ char *renderOptions[] = {
 	"Anti-Alias",  
 	"Screen Split", 
 	"Draw Dist.", 
-	"Game Tempo", 
+	"Game Tempo",
+	"Cull Mode" 
 	"Show FPS", 
 	"Input Disp.",
 	"Detail Disp."
