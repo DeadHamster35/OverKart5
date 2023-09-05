@@ -1127,7 +1127,7 @@ void PrintMenuFunction()
 		}
 		case 10:
 		{
-			
+			//title screen
 			DrawBox(102,130,120,55, 0, 0, 0, 200);
 
 			if (SaveGame.RenderSettings.CullMode == 0)
