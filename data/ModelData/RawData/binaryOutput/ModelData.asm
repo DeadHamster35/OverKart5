@@ -22,5 +22,5 @@
 .definelabel ToadMushroom, 0x0801B780
 .definelabel WarioMushroom, 0x0801CE20
 .definelabel YoshiMushroom, 0x0801E4C0
-.definelabel PointMarker, 0x0801E5E0
-.definelabel SoccerBall, 0x0801F680
+.definelabel TargetMarker, 0x0801E710
+.definelabel SoccerBall, 0x0801F7B0

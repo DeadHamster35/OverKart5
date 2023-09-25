@@ -83,11 +83,11 @@ extern short FlyCamSpeed;
 
 //InputDisplay Variables
 extern char *names[];
-extern char colors[][3];
-extern char coords[][2];
+extern short colors[][3];
+extern short coords[][2];
 extern char *stickNames[];
-extern char stickColor[][3];
-extern char stickCoord[][2];
+extern short stickColor[][3];
+extern short stickCoord[][2];
 extern short ControllerInputX, ControllerInputY;
 
 

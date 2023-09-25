@@ -1128,23 +1128,23 @@ void PrintMenuFunction()
 		case 10:
 		{
 			//title screen
-			DrawBox(102,130,120,55, 0, 0, 0, 200);
+			DrawBox(102,130,120,38, 0, 0, 0, 200);
 
 			if (SaveGame.RenderSettings.CullMode == 0)
 			{
-				PrintBigText(115, 132, 0.6f, "CULL MODE A" );
+				PrintBigText(128, 131, 0.6f, "LLE MODE" );
 			}
 			else
 			{
-				PrintBigText(115, 132, 0.6f, "CULL MODE B" );
+				PrintBigText(128, 131, 0.6f, "HLE MODE" );
 			}
 			if (SaveGame.RenderSettings.Platform == 0)
 			{
-				PrintBigText(115, 162, 0.6f, "N64 CONSOLE" );
+				PrintBigText(115, 149, 0.6f, "N64 CONSOLE" );
 			}
 			else
 			{
-				PrintBigText(130, 162, 0.6f, "EMULATOR" );
+				PrintBigText(128, 149, 0.6f, "EMULATOR" );
 			}
 			
 			if (TitleSwitch == 0)
@@ -1153,7 +1153,7 @@ void PrintMenuFunction()
 			}
 			else
 			{
-				GlobalIntA = 175;
+				GlobalIntA = 158;
 			}
 			KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
 			KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);

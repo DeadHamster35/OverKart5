@@ -22,5 +22,5 @@ const int RedMushroom= 0x0801A0E0;
 const int ToadMushroom= 0x0801B780;
 const int WarioMushroom= 0x0801CE20;
 const int YoshiMushroom= 0x0801E4C0;
-const int PointMarker= 0x0801E5E0;
-const int SoccerBall= 0x0801F680;
+const int TargetMarker= 0x0801E710;
+const int SoccerBall= 0x0801F7B0;

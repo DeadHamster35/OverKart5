@@ -12,11 +12,6 @@ char MenuOverflow;   A/B Buttons
 
 
 
-typedef struct SaveState
-{
-	//todo
-}
-
 float SaveState_WaterLevel = 0;
 uint SaveState_KeystockCounter = 0;
 char SplitTimerToggle, SplitTimerToggleSave = 0x00;

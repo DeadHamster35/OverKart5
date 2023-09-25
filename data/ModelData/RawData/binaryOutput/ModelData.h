@@ -22,7 +22,7 @@ extern const int RedMushroom; //0x0801A0E0
 extern const int ToadMushroom; //0x0801B780
 extern const int WarioMushroom; //0x0801CE20
 extern const int YoshiMushroom; //0x0801E4C0
-extern const int PointMarker; //0x0801E5E0
-extern const int SoccerBall; //0x0801F680
-#define ModelData_RawDataSize 0x1F4F8
-#define ModelData_CompressedSize 0x9FFC
+extern const int TargetMarker; //0x0801E710
+extern const int SoccerBall; //0x0801F7B0
+#define ModelData_RawDataSize 0x1F628
+#define ModelData_CompressedSize 0xA150
