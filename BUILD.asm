@@ -170,8 +170,6 @@ StartRAMData:
      .align 0x10
      .importobj "OverKartVariables.o"
      .align 0x10
-     .importobj "grayscaleB.o"
-     .align 0x10
      .importobj "MarioKartAI.o"
      .align 0x10
      .importobj "OKMenu.o"

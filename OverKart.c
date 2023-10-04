@@ -458,20 +458,16 @@ void gameCode(void)
 {	
 	#if(DEBUGBUILD==TRUE)
 	{
-		loadFont();
-		
-		//OverKartHeader.ScrollROM
-		
-		for (int ThisChar = 0; ThisChar < 8; ThisChar++)
+		if(scrollLock)
 		{
-			printStringNumber(150, 10 * ThisChar, stockCharacterNames[GlobalPlayer[ThisChar].kart], GlobalPlayer[ThisChar].accelcount);
-			printStringNumber(220, 10 * ThisChar, "", (int)RubberChar[ThisChar]);
-		}
 
-		if ((GlobalController[0]->ButtonPressed & BTN_DUP) == BTN_DUP)
-		{
-			GlobalPlayer[0].rap = 2;
-			*GlobalLap[0] = 2;
+			loadFont();
+			
+			//OverKartHeader.ScrollROM
+			for (int ThisList = 0; ThisList < 5; ThisList++)
+			{
+				printStringNumber(0, ThisList * 10, "", OverKartRAMHeader.ObjectList[ThisList].Flag);
+			}
 		}
 	}
 	#endif
