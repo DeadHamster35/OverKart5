@@ -237,15 +237,23 @@ void startRace()
 	InitialCustomParticleBuffer();
 	if (g_gameMode == GAMEMODE_BATTLE)
 	{
-		if (SaveGame.BattleSettings.GameMode == BTL_CTF)
+		switch (SaveGame.BattleSettings.GameMode)
 		{
-			PlaceFlags(BattleFlag, FlagModels, RedMushroom, MushroomModels, 1);
-		}		
-		if (SaveGame.BattleSettings.GameMode == BTL_SOCCER)
-		{
-			PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);  //lol
+			case BTL_BATTLE:
+			{
+				SlayerInit();
+				break;
+			}
+			case BTL_CTF:
+			{
+				PlaceFlags(BattleFlag, FlagModels, RedMushroom, MushroomModels, 1);
+				break;
+			}
+			case BTL_SOCCER:
+			{
+				PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);  //lol
+			}
 		}
-
 	}
 	
 	
