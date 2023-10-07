@@ -36,6 +36,9 @@ extern char* mapMode;
 
 extern int LoadedProgress;
 
+extern uint PrintLog[];
+extern uint PrintCount;
+
 extern char *menuNames[];
 extern int menuChar[];
 

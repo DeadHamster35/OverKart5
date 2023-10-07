@@ -15,6 +15,10 @@ char* mapMode = (char*)&SaveGame.LevelSettings;
 int LoadedProgress;
 
 
+
+uint PrintLog[99];
+uint PrintCount;
+
 float AnalogInput[2];
 
 int ItemChance[8];

@@ -10,7 +10,6 @@
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel DMA_FUNC,    		0x80001138
 .definelabel DMA_MAX_LENGTH, 	     0x16EA0
-.definelabel Printf, 			0x800D6420
 
 
 

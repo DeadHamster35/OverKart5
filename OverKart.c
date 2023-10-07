@@ -1,5 +1,6 @@
 #include "../Library/MainInclude.h"
 #include "OKInclude.h"
+#include <stdio.h>
 
 //OverKart6
 
@@ -10,6 +11,18 @@ int RandomDPR;
 short MapModeCheck = 0;
 short LastMenuID = 0;
 uint ROptionPressed = 0;
+
+
+void DebugLog(uint Data)
+{
+	if (PrintCount >= 99)
+	{
+		PrintCount = 0;	
+	}
+	PrintLog[PrintCount] = Data;
+	PrintCount++;
+
+}
 
 void loadLogo()
 {
@@ -157,6 +170,7 @@ void okSetup(void)
 	g_sfxPause = 0; //Just for Amped Up (To fix some mute sfx when pausing the game)
 	hsGP = 0;
 	MapModeCheck = 0;
+	PrintCount = 0;
 	//FlyCamSpeed = 5;
 	//ok_Knowledge = (long)(&ok_Target);
 
@@ -722,7 +736,6 @@ uint SearchJRK0()
 void allRun()
 {
 	MakeRandom();
-
 	
 
 	if (GlobalController[4]->ButtonPressed != 0)
@@ -839,6 +852,15 @@ void allRun()
 				MenuChanged = 6;
 			}
 			GameOptionsHandler(4);
+			break;
+		}
+		case 8:
+		{
+			if (MenuChanged != 8)
+			{
+				LastMenuID = MenuChanged;
+				MenuChanged = 8;
+			}
 			break;
 		}
 		case 10:
@@ -1063,7 +1085,8 @@ void allRun()
 
 void PrintMenuFunction()
 {
-
+	loadFont();
+	printStringNumber(0,0,"",KBGNumber);
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
@@ -1119,6 +1142,18 @@ void PrintMenuFunction()
 			{
 				CourseMenu(175);
 			}
+			break;
+		}
+		case 8:
+		{
+			//logo
+			
+			if (DEBUGBUILD)
+			{
+				loadFont();
+				printStringUnsignedHex(0,0,"PRINTLOG", (uint)&PrintLog);
+			}
+			
 			break;
 		}
 		case 10:

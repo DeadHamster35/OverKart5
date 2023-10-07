@@ -9,7 +9,6 @@
 .definelabel RAM_END,           org(EndRAMData)
 
 .definelabel DMA_MAX_LENGTH,       org(EndRAMData) - org(StartRAMData)
-.definelabel Printf, 			0x800D6420
 .definelabel ok_ModelDataRawSize,     filesize("data\ModelData\Binary\ModelData.raw")
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
