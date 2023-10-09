@@ -399,9 +399,6 @@ void moveCameraTilt(int inputDistance, int tilt)
 
 
 	FlyCamRadian = (int)FlyCamRadian * -0.0174533;
-	GlobalCamera[0]->camera_pos[0] = (float)(GlobalCamera[0]->camera_pos[0] + inputDistance * sinF(FlyCamRadian));
-	GlobalCamera[0]->camera_pos[2] = (float)(GlobalCamera[0]->camera_pos[2] + inputDistance * cosF(FlyCamRadian));
-
 	GlobalCamera[0]->lookat_pos[0] = (float)(GlobalCamera[0]->lookat_pos[0] + inputDistance * sinF(FlyCamRadian));
 	GlobalCamera[0]->lookat_pos[2] = (float)(GlobalCamera[0]->lookat_pos[2] + inputDistance * cosF(FlyCamRadian));
 }
