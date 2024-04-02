@@ -1,10 +1,10 @@
 .n64
-//.open "ROM\amp2.z64", "ROM\BASE.z64", 0
+
 
 
 
 .open "ROM\stock.z64", "ROM\BASE.z64", 0
-.definelabel PAYLOAD_ROM, 		0x01200000
+.definelabel PAYLOAD_ROM, 		filesize("ROM\stock.z64")
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -20,8 +20,6 @@
 .include "..\library\OKHeader.asm"
 .include "..\library\GameVariables\NTSC\OKAssembly.asm"
 
-.org 0xBFFFFC
-.word 0xF00000
 
 
 
@@ -173,8 +171,6 @@ StartRAMData:
      .align 0x10
      .importobj "OKMenu.o"
      .align 0x10
-     .importobj "Protec.o"
-     .align 0x10
      .importobj "MarioKartPractice.o"
      .align 0x10
      .importobj "LitroFunc.o"
@@ -187,6 +183,8 @@ StartRAMData:
      RCIconMap:
      .import "data\\RedSquare.png.RAW"
      .align 0x10
+
+     
 
 
      .include "..\Library\LIBRARYBUILD2.asm"
@@ -207,6 +205,15 @@ EndRAMData:
      .import "data\\SplashLogo\\backdrop.bin"
      .align 0x10
      BackDropEnd:
+
+     
+     
+     .definelabel OverwriteCrash, 1
+    
+     Crash:
+     .import "data/CrashBanner.RAW"
+     .align 0x10
+     CrashEnd:
      
      
      RAMCheck:
@@ -292,13 +299,11 @@ EndRAMData:
 .include "..\Library\LIBRARYBUILD3.asm"
 
 .include "..\Library\LIBRARYBUILD4.asm"
+
+
 .headersize 0
-
 .org 0x20
-.ascii "TARMAC64 BASE 6.0   "
+.ascii "TARMAC 64     031824"
 
 
-.org 0xEFFFF8
-.word DMA_MAX_LENGTH
-.word 0xFFFFFFFF
 .close

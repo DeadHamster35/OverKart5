@@ -36,6 +36,7 @@ extern char* mapMode;
 
 extern int LoadedProgress;
 
+extern uint CartridgeStatus;
 extern uint PrintLog[];
 extern uint PrintCount;
 

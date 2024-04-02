@@ -13,6 +13,7 @@ short LastMenuID = 0;
 uint ROptionPressed = 0;
 
 
+
 void DebugLog(uint Data)
 {
 	if (PrintCount >= 99)
@@ -475,25 +476,31 @@ void CheckBattleCDown()
 }
 
 
-
 void gameCode(void)
 {	
-	#if(DEBUGBUILD==TRUE)
+	
+	#if(DEBUGBUILD)
 	{
-		if(scrollLock)
+		if (scrollLock)
 		{
-
 			loadFont();
-			
-			//OverKartHeader.ScrollROM
-			for (int ThisList = 0; ThisList < 5; ThisList++)
+			printStringNumber(0,0,"",OverKartHeader.MusicID);
+			printStringNumber(0,10,"",songID);
+			if (GlobalController[0]->ButtonHeld & BTN_DUP)
 			{
-				printStringNumber(0, ThisList * 10, "", OverKartRAMHeader.ObjectList[ThisList].Flag);
+				GlobalPlayer[0].position[1] += 1;
+				GlobalPlayer[0].velocity[1] = 0;
+			}
+
+			if (GlobalController[0]->ButtonHeld & BTN_DLEFT)
+			{
+				GlobalPlayer[0].rap = 2;
+				*GlobalLap[0] = 2;
+				
 			}
 		}
 	}
 	#endif
-
 
 	if(SaveGame.TENNES == 1)
 	{
@@ -646,11 +653,7 @@ void gameCode(void)
 					}			
 					if (g_gameMode == GAMEMODE_GP)
 					{
-						printGPTime(gpTotalTime,0);
-						if (HotSwapID > 0)
-						{
-							hsTableSet();
-						}				
+						printGPTime(gpTotalTime,0);			
 					}
 				}
 				
@@ -740,10 +743,53 @@ uint SearchJRK0()
 //
 
 
-
+uint Target = 0x80600000;
+uint Source = 0x01600000;
+uint DataLen = 0x1000;
 void allRun()
 {
 	MakeRandom();
+
+	*(uint*)0x80650040 = (uint)&g_CfbPtrs[2];
+	*(uint*)0x80650044 = (uint)g_DispFrame;
+	#if DEBUGBUILD
+	switch (startupSwitch)
+	{
+		case 0:
+		case 1:		
+		break;
+
+		case 2:
+		if (GlobalController[0]->ButtonPressed == BTN_L)
+		{
+			*sourceAddress = Source;
+			*targetAddress = Target;
+			dataLength = DataLen;
+			runDMA();
+		}
+		if (GlobalController[0]->ButtonPressed == BTN_DRIGHT)
+		{
+			Source += 0x00100000;
+		}
+		if (GlobalController[0]->ButtonPressed == BTN_DLEFT)
+		{
+			Source -= 0x00100000;
+		}
+		if (GlobalController[0]->ButtonPressed == BTN_DUP)
+		{
+			Source += 0x00010000;
+		}
+		if (GlobalController[0]->ButtonPressed == BTN_DDOWN)
+		{
+			Source -= 0x00010000;
+		}
+		break;
+	}
+		
+	
+
+
+	#endif
 	
 
 	if (GlobalController[4]->ButtonPressed != 0)
@@ -751,6 +797,8 @@ void allRun()
 		MakeRandom();
 	}
 
+
+	//SaveGame.RenderSettings.CullMode = 1;
 	if (SaveGame.RenderSettings.CullMode == 1)
 	{
 		//Emulator
@@ -789,7 +837,7 @@ void allRun()
 	}
 	
 	
-	gMatrixCount = 0;
+	//gMatrixCount = 0;
 	
 	
 	if ((HotSwapID == 0) || (OverKartHeader.BackgroundToggle == 1))
@@ -807,22 +855,23 @@ void allRun()
 
 		asm_CupCount = 15;
 
-		if ((g_startingIndicator >= 6) && (gpCourseIndex == 16))
-		{
-			g_NewSequenceMode = 1; //trophy sequence is brokens
-			KBGNumber = 11;
-		}
 	}
 	else
 	{
-		asm_CupCount = 3;
-
-		if ((g_startingIndicator >= 6) && (gpCourseIndex == 4))
+		#if(DEBUGBUILD)
 		{
-			g_NewSequenceMode = 1; //trophy sequence is brokens
-			KBGNumber = 11;
+			asm_CupCount = 1;
 		}
+		#else
+		{
+			asm_CupCount = 3;
+		}
+		#endif
+		
+
 	}
+
+	
 	SetWeather3D(OverKartHeader.SkyType == 3);
 	SetWaterType((char)OverKartHeader.WaterType);
 	
@@ -838,9 +887,8 @@ void allRun()
 			{
 				g_courseID = 15;
 			}
-
-			
 		}
+		
 		
 			
 		if (g_courseID == 0x14)
@@ -873,8 +921,7 @@ void allRun()
 		}
 		case 10:
 		{			
-			scrollLock = false;
-			g_startingIndicator = 0;
+			
 			if (MenuChanged != 10)
 			{	
 				//MenuToggle = 0;
@@ -930,14 +977,11 @@ void allRun()
 				
 				startupSwitch = 2;
 
-				#if ProtectMode
-					SaveGame.TENNES = DPR();
-					DPRSave();
-				#endif
 
 				if ((SaveGame.SaveVersion != 7) && (SaveGame.SaveVersion != 99))
 				{
 					SaveGame.SaveVersion = 7;	
+					SaveGame.Initial = 0;
 					for (int This = 0; This < 8; This++)
 					{
 						renderMode[This] = 0;
@@ -956,7 +1000,16 @@ void allRun()
 					SaveGame.LevelSettings.ScaleXMode = 2;
 					SaveGame.LevelSettings.ScaleYMode = 2;
 					SaveGame.LevelSettings.ScaleZMode = 2;
+
+					#if ProtectMode
+						//SaveGame.TENNES = DPR();
+						//DPRSave();
+					#endif
+					
 				}
+
+				scrollLock = false;
+				g_startingIndicator = 0;
 			}
 			break;
 		}
@@ -968,6 +1021,7 @@ void allRun()
 				menuScreenB = 3; //resets mode selection to start screen.
 				LastMenuID = MenuChanged;
 				MenuChanged = 11;
+				SaveGame.Initial = 1;
 				//MenuToggle = 0;
 				
 				/*
@@ -989,12 +1043,12 @@ void allRun()
 				MenuIconsRAM = (int)(&ok_Storage);
 				GlobalAddressA = runMIO();
 
+				scrollLock = false;
+				g_startingIndicator = 0;
+				//HotSwapID = 0;
 				saveEEPROM((uint)&SaveGame);
 			}
 			
-			scrollLock = false;
-			g_startingIndicator = 0;
-			HotSwapID = 0;
 			copyCourseTable(0);
 			break;
 		}
@@ -1021,17 +1075,17 @@ void allRun()
 
 				LastMenuID = MenuChanged;
 				MenuChanged = 12;   
-				//menuScreenC = 0;       
+				//menuScreenC = 0;    
+					
+				scrollLock = false;
+				HotSwapID = 0;
+				copyCourseTable(0);   
 			}
-			scrollLock = false;
-			HotSwapID = 0;
-			copyCourseTable(0);
 			break;
 		}			
 		case 13:
 		{
-			scrollLock = false;
-			g_startingIndicator = 0;
+			
 			if (MenuChanged != 13)
 			{
 				//MenuToggle = 0;
@@ -1068,6 +1122,9 @@ void allRun()
 				setBanners();
 				hsLabel = -1;
 				courseValue = -1;
+
+				scrollLock = false;
+				g_startingIndicator = 0;
 				
 			}				
 		
@@ -1093,18 +1150,39 @@ void allRun()
 
 void PrintMenuFunction()
 {
-	loadFont();
-	printStringNumber(0,0,"",KBGNumber);
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
-	#if(DEBUGBUILD==TRUE)
+	#if(DEBUGBUILD)
 	{
+		if ( ((GlobalController[0]->ButtonPressed & BTN_L) == BTN_L) && ((GlobalController[0]->ButtonPressed & BTN_START) == BTN_START) )
+		{
+			
+			//StartGame
+			KBGNumber = 11;
+			g_cupSelect = 0;
+			g_courseSelect = 0;
+			g_courseID = 0;
+			*(short*)(0x8018EDF0) = 0;
+			g_raceClass = 1;
+			g_playerCount = 1;
+			g_gameMode = 1;
+			g_startingIndicator = 0;
+			g_menuMultiplayerSelection = 1;
+			GlobalPlayer[0].kart = 0;
+			HotSwapID = 1;
+			courseValue = 0;
+			
+			g_NewSequenceMode = 4;
+
+			
+		}
+
+
 		loadFont();
-		
-		
-		printStringUnsignedHex(0,10,"7",(uint)7);
+		printStringUnsignedHex(0,20,"",(uint)Source);
+		printStringUnsignedHex(0,30,"",(uint)Target);
 		
 	}
 	#endif
@@ -1155,36 +1233,42 @@ void PrintMenuFunction()
 		case 8:
 		{
 			//logo
-			
-			if (DEBUGBUILD)
+			#if (DEBUGBUILD)
 			{
 				loadFont();
 				printStringUnsignedHex(0,0,"PRINTLOG", (uint)&PrintLog);
 			}
+			#endif
 			
 			break;
 		}
 		case 10:
 		{
 			//title screen
-			DrawBox(102,130,120,38, 0, 0, 0, 200);
-
-			if (SaveGame.RenderSettings.CullMode == 0)
-			{
-				PrintBigText(128, 131, 0.6f, "LLE MODE" );
+			
+			
+			
+			if (SaveGame.Initial == 0)
+			{	
+				DrawBox(102,130,120,38, 0, 0, 0, 200);
+				if (SaveGame.RenderSettings.CullMode == 0)
+				{
+					PrintBigText(128, 131, 0.6f, "LLE MODE" );
+				}
+				else
+				{
+					PrintBigText(128, 131, 0.6f, "HLE MODE" );
+				}
+				if (SaveGame.RenderSettings.Platform == 0)
+				{
+					PrintBigText(115, 149, 0.6f, "N64 CONSOLE" );
+				}
+				else
+				{
+					PrintBigText(128, 149, 0.6f, "EMULATOR" );
+				}
 			}
-			else
-			{
-				PrintBigText(128, 131, 0.6f, "HLE MODE" );
-			}
-			if (SaveGame.RenderSettings.Platform == 0)
-			{
-				PrintBigText(115, 149, 0.6f, "N64 CONSOLE" );
-			}
-			else
-			{
-				PrintBigText(128, 149, 0.6f, "EMULATOR" );
-			}
+			
 			
 			if (TitleSwitch == 0)
 			{
@@ -1196,11 +1280,8 @@ void PrintMenuFunction()
 			}
 			KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
 			KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);
-
 			
-			loadFont();
-			printString(0,200,VersionString);
-
+			
 			break;
 
 		}

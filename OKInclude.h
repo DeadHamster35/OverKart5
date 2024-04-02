@@ -14,7 +14,6 @@
 #include "OverKartVariables.h"
 #include "BlockFortPaths.h"
 #include "Data\ModelData\ModelData.h"
-#include "Protec.h"
 #include "Build.h"
 #include "CustomMenu\GFX\MenuGFX.h"
 #endif

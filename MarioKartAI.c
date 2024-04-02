@@ -6,6 +6,9 @@ char GlobalCharA; CPU STY
 char GlobalCharB; FORCE CPU
 char MenuOverflow; START BOOST
 */
+
+
+
 void fastAI()
 {
      switch(g_raceClass)

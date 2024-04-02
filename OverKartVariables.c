@@ -15,7 +15,6 @@ char* mapMode = (char*)&SaveGame.LevelSettings;
 int LoadedProgress;
 
 
-
 uint PrintLog[99];
 uint PrintCount;
 
@@ -187,7 +186,7 @@ char *renderOptions[] = {
 	"Screen Split", 
 	"Draw Dist.", 
 	"Game Tempo",
-	"Cull Mode" 
+	"Cull Mode", 
 	"Show FPS", 
 	"Input Disp.",
 	"Detail Disp."
@@ -200,6 +199,7 @@ char *renderParameters[][3] = {
 	{"Horizontal", "Vertical", ""}, 
 	{"Default","Extended", ""}, 
 	{"Console","Emulator", ""},  
+	{"LLE","HLE",""},
 	{"Off" , "On", ""},
 	{"Off" , "On", ""},
 	{"Off" , "On", "Shortcut"}
@@ -207,6 +207,7 @@ char *renderParameters[][3] = {
 
 __attribute__((aligned(16)))
 int renderLimits[] = {
+	2,
 	2,
 	2,
 	2,
@@ -225,6 +226,7 @@ int renderChar[][3] = {
 	{10,8,0}, 
 	{7,8,0}, 
 	{7,8,0},
+	{3,3,0},
 	{3,2,0},
 	{3,2,0},
 	{3,2,8} 

@@ -28,7 +28,8 @@ typedef struct SaveData{
      LevelOptions   LevelSettings;
      bool           TENNES;
      char           SaveVersion;     
-     char           PAD[458];
+     char           Initial;
+     char           PAD[457];
 } SaveData;
 
 #endif

@@ -1,6 +1,9 @@
 #include "../Library/MainInclude.h"
 #include "OKInclude.h"
 
+
+uint SetLimit = 2;
+
 void loadPosition()
 {
      switch(g_playerCount)
@@ -1319,6 +1322,15 @@ void PlayerSelectMenuBefore()
 void MapSelectMenu(short PlayerIndex)
 {
      
+    
+     if ((menuScreenA == 3) && (GlobalController[4]->ButtonPressed == BTN_A))
+     {
+          if (HotSwapID > 0)
+          {
+               hsTableSet();
+          }
+     }
+
      if (g_gameMode == GAMEMODE_BATTLE)
      {
           GlobalShortA = 4;
@@ -1353,9 +1365,13 @@ void MapSelectMenu(short PlayerIndex)
           }
           else if ((GlobalController[PlayerIndex]->ButtonPressed & BTN_CRIGHT) == BTN_CRIGHT)
           {
-               swapHS(1);
+               if (HotSwapID < SetLimit)
+               {
+                    swapHS(1);
+               }
+               
           }
-          LoadCustomHeader(courseValue);
+          LoadCustomHeader(courseValue + gpCourseIndex);
      }
 
      *(int*)(&PlayerOK) = 0;
@@ -1784,53 +1800,57 @@ void DataMenuController(OSContPad *pad, u16 i, u16 NewButton)
 int TitleSwitch;
 void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
-     if 
-     ( 
-          ((BTN_DLEFT == (GlobalController[i]->ButtonPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->ButtonPressed & BTN_DRIGHT))) ||
-          ((BTN_DLEFT == (GlobalController[i]->AnalogPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->AnalogPressed & BTN_DRIGHT)))
-     )
+     
+     if (SaveGame.Initial == 0)
      {
-          if (TitleSwitch == 0)
+          if 
+          ( 
+               ((BTN_DLEFT == (GlobalController[i]->ButtonPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->ButtonPressed & BTN_DRIGHT))) ||
+               ((BTN_DLEFT == (GlobalController[i]->AnalogPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->AnalogPressed & BTN_DRIGHT)))
+          )
           {
-               if (SaveGame.RenderSettings.CullMode == 1)
+               if (TitleSwitch == 0)
                {
-                    SaveGame.RenderSettings.CullMode = 0;
+                    if (SaveGame.RenderSettings.CullMode == 1)
+                    {
+                         SaveGame.RenderSettings.CullMode = 0;
+                    }
+                    else
+                    {
+                         SaveGame.RenderSettings.CullMode = 1;
+                    }
                }
                else
                {
-                    SaveGame.RenderSettings.CullMode = 1;
+                    if (SaveGame.RenderSettings.Platform == 1)
+                    {
+                         SaveGame.RenderSettings.Platform = 0;
+                    }
+                    else
+                    {
+                         SaveGame.RenderSettings.Platform = 1;
+                    }
                }
           }
-          else
+          if 
+          ( 
+               ((BTN_DDOWN == (GlobalController[i]->ButtonPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->ButtonPressed & BTN_DUP))) ||
+               ((BTN_DDOWN == (GlobalController[i]->AnalogPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->AnalogPressed & BTN_DUP)))
+          )
           {
-               if (SaveGame.RenderSettings.Platform == 1)
+               
+               if (TitleSwitch == 0)
                {
-                    SaveGame.RenderSettings.Platform = 0;
+                    TitleSwitch = 1;
                }
                else
                {
-                    SaveGame.RenderSettings.Platform = 1;
+                    TitleSwitch = 0;
                }
-          }
-     }
-     if 
-     ( 
-          ((BTN_DDOWN == (GlobalController[i]->ButtonPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->ButtonPressed & BTN_DUP))) ||
-          ((BTN_DDOWN == (GlobalController[i]->AnalogPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->AnalogPressed & BTN_DUP)))
-     )
-     {
-          
-          if (TitleSwitch == 0)
-          {
-               TitleSwitch = 1;
-          }
-          else
-          {
-               TitleSwitch = 0;
           }
      }
      
-          
+     
      TitleController(pad,i,newbutton);
      
 };

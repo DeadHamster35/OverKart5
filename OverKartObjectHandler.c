@@ -9,7 +9,7 @@ void DrawPerScreen(Camera* LocalCamera)
 	{
 		if(HotSwapID > 0)
 		{
-			DrawOKObjects(LocalCamera);
+			DrawOKObjects(LocalCamera, SaveGame.GameSettings.FlycamMode);
 		}
 
 
