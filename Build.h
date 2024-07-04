@@ -3,10 +3,11 @@
 
 #define CFLG_LapCounter      1
 #define CFLG_PlayerSelect   1
-#define OverKartBuild   0
+#define OverKartBuild   1
+
 #define DebugMode       0
 #define ProtectMode     1
 #define DEBUGBUILD      0
-#define VersionString "03182024"
+#define VersionString "06282024"
 
 #endif

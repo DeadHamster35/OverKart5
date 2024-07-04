@@ -3,8 +3,9 @@
 
 
 
-.open "ROM\stock.z64", "ROM\BASE.z64", 0
-.definelabel PAYLOAD_ROM, 		filesize("ROM\stock.z64")
+.open "ROM\Battle.z64", "ROM\BASE.z64", 0
+//.definelabel PAYLOAD_ROM, 		filesize("ROM\Battle.z64")
+.definelabel PAYLOAD_ROM, 0x3C00000
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -12,7 +13,7 @@
 .definelabel ok_ModelDataRawSize,     filesize("data\ModelData\Binary\ModelData.raw")
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
-.definelabel OKBuild, 0
+.definelabel OKBuild, 1
 .definelabel CFLG_LapCounter, 1
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
@@ -20,10 +21,124 @@
 .include "..\library\OKHeader.asm"
 .include "..\library\GameVariables\NTSC\OKAssembly.asm"
 
+.if OKBuild
+
+     //Lucky Blank Function
+     .org 0x124BF4
+     JAL ResultsCheck
 
 
+     .org 0x0FA178
+     JAL CameraCheckFunc
+     .org 0x0FA194
+     JAL CameraCheckFunc
+     .org 0x0FA1AC
+     JAL CameraCheckFunc
+     .org 0x0FA1C8
+     JAL CameraCheckFunc
+     .org 0x0FA1E0
+     JAL CameraCheckFunc
+     .org 0x0FA1F8
+     JAL CameraCheckFunc
+     .org 0x0FA210
+     JAL CameraCheckFunc
+     .org 0x00218C
+     JAL CameraCheckFunc
+     .org 0x002438
+     JAL CameraCheckFunc
+     .org 0x002458
+     JAL CameraCheckFunc
+     .org 0x0025E0
+     JAL CameraCheckFunc
+     .org 0x002600
+     JAL CameraCheckFunc
+     .org 0x0027F8
+     JAL CameraCheckFunc
+     .org 0x002818
+     JAL CameraCheckFunc
+     .org 0x002838
+     JAL CameraCheckFunc
+     .org 0x002858
+     JAL CameraCheckFunc
+
+     .org 0x10F23C
+     JAL KartCheckFuncA
+     NOP
+     .org 0x10F524
+     JAL KartCheckFuncA
+     NOP
+     .org 0x10FB30
+     JAL KartCheckFuncA
+     NOP
+     .org 0x110128
+     JAL KartCheckFuncA
+     NOP
+
+     .org 0x10F254
+     JAL KartCheckFuncA2
+     NOP
+     .org 0x10F53C
+     JAL KartCheckFuncA2
+     NOP
+     .org 0x10FB48
+     JAL KartCheckFuncA2
+     NOP
+     .org 0x110140
+     JAL KartCheckFuncA2
+     NOP
 
 
+     //
+     //
+
+     
+     .org 0x10F81C
+     JAL KartCheckFuncB 
+     NOP
+     .org 0x10FE44
+     JAL KartCheckFuncB
+     NOP
+     .org 0x11040C
+     JAL KartCheckFuncB     
+     NOP
+
+     .org 0x10F834
+     JAL KartCheckFuncB2
+     NOP
+     .org 0x10FE5C
+     JAL KartCheckFuncB2
+     NOP
+     .org 0x110424
+     JAL KartCheckFuncB2    
+     NOP
+
+
+     //
+     //
+     
+
+     .org 0x1106F0
+     JAL KartCheckFuncC     
+     NOP
+
+     .org 0x110708
+     JAL KartCheckFuncC2
+     NOP
+
+     
+     //
+     //
+
+
+     .org 0x110A34
+     JAL KartCheckFuncD
+     NOP
+
+     .org 0x110A4C
+     JAL KartCheckFuncD2
+     NOP
+
+.endif
 
 
 
@@ -122,6 +237,11 @@ NOP
 NOP
 
 
+//Disable C-button Z-Button C Button Z Button merge
+.org 0x001584
+ori   $t4, $a1, 0x0000
+
+
 
 .org 0xB105C
 //DATA Controller
@@ -181,10 +301,15 @@ StartRAMData:
      .align 0x10
      .importobj "ModelData.o"
      RCIconMap:
-     .import "data\\RedSquare.png.RAW"
+     .import "data\\RedSquare.png.RAW"          
+     .align 0x10
+     .importobj "TitleMenu.o"
      .align 0x10
 
-     
+     .if OKBuild
+     .align 0x10
+     .importobj "Cheat.o"
+     .endif
 
 
      .include "..\Library\LIBRARYBUILD2.asm"
@@ -196,7 +321,16 @@ EndRAMData:
 .headersize 0
 //ROM data
 //Offsets are ROM Relative- Headersize 0
-     
+
+
+     .if OKBuild
+          Seg12BIN:
+          .align 0x10
+          .import "data\\Segment12.bin"
+          .align 0x10
+          Seg12END:
+     .endif
+
      Splash3D:
      .import "data\\SplashLogo\\model\\SplashLogo.bin"
      .align 0x10
@@ -234,7 +368,7 @@ EndRAMData:
      .align 0x10
      StartEnd:
      Pirate:
-     .import "Data\test\Pirate512.MIO0"
+     .import "Data\\PiracyWarning.MIO0"
      .align 0x10
      PirateEnd:
 
@@ -294,7 +428,7 @@ EndRAMData:
     
 .include "CustomMenu\MenuBuild.asm"
 
-
+.org 0xD00000
 .align 0x10
 .include "..\Library\LIBRARYBUILD3.asm"
 
@@ -303,7 +437,10 @@ EndRAMData:
 
 .headersize 0
 .org 0x20
-.ascii "TARMAC 64     031824"
+//.ascii "TARMAC 64     031824"
+.ascii "OVERKART64 V6 062824"
 
+.org 0x3FFFFF1
+.ascii "64MEGFUCKREPROS"
 
 .close

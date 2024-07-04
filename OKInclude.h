@@ -16,4 +16,5 @@
 #include "Data\ModelData\ModelData.h"
 #include "Build.h"
 #include "CustomMenu\GFX\MenuGFX.h"
+#include "TitleMenu.h"
 #endif

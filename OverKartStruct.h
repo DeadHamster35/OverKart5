@@ -21,6 +21,10 @@ typedef struct LevelOptions{
      char ScaleXMode, ScaleYMode, ScaleZMode, MirrorX, MirrorY, MirrorZ, PAD4, PAD5;
 } LevelOptions;
 
+typedef struct CheatOptions{
+     char CHEATA,CHEATB,CHEATC,CHEATD,CHEATE, CHEATF, CHEATG, CHEATH;
+} CheatOptions;
+
 typedef struct SaveData{
      RaceOptions    GameSettings;
      RenderOptions  RenderSettings;    
@@ -29,7 +33,8 @@ typedef struct SaveData{
      bool           TENNES;
      char           SaveVersion;     
      char           Initial;
-     char           PAD[457];
+     CheatOptions   CheatSettings;
+     char           PAD[449];
 } SaveData;
 
 #endif

@@ -32,9 +32,13 @@ extern uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 extern char* gameMode;
 extern char* renderMode;
 extern char* battleMode;
+extern char* cheatMode;
 extern char* mapMode;
 
 extern int LoadedProgress;
+
+
+extern short LastMenuID;
 
 extern uint CartridgeStatus;
 extern uint PrintLog[];

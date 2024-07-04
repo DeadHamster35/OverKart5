@@ -11,8 +11,12 @@ SaveData SaveGame;
 char* gameMode = (char*)&SaveGame.GameSettings;
 char* renderMode = (char*)&SaveGame.RenderSettings;
 char* battleMode = (char*)&SaveGame.BattleSettings;
+char* cheatMode = (char*)&SaveGame.CheatSettings;
 char* mapMode = (char*)&SaveGame.LevelSettings;
 int LoadedProgress;
+
+
+short LastMenuID = 0;
 
 
 uint PrintLog[99];
@@ -114,7 +118,7 @@ OKMenu GameOKMenu;
 __attribute__((aligned(16)))
 uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 __attribute__((aligned(16)))
-int battleLimits[] = {3,2};
+int battleLimits[] = {1,2};
 __attribute__((aligned(16)))
 int battleChar[][3] = {{7,3,6}, {3,2}};
 
@@ -150,7 +154,7 @@ char *gameParameters[][4] = {
 
 __attribute__((aligned(16)))
 int gameLimits[] = {
-	4,
+	3,
 	2,
 	2,
 	2,

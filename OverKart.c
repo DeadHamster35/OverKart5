@@ -9,9 +9,8 @@ extern unsigned short net[];
 int DPRTester;
 int RandomDPR;
 short MapModeCheck = 0;
-short LastMenuID = 0;
 uint ROptionPressed = 0;
-
+ushort PiracyBool = 1;
 
 
 void DebugLog(uint Data)
@@ -126,6 +125,7 @@ void okSetup(void)
 	//EmulatorPlatform = CheckEmulator();	
 	
 	
+				
 	
 	//8047CBA0
 	loadLogo();
@@ -137,7 +137,9 @@ void okSetup(void)
 	loadEEPROM((uint)&SaveGame);
 	CheckContPackMenu();
 	
-
+	#if OverKartBuild
+		CheatSetup();
+	#endif
 	
 	dataLength = 8;
 	*sourceAddress = (int)&g_MUSSequenceTable.pointer[3].address;
@@ -169,7 +171,7 @@ void okSetup(void)
 	asm_SongB = 0x240E0001;
 
 	g_sfxPause = 0; //Just for Amped Up (To fix some mute sfx when pausing the game)
-	hsGP = 0;
+	HotSwapGP = 0;
 	MapModeCheck = 0;
 	PrintCount = 0;
 	//FlyCamSpeed = 5;
@@ -189,7 +191,7 @@ void okSetup(void)
 	*(long*)(&ok_MRSong + 1) = g_MUSSequenceTable.pointer[3].length;
 	
 	FreeSpaceAddress = (int)&ok_Storage;
-	SaveGame.TENNES = false;
+	SaveGame.TENNES = true;
 
 	GameOKMenu.PanelCount = 3;
 	
@@ -232,7 +234,17 @@ bool checkEndGame()
 }
 void startRace()
 {
-	setZoomLevel(1); //Just for Amped Up (All races start zoomed out)
+	
+	
+	
+
+	#if OverKartBuild
+	{
+		LoadCheatData();
+	}				
+	#endif
+
+	setZoomLevel(1); // (All races start zoomed out)
 	g_loadedcourseFlag = 0xF0;
 
 	InitialCustomParticleBuffer();
@@ -267,7 +279,7 @@ void startRace()
 		checkStats(0);
 	}
 
-	if (g_gameMode == GAMEMODE_GP)
+	if ((g_gameMode == GAMEMODE_GP) || ((g_gameMode == GAMEMODE_VS) && (SaveGame.GameSettings.AIMode > 0)) )
 	{
 		SetAIDifficulty(g_raceClass);
 	}
@@ -275,48 +287,52 @@ void startRace()
 	
 	if (HotSwapID > 0)
 	{
-		if (g_gameMode != GAMEMODE_TT)
+		if ((g_gameMode != GAMEMODE_TT) && (g_gameMode != GAMEMODE_BATTLE))
 		{
 			PlaceSIBox(GetRealAddress(0x06000668));
 		}
 		if (g_gameMode != GAMEMODE_BATTLE)
 		{
 			EmptyActionData();
-		
-			setSky();
-			setWater();
-			loadMinimap();	
-		}
-		if ((SaveGame.GameSettings.GameMode == 1))  
-		{     
-			//Red Coin Challenge   	
-			RedCoinChallenge(GetRealAddress(0x06000620));
-			CoinCount[0] = 0;
-			CoinCount[1] = 0;
-			CoinCount[2] = 0;
-			CoinCount[3] = 0;
 		}
 		
-		if ((SaveGame.GameSettings.GameMode == 2))  
-		{      
-			//Gold Coin Challenge  	
-			
-			
-			GlobalIntA = (int)(8 * g_playerCount); // CoinCount
-			
-			if (GlobalIntA < 10)
-			{
-				GlobalIntA = 10;
+		setSky();
+		setWater();
+		loadMinimap();	
+		
+		if (g_gameMode != GAMEMODE_BATTLE)
+		{	
+			if ((SaveGame.GameSettings.GameMode == 1))  
+			{     
+				//Red Coin Challenge   	
+				RedCoinChallenge(GetRealAddress(0x06000620));
+				CoinCount[0] = 0;
+				CoinCount[1] = 0;
+				CoinCount[2] = 0;
+				CoinCount[3] = 0;
 			}
-			GoldCoinChallenge(GetRealAddress(pathOffset), GlobalIntA);
-			CoinCount[0] = 0;
-			CoinCount[1] = 0;
-			CoinCount[2] = 0;
-			CoinCount[3] = 0;
-			CoinCount[4] = 0;
-			CoinCount[5] = 0;
-			CoinCount[6] = 0;
-			CoinCount[7] = 0;
+			
+			if ((SaveGame.GameSettings.GameMode == 2))  
+			{      
+				//Gold Coin Challenge  	
+				
+				
+				GlobalIntA = (int)(8 * g_playerCount); // CoinCount
+				
+				if (GlobalIntA < 10)
+				{
+					GlobalIntA = 10;
+				}
+				GoldCoinChallenge(GetRealAddress(pathOffset), GlobalIntA);
+				CoinCount[0] = 0;
+				CoinCount[1] = 0;
+				CoinCount[2] = 0;
+				CoinCount[3] = 0;
+				CoinCount[4] = 0;
+				CoinCount[5] = 0;
+				CoinCount[6] = 0;
+				CoinCount[7] = 0;
+			}
 		}
 		if (VersionNumber > 4)
 		{
@@ -325,7 +341,8 @@ void startRace()
 				ClearOKObject(This);
 			}
 			loadOKObjects();
-			setOKObjects();					
+			setOKObjects();	
+
 		}
 	}
 	else
@@ -405,6 +422,7 @@ void ExecuteItemHook(Player* Car)
 	{
 		ExecuteItem(Car);
 	}
+	else
 	{
 		switch (SaveGame.BattleSettings.GameMode)
 		{
@@ -479,241 +497,225 @@ void CheckBattleCDown()
 void gameCode(void)
 {	
 	
+	#if OverKartBuild
+	{
+		ApplyCheats();
+	}
+	#endif
+
+	
+
 	#if(DEBUGBUILD)
 	{
 		if (scrollLock)
 		{
 			loadFont();
-			printStringNumber(0,0,"",OverKartHeader.MusicID);
-			printStringNumber(0,10,"",songID);
-			if (GlobalController[0]->ButtonHeld & BTN_DUP)
-			{
-				GlobalPlayer[0].position[1] += 1;
-				GlobalPlayer[0].velocity[1] = 0;
-			}
-
-			if (GlobalController[0]->ButtonHeld & BTN_DLEFT)
-			{
-				GlobalPlayer[0].rap = 2;
-				*GlobalLap[0] = 2;
-				
-			}
+			printStringNumber(0,10,"",HotSwapID);
 		}
 	}
 	#endif
 
-	if(SaveGame.TENNES == 1)
-	{
-		KWSpriteDiv(256,120,(ushort*)&Pirate,512,240,4);
-	}
-	else
-	{
 		
 
-
-		CheckIFrames();
-		
-		if (SaveGame.RenderSettings.Platform == 0)
+	CheckIFrames();
+	
+	if (SaveGame.RenderSettings.Platform == 0)
+	{
+		//Console
+		if (g_gameMode != GAMEMODE_TT)
 		{
-			//Console
-			if (g_gameMode != GAMEMODE_TT)
+			DynamicTempo();
+		}
+		else
+		{
+			if (HotSwapID > 0)
 			{
-				DynamicTempo();
+				StaticTempo(OverKartHeader.ManualTempo);
 			}
 			else
 			{
-				if (HotSwapID > 0)
-				{
-					StaticTempo(OverKartHeader.ManualTempo);
-				}
-				else
-				{
-					StaticTempo(2);
-				}
-			}
-			
-		}
-		else
-		{
-			//emulator
-			StaticTempo(2);
-		}
-		
-		
-		if (g_gameMode == GAMEMODE_BATTLE)
-		{
-			switch(SaveGame.BattleSettings.GameMode)
-			{
-				case BTL_BATTLE:
-				{
-					break;
-				}
-				case BTL_CTF:
-				{							
-					CaptureFlag();
-					break;
-				}
-				case BTL_SOCCER:
-				{
-					CaptureBalls();
-					break;
-				}
+				StaticTempo(2);
 			}
 		}
-
-		if (MapModeCheck || (SaveGame.GameSettings.GameMode == 3))
-		{
-			practiceHack();		
-		}
-		if (SaveGame.GameSettings.FlycamMode == 1)
-		{
-			RunFlyCam();
-		}
 		
-		SurfaceExplorerMode = SaveGame.GameSettings.ExploreMode;
-
-		if (SaveGame.RenderSettings.InputMode > 0x00)
-		{
-			drawInputDisplay();
-		}
-
-		if (SaveGame.RenderSettings.DetailMode > 0x00)
-		{
-			printDetails();
-		}
-
-		
-		if (HotSwapID > 0)   //Version 4 Texture Scroll Function
-		{			
-			if ((g_gamePausedFlag == 0) && (scrollLock))
-			{
-				runTextureScroll();
-				CheckOKObjects();
-				runDisplayScreen();
-
-				//Dynamic WaveRace Water 
-				runWaterVertex();
-				LavaFloorRecoil();
-				CheckPaths();
-				
-			}	
-		}
-		
-
-		if ((HotSwapID > 0) || (SaveGame.RenderSettings.DrawMode == 1))
-		{
-			g_farClip = 20000;
-		}
-		else
-		{
-			g_farClip = 6800;
-		}
-
-
-		if (g_startingIndicator == 1)
-		{
-				// Version 5 and Above.
-			// Adds Scrolling Textures.
-			// Adds Tranlucent Textures.
-
-			if (raceStatus != 1)
-			{
-				raceStatus = 1;
-				startRace();
-				hsLabel = -1;
-				MenuChanged = -1;
-			}
-
-			
-			GlobalShortD = 0;
-			
-		}
-		if (g_startingIndicator == 2)
-		{
-			raceStatus = 2;
-			scrollLock = true;
-			
-			if (GlobalShortD < 60)
-			{	
-				printAnticheat(true);		
-				if  (HotSwapID > 0)
-				{
-					loadFont();
-					GlobalIntA = *(long*)(&ok_Credits);
-					if (GlobalIntA != 0)
-					{		
-								
-						printString( (140 - (GlobalIntA * 4)), 150, (char*)(&ok_Credits + 1));
-					}
-					GlobalIntA = *(long*)(&ok_SerialKey);
-					if ((g_gameMode == GAMEMODE_TT) && (GlobalIntA != 0))
-					{
-						printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
-						printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
-					}			
-					if (g_gameMode == GAMEMODE_GP)
-					{
-						printGPTime(gpTotalTime,0);			
-					}
-				}
-				
-
-				GlobalShortD += 1;
-			}
-
-			
-		}
-		if (g_startingIndicator == 3)
-		{
-			raceStatus = 3;
-			if ((SaveGame.GameSettings.GameMode == 2) && (HotSwapID > 0) && (g_menuMultiplayerSelection == 1))
-			{
-				DisplayCoinSprite();			
-			}
-			
-			
-		}
-		
-		if (g_startingIndicator == 5)
-		{
-			if (raceStatus != 5)
-			{
-				gpTotalTime += g_TrialTime;
-				raceStatus = 5;
-			}
-			if (g_gameMode == GAMEMODE_GP)
-			{
-				printGPTime(gpTotalTime,30);
-			}
-		}
-
-		if (g_startingIndicator == 6)
-		{	
-			raceStatus = 6;
-		}
-
-		if (g_startingIndicator == 7)
-		{
-			
-			if (raceStatus != 7)
-			{
-				raceStatus = 7;	
-				
-				endRace();
-			}
-			
-		}
-		
-		if(SaveGame.RenderSettings.DisplayFPS == 1)
-		{
-			DrawFPS(220,10);	
-		}
-		
-
-		#ifndef CFLG_LapCounter
-			DrawLapCounter();	
-		#endif
 	}
+	else
+	{
+		//emulator
+		StaticTempo(2);
+	}
+	
+	
+	if (g_gameMode == GAMEMODE_BATTLE)
+	{
+		switch(SaveGame.BattleSettings.GameMode)
+		{
+			case BTL_BATTLE:
+			{
+				break;
+			}
+			case BTL_CTF:
+			{							
+				CaptureFlag();
+				break;
+			}
+			case BTL_SOCCER:
+			{
+				CaptureBalls();
+				break;
+			}
+		}
+	}
+
+	if (MapModeCheck || (SaveGame.GameSettings.GameMode == 3))
+	{
+		practiceHack();		
+	}
+	if (SaveGame.GameSettings.FlycamMode == 1)
+	{
+		RunFlyCam();
+	}
+	
+	SurfaceExplorerMode = SaveGame.GameSettings.ExploreMode;
+
+	if (SaveGame.RenderSettings.InputMode > 0x00)
+	{
+		drawInputDisplay();
+	}
+
+	if (SaveGame.RenderSettings.DetailMode > 0x00)
+	{
+		printDetails();
+	}
+
+	
+	if (HotSwapID > 0)   //Version 4 Texture Scroll Function
+	{			
+		if ((g_gamePausedFlag == 0) && (scrollLock))
+		{
+			runTextureScroll();
+			CheckOKObjects();
+			runDisplayScreen();
+
+			//Dynamic WaveRace Water 
+			runWaterVertex();
+			
+			LavaFloorRecoil();
+			CheckPaths();
+			
+		}	
+	}
+	
+
+	if ((HotSwapID > 0) || (SaveGame.RenderSettings.DrawMode == 1))
+	{
+		g_farClip = 20000;
+	}
+	else
+	{
+		g_farClip = 6800;
+	}
+
+
+	if (g_startingIndicator == 1)
+	{
+			// Version 5 and Above.
+		// Adds Scrolling Textures.
+		// Adds Tranlucent Textures.
+
+		if (raceStatus != 1)
+		{
+			raceStatus = 1;
+			startRace();
+			hsLabel = -1;
+			MenuChanged = -1;
+		}
+
+		
+		GlobalShortD = 0;
+		
+	}
+	if (g_startingIndicator == 2)
+	{
+		raceStatus = 2;
+		scrollLock = true;
+		
+		if (GlobalShortD < 60)
+		{	
+			printAnticheat(true);		
+			if  (HotSwapID > 0)
+			{
+				loadFont();
+				GlobalIntA = *(long*)(&ok_Credits);
+				if (GlobalIntA != 0)
+				{		
+							
+					printString( (140 - (GlobalIntA * 4)), 150, (char*)(&ok_Credits + 1));
+				}
+				GlobalIntA = *(long*)(&ok_SerialKey);
+				if ((g_gameMode == GAMEMODE_TT) && (GlobalIntA != 0))
+				{
+					printString( (140 - (GlobalIntA * 4)), 160, (char*)(&ok_SerialKey + 1));
+					printStringNumber(76,170,"Base Version -",OverKartHeader.Version);
+				}			
+				if (g_gameMode == GAMEMODE_GP)
+				{
+					printGPTime(gpTotalTime,0);			
+				}
+			}
+			
+
+			GlobalShortD += 1;
+		}
+
+		
+	}
+	if (g_startingIndicator == 3)
+	{
+		raceStatus = 3;
+		if ((SaveGame.GameSettings.GameMode == 2) && (HotSwapID > 0) && (g_menuMultiplayerSelection == 1))
+		{
+			DisplayCoinSprite();			
+		}
+		
+		
+	}
+	
+	if (g_startingIndicator == 5)
+	{
+		if (raceStatus != 5)
+		{
+			gpTotalTime += g_TrialTime;
+			raceStatus = 5;
+		}
+		if (g_gameMode == GAMEMODE_GP)
+		{
+			printGPTime(gpTotalTime,30);
+		}
+	}
+
+	if (g_startingIndicator == 6)
+	{	
+		raceStatus = 6;
+	}
+
+	if (g_startingIndicator == 7)
+	{
+		
+		if (raceStatus != 7)
+		{
+			raceStatus = 7;	
+			
+			endRace();
+		}
+		
+	}
+	
+	if(SaveGame.RenderSettings.DisplayFPS == 1)
+	{
+		DrawFPS(220,10);	
+	}
+
 }
 void resetMap()
 {
@@ -722,22 +724,7 @@ void resetMap()
 }
 
 
-uint SearchJRK0()
-{
-	uint Address = 0x80000000;
 
-	do 
-	{
-		if ( (*(uint*)(Address)) == 0x03400008)
-		{
-			return Address;
-		}
-		
-		Address+=4;
-	} while(Address < 0x80800000);
-	
-	return 0;
-}
 //
 //
 //
@@ -746,59 +733,24 @@ uint SearchJRK0()
 uint Target = 0x80600000;
 uint Source = 0x01600000;
 uint DataLen = 0x1000;
+
+ushort PiracyCountdown = 0;
+
 void allRun()
 {
+
 	MakeRandom();
-
-	*(uint*)0x80650040 = (uint)&g_CfbPtrs[2];
-	*(uint*)0x80650044 = (uint)g_DispFrame;
-	#if DEBUGBUILD
-	switch (startupSwitch)
-	{
-		case 0:
-		case 1:		
-		break;
-
-		case 2:
-		if (GlobalController[0]->ButtonPressed == BTN_L)
-		{
-			*sourceAddress = Source;
-			*targetAddress = Target;
-			dataLength = DataLen;
-			runDMA();
-		}
-		if (GlobalController[0]->ButtonPressed == BTN_DRIGHT)
-		{
-			Source += 0x00100000;
-		}
-		if (GlobalController[0]->ButtonPressed == BTN_DLEFT)
-		{
-			Source -= 0x00100000;
-		}
-		if (GlobalController[0]->ButtonPressed == BTN_DUP)
-		{
-			Source += 0x00010000;
-		}
-		if (GlobalController[0]->ButtonPressed == BTN_DDOWN)
-		{
-			Source -= 0x00010000;
-		}
-		break;
-	}
-		
-	
-
-
-	#endif
-	
 
 	if (GlobalController[4]->ButtonPressed != 0)
 	{
 		MakeRandom();
 	}
 
-
+	
+	//Emulator Only ForceHack
+	//SaveGame.RenderSettings.Platform = 1;
 	//SaveGame.RenderSettings.CullMode = 1;
+	//Emulator ForceHack
 	if (SaveGame.RenderSettings.CullMode == 1)
 	{
 		//Emulator
@@ -860,7 +812,7 @@ void allRun()
 	{
 		#if(DEBUGBUILD)
 		{
-			asm_CupCount = 1;
+			asm_CupCount = 0;
 		}
 		#else
 		{
@@ -868,7 +820,6 @@ void allRun()
 		}
 		#endif
 		
-
 	}
 
 	
@@ -900,6 +851,64 @@ void allRun()
 	
 	switch(KBGNumber)
 	{
+		#if OverKartBuild
+			case 99:
+			{
+				if (MenuChanged != 99)
+				{
+					LastMenuID = MenuChanged;
+					MenuChanged = 99;
+				}
+
+				
+				CheatMenuHandler();
+
+				
+				break;
+			}
+
+			case 98:
+			{
+				if (MenuChanged != 98)
+				{
+					*sourceAddress = (int)(&Pirate);
+					*targetAddress = (int)(&ok_FreeSpace);
+					dataLength = (int)&PirateEnd - (int)&Pirate;
+					runDMA();
+					*sourceAddress = (int)(&ok_FreeSpace);
+					*targetAddress = (int)(&ok_Storage);
+					runMIO();
+					PiracyCountdown = 60;
+
+					MenuChanged = 98;
+				}
+
+				
+
+				if (PiracyCountdown <= 0)
+				{
+					
+					if (GlobalController[4]->ButtonPressed)
+					{	
+						SpriteBtnStart(200,120,0.5f,true);
+						KBGNumber = 10;
+						KBGNumberNext = 10;
+						KBGChange = 1;
+						SetFadeOutTaData();
+					}
+					else
+					{
+						SpriteBtnStart(200,120,0.5f,false);
+					}
+				}
+				else
+				{
+					PiracyCountdown--;
+				}
+				break;
+
+			}
+		#endif
 		case 6:
 		{
 			if (MenuChanged != 6)
@@ -921,7 +930,14 @@ void allRun()
 		}
 		case 10:
 		{			
-			
+			if (SaveGame.TENNES == true)
+			{
+				SaveGame.TENNES = false;
+				KBGNumber = 98;
+				KBGNumberNext = 98;
+				KBGChange = 1;
+				SetFadeOutTaData();
+			}
 			if (MenuChanged != 10)
 			{	
 				//MenuToggle = 0;
@@ -976,6 +992,7 @@ void allRun()
 
 				
 				startupSwitch = 2;
+
 
 
 				if ((SaveGame.SaveVersion != 7) && (SaveGame.SaveVersion != 99))
@@ -1147,12 +1164,12 @@ void allRun()
 }
 
 
-
 void PrintMenuFunction()
 {
 	ClockCycle[1] = osGetCount();
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
+
 
 	#if(DEBUGBUILD)
 	{
@@ -1174,43 +1191,35 @@ void PrintMenuFunction()
 			HotSwapID = 1;
 			courseValue = 0;
 			
-			g_NewSequenceMode = 4;
+			g_NewSequenceMode = 5;
 
 			
 		}
-
-
-		loadFont();
-		printStringUnsignedHex(0,20,"",(uint)Source);
-		printStringUnsignedHex(0,30,"",(uint)Target);
 		
 	}
 	#endif
+
+
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
 	{
 		DrawFPS(220,10);	
 	}
 	
-	#if ProtectMode
-	if(SaveGame.TENNES == 1)
-	{		
-		if (SaveGame.SaveVersion != 99)
-		{
-			SaveGame.SaveVersion = 99;
-			*sourceAddress = (int)(&Pirate);
-			*targetAddress = (int)(&ok_FreeSpace);
-			dataLength = (int)&PirateEnd - (int)&Pirate;
-			runDMA();
-			*sourceAddress = (int)(&ok_FreeSpace);
-			*targetAddress = (int)(&ok_Storage);
-			runMIO();
-		}
-		KWSpriteDiv(256,120,(ushort*)&ok_Storage,512,240,4);
-		return;
-	}
-	#endif
 	switch (MenuChanged)
 	{
+		#if OverKartBuild
+		case 99:
+		{
+			//Draw Cheats Menu
+			DrawCheatMenu();
+			break;
+		}
+		case 98:
+		{
+			KWSpriteDiv(256,120,(ushort*)&ok_Storage,512,240,4);
+			break;
+		}
+		#endif
 		case 6:
 		{
 			//Draw OptionsMenu
@@ -1233,12 +1242,6 @@ void PrintMenuFunction()
 		case 8:
 		{
 			//logo
-			#if (DEBUGBUILD)
-			{
-				loadFont();
-				printStringUnsignedHex(0,0,"PRINTLOG", (uint)&PrintLog);
-			}
-			#endif
 			
 			break;
 		}
@@ -1250,7 +1253,10 @@ void PrintMenuFunction()
 			
 			if (SaveGame.Initial == 0)
 			{	
+
+				/*
 				DrawBox(102,130,120,38, 0, 0, 0, 200);
+				
 				if (SaveGame.RenderSettings.CullMode == 0)
 				{
 					PrintBigText(128, 131, 0.6f, "LLE MODE" );
@@ -1267,19 +1273,23 @@ void PrintMenuFunction()
 				{
 					PrintBigText(128, 149, 0.6f, "EMULATOR" );
 				}
+					
+				
+				if (TitleSwitch == 0)
+				{
+					GlobalIntA = 140;
+				}
+				else
+				{
+					GlobalIntA = 158;
+				}
+				KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
+				KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);
+
+				*/
 			}
 			
 			
-			if (TitleSwitch == 0)
-			{
-				GlobalIntA = 140;
-			}
-			else
-			{
-				GlobalIntA = 158;
-			}
-			KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
-			KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);
 			
 			
 			break;

@@ -550,7 +550,7 @@ void GameOptionsHandler(short PlayerIndex)
                     }
                     else
                     {
-                         GlobalIntA = 4; //cup editor
+                         GlobalIntA = 5; //cup editor
                     }
                     if (ParameterIndex + MenuOverflow < GlobalIntA) //currentParameter
                     {
@@ -765,78 +765,85 @@ void TitleMenuHandler(short PlayerIndex)
 
      
      
-
      //OptionsMenu(175,2,1);
 }
 
-
-
 void titleMenu()
 {
-     if (MenuBlink > 30)
-     {
-          MenuBlink = 0;
-     }
-     else
-     {
-          MenuBlink++;
-     }
+     
+
      if(titleDemo > 4)
      {
           titleDemo = 4;   //This is a timer that runs at the title screen. Locking at 4 Prevents the demo courses from being displayed.
      }
 
      
-     g_mracewayTime = 0;
 
+     
      #if OverKartBuild
+
           
-          GlobalAddressA = 0x8018DABC;
-          for (int Loop = 0; Loop < 4; Loop++)
-          {
-               *(uint*)(GlobalAddressA) = 0; 
-               GlobalAddressA += 4;
-          }          
-          KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
-          KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
           
-          guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 25000, 1.0f);
-          gSPPerspNormalize(GraphPtrOffset++, PerspectiveValue);
-          gSPMatrix(GraphPtrOffset++, K0_TO_PHYS((u32) &(gDynamicP->projection1)),G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
-          //gSPMatrix(GraphPtrOffset++, K0_TO_PHYS((u32) &(gDynamicP->viewing)),G_MTX_PROJECTION|G_MTX_MUL|G_MTX_NOPUSH);
-          GULookAt(&gDynamicP->viewing,
-               0, 0,0,
-               0, 0,50000,
-               0,1,0);
-          
-          LoadIdentAffineMtx(AffineMatrix);
-          SetMatrix(AffineMatrix,0);
+     gMatrixCount = 0;
+
+
+     
+     
+     KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);          
+     KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
+     
+     
+     
+     
+     //InitRDP();
+     //SetViewport((Screen*)&g_Screen1);                
+     //gSPClearGeometryMode(GraphPtrOffset++, 0xFFFFFFFF);
+     //gSPSetGeometryMode(GraphPtrOffset++, G_CLIPPING |G_SHADE |G_SHADING_SMOOTH);
+     //ClearZBuffer2((Screen*)&g_Screen1);
+
+     
+     
+     guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320.0f/240.0f, 45.0f, 17500.0f, 1.0f);
+     gSPPerspNormalize(GraphPtrOffset++, PerspectiveValue);
+     GULookAt(&gDynamicP->viewing,
+          0, 0,0,
+          0,100,0,
+          0,0,1);
+
+
+
+     gSPMatrix(GraphPtrOffset++, & gDynamicP->projection1, 
+               G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+     gSPMatrix(GraphPtrOffset++, &gDynamicP->viewing, 
+               G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+
+     
+
+     //Segmented Address of title screen 3D logo is 0x0A000000
+     gSPSetGeometryMode(GraphPtrOffset++,G_CULL_BACK | G_ZBUFFER | G_SHADING_SMOOTH | G_SHADE);
+     
+     
+     gSPDisplayList(GraphPtrOffset++,&Draw_CI_RoadStripe_T);		
+     gSPDisplayList(GraphPtrOffset++,&Draw_Road_M);		
+     gDPSetTextureLUT(GraphPtrOffset++, G_TT_NONE);
+
+     gSPDisplayList(GraphPtrOffset++,&Draw_wall_T);		
+     gSPDisplayList(GraphPtrOffset++,&Draw_Cliff_M);		
+     gSPDisplayList(GraphPtrOffset++,&Draw_grass_T);		
+     gSPDisplayList(GraphPtrOffset++,&Draw_Grass_M);
+     
+     gSPDisplayList(GraphPtrOffset++,&Draw_MushroomHouseRed_T);		
+     gSPDisplayList(GraphPtrOffset++,&Draw_Mushrooms_M);	
+
+     gSPDisplayList(GraphPtrOffset++,&Draw_water_T);		
+     gSPDisplayList(GraphPtrOffset++,&Draw_Water_M);		
+
+     //gSPDisplayList(GraphPtrOffset++,0x0A000000);		
+     
+     return;
+
           
           /*
-          guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320/240, 100, 50000, 1.0f);
-          gSPPerspNormalize(*graphPointer, PerspectiveValue);
-          gSPMatrix(*graphPointer, K0_TO_PHYS((u32) &(gDynamicP->projection1)),G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
-          GULookAt(&gDynamicP->viewing,
-               0, 0,0,
-               0, 0,100,
-               0,1,0);
-          gSPMatrix(*graphPointer, K0_TO_PHYS((u32) &(gDynamicP->viewing)),G_MTX_PROJECTION|G_MTX_MUL|G_MTX_NOPUSH);
-          LoadIdentAffineMtx(AffineMatrix);
-          SetMatrix(AffineMatrix,0);
-          */
-          
-
-
-          objectPosition[0] = 0;
-          objectPosition[1] = 0;
-          objectPosition[2] = -200;
-          objectAngle[0] = 0;
-          objectAngle[1] = 0;
-          objectAngle[2] = 0;
-
-          //Segmented Address of title screen 3D logo is 0x0A000000
-          DrawGeometryScale(objectPosition, objectAngle, 0x0A000000, 1.4);
-          
           if ((GlobalController[0]->ButtonHeld & BTN_L) != BTN_L)
           {
                MenuAngle[0]++;
@@ -912,11 +919,13 @@ void titleMenu()
                
           }
 
+          */
+
      #endif
 
 
 
-
+     
 }
 
 
@@ -1797,6 +1806,7 @@ void DataMenuController(OSContPad *pad, u16 i, u16 NewButton)
           SetFadeOutB();
      }
 }
+
 int TitleSwitch;
 void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
@@ -1850,7 +1860,16 @@ void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
           }
      }
      
-     
+     #if OverKartBuild     
+     if (CheckCheat())
+     {
+          KBGNumber = 99;
+          KBGNumberNext = 99;
+          KBGChange = 1;
+          SetFadeOutTaData();
+     }
+     #endif
+
      TitleController(pad,i,newbutton);
      
 };
@@ -1895,3 +1914,8 @@ void MiniMapDraw()
      KWReturnViewport();
      KawanoDrawFinal();
 }
+
+
+
+
+

@@ -28,4 +28,5 @@ extern void GameSelectSwitch(OSContPad *pad,u16 i, u16 newbutton);
 extern void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton);
 extern void DataMenuController(OSContPad *pad,u16 i, u16 newbutton);
 extern int TitleSwitch;
+
 #endif

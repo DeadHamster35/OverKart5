@@ -105,52 +105,8 @@ void fastAI()
 }
 
 
-
-
-void aiSetup()
-{
-     switch (SaveGame.GameSettings.AIMode)
-	{
-          case 0:
-          {
-               return;
-               break;
-          }
-          case 1:
-          {
-               player2OK = 0X01;
-               player3OK = 0x01;
-               player4OK = 0x01;
-               break;
-          }
-          case 2:
-          {
-               player3OK = 0x01;
-               player4OK = 0x01;
-               break;
-          }
-          case 3:
-          {
-               player4OK = 0x01;
-               break;
-          }
-		
-	}
-     if ((g_startingIndicator >= 3) && (g_startingIndicator < 7))
-     {
-          for (int ThisPlayer = SaveGame.GameSettings.AIMode; ThisPlayer < 4; ThisPlayer++)
-          {
-               if (*GlobalLap[ThisPlayer] < 3)
-               {
-                    GlobalPlayer[ThisPlayer].flag = 0x9000;
-               }
-          }
-     }
-
-}
-
-
-short RubberCheck[4] = {10, 20, 25, 28};  //doubles for distance and speed
+short RubberCheck[4] = {20, 30, 40, 35}; 
+short SpeedMin[4] = {25, 35, 45, 40}; 
 
 char RubberChar[8];
 void RubberBandMan(int EnemyID, Player* EnemyKart)
@@ -160,7 +116,7 @@ void RubberBandMan(int EnemyID, Player* EnemyKart)
           short ThisIndex = (short)g_playerPathPointTable[EnemyID];
           short TargetIndex = (short)g_playerPathPointTable[g_EnemyTargetPlayer];
           
-          if (EnemyKart->speed < SPEED_KM(RubberCheck[g_raceClass]))
+          if (EnemyKart->speed < SPEED_KM(SpeedMin[g_raceClass]))
           {
                AccelOn(EnemyKart);
                RubberChar[EnemyID] = 0;
@@ -208,7 +164,7 @@ void RubberBandMan(int EnemyID, Player* EnemyKart)
      }
 }
 
-short DifficultyCurve[4] = {0,5,10,12};
+short DifficultyCurve[4] = {0,5,10,8};
 void SetAIDifficulty(int Difficulty)
 {
      for (int ThisPlayer = g_playerCount; ThisPlayer < 8; ThisPlayer++)
@@ -216,3 +172,55 @@ void SetAIDifficulty(int Difficulty)
           GlobalPlayer[ThisPlayer].acc_maxcount += DifficultyCurve[Difficulty];
      }
 }
+
+
+void aiSetup()
+{
+     switch (SaveGame.GameSettings.AIMode)
+	{
+          case 0:
+          {
+               return;
+               break;
+          }
+          case 1:
+          {
+               player2OK = 0X01;
+               player3OK = 0x01;
+               player4OK = 0x01;
+               break;
+          }
+          case 2:
+          {
+               player3OK = 0x01;
+               player4OK = 0x01;
+               break;
+          }
+          case 3:
+          {
+               player4OK = 0x01;
+               break;
+          }
+		
+	}
+     if ((g_startingIndicator >= 3) && (g_startingIndicator < 7))
+     {
+          for (int ThisPlayer = SaveGame.GameSettings.AIMode; ThisPlayer < 4; ThisPlayer++)
+          {
+               if (*GlobalLap[ThisPlayer] < 3)
+               {
+                    GlobalPlayer[ThisPlayer].flag = 0x9000;
+               }
+          }
+
+          
+          
+          
+          g_EnemyTargetPlayer = 0;
+          
+          
+          
+     }
+     
+}
+
