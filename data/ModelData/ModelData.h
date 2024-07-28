@@ -1,34 +1,54 @@
-extern const uint BowserLOD0; //0x080081B0
-extern const uint BowserLOD1; //0x0800D180
-extern const uint BowserLOD2; //0x080107C0
-extern const uint BlueCoin; //0x08011638
-extern const uint GoldCoin; //0x080124A8
-extern const uint N64Coin; //0x080139B0
-extern const uint RedCoin; //0x08014828
-extern const uint BattleFlag; //0x08015BB8
-extern const uint BlueFlag; //0x08016F48
-extern const uint BowserFlag; //0x080182D8
-extern const uint DKFlag; //0x08019668
-extern const uint LuigiFlag; //0x0801A9F8
-extern const uint MarioFlag; //0x0801BD88
-extern const uint PeachFlag; //0x0801D118
-extern const uint BattleFlag; //0x0801E4A8
-extern const uint ToadFlag; //0x0801F838
-extern const uint WarioFlag; //0x08020BC8
-extern const uint YoshiFlag; //0x08021F58
-extern const uint BowserMushroom; //0x080237D8
-extern const uint DKMushroom; //0x08025058
-extern const uint LuigiMushroom; //0x080268D8
-extern const uint MarioMushroom; //0x08028158
-extern const uint PeachMushroom; //0x080299D8
-extern const uint RedMushroom; //0x0802B258
-extern const uint ToadMushroom; //0x0802CAD8
-extern const uint WarioMushroom; //0x0802E358
-extern const uint YoshiMushroom; //0x0802FBD8
-extern const uint SoccerBall; //0x08031500
+extern Gfx Draw_DefaultMaterial_T[];
+extern Gfx Draw_battleflag_bowser_T[];
+extern Gfx Draw_battleflag_mario_T[];
+extern Gfx Draw_battleflag_luigi_T[];
+extern Gfx Draw_battleflag_peach_T[];
+extern Gfx Draw_battleflag_toad_T[];
+extern Gfx Draw_battleflag_wario_T[];
+extern Gfx Draw_battleflag_dk_T[];
+extern Gfx Draw_battleflag_yoshi_T[];
+extern Gfx Draw_battleflag_T[];
+extern Gfx Draw_BlueFlag_T[];
+extern Gfx Draw_BattleFlag_M[];
+extern Gfx Draw_BlueFlag_M[];
+extern Gfx Draw_BowserFlag_M[];
+extern Gfx Draw_DKFlag_M[];
+extern Gfx Draw_LuigiFlag_M[];
+extern Gfx Draw_MarioFlag_M[];
+extern Gfx Draw_PeachFlag_M[];
+extern Gfx Draw_ToadFlag_M[];
+extern Gfx Draw_WarioFlag_M[];
+extern Gfx Draw_YoshiFlag_M[];
+extern Gfx Draw_DefaultMaterial_T[];
+extern Gfx Draw_mushroomcombo_T[];
+extern Gfx Draw_mushroom_mario_T[];
+extern Gfx Draw_mushroom_luigi_T[];
+extern Gfx Draw_mushroom_peach_T[];
+extern Gfx Draw_mushroom_toad_T[];
+extern Gfx Draw_mushroom_yoshi_T[];
+extern Gfx Draw_mushroom_dk_T[];
+extern Gfx Draw_mushroom_bowser_T[];
+extern Gfx Draw_mushroom_wario_T[];
+extern Gfx Draw_BowserMushroom_M[];
+extern Gfx Draw_DKMushroom_M[];
+extern Gfx Draw_LuigiMushroom_M[];
+extern Gfx Draw_MarioMushroom_M[];
+extern Gfx Draw_PeachMushroom_M[];
+extern Gfx Draw_RedMushroom_M[];
+extern Gfx Draw_ToadMushroom_M[];
+extern Gfx Draw_WarioMushroom_M[];
+extern Gfx Draw_YoshiMushroom_M[];
+extern Gfx Draw_DefaultMaterial_T[];
+extern Gfx Draw_whitecoin_T[];
+extern Gfx Draw_BlueCoin_M[];
+extern Gfx Draw_GoldCoin_M[];
+extern Gfx Draw_RedCoin_M[];
 
 
-extern uint FlagModels[];
-extern uint MushroomModels[];
-#define ModelData_RawDataSize 0x31358
-#define ModelData_CompressedSize 0xF0A8
+extern uint GoldCoin_GFX[];
+extern uint RedCoin_GFX[];
+extern uint BlueCoin_GFX[];
+extern uint BattleMushroom_Red_GFX[];
+extern uint BattleFlag_Red_GFX[];
+extern uint *FlagModels[];
+extern uint *MushroomModels[];

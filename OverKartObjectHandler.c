@@ -54,14 +54,6 @@ void DrawPerScreen(Camera* LocalCamera)
 
 void loadCoin()
 {
-	SetSegment(0x8,(int)(&ok_ModelData));
-	*sourceAddress = (int)(&ModelDataStart);
-	*targetAddress = (int)(&ok_FreeSpace);
-	dataLength = (int)ModelData_CompressedSize;
-	runDMA();
-	*sourceAddress = (int)(&ok_FreeSpace);
-	*targetAddress = (int)(&ok_ModelData);
-	runMIO();
 	
 	*sourceAddress = (int)(&RCSpriteROM);
 	*targetAddress = (int)(&ok_FreeSpace);
@@ -326,7 +318,7 @@ void DisplayObject(void *Car, Object *InputObject)
 		case (47):
 		{
 			
-			GlobalAddressB = (long)RedCoin;
+			GlobalAddressB = (long)RedCoin_GFX;
 			objectPosition[0] = InputObject->position[0];
 			objectPosition[1] = InputObject->position[1];
 			objectPosition[2] = InputObject->position[2];
@@ -343,7 +335,7 @@ void DisplayObject(void *Car, Object *InputObject)
 		}
 		case 48:
 		{
-			GlobalAddressB = (long)GoldCoin;
+			GlobalAddressB = (long)GoldCoin_GFX;
 			UpdateObjectGravity(InputObject);
 			UpdateObjectVelocity(InputObject);
 			
@@ -371,7 +363,7 @@ void DisplayObject(void *Car, Object *InputObject)
 		}
 		case 49:
 		{
-			GlobalAddressB = (long)GoldCoin;
+			GlobalAddressB = (long)GoldCoin_GFX;
 			objectPosition[0] = InputObject->position[0];
 			objectPosition[1] = InputObject->position[1] - 5.0f;
 			objectPosition[2] = InputObject->position[2];

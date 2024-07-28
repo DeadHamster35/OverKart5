@@ -10,7 +10,6 @@ int DPRTester;
 int RandomDPR;
 short MapModeCheck = 0;
 uint ROptionPressed = 0;
-ushort PiracyBool = 1;
 
 
 void DebugLog(uint Data)
@@ -34,7 +33,7 @@ void loadLogo()
 	
 	*sourceAddress = (int)(&LogoROM);
 	*targetAddress = (int)(&ok_FreeSpace);
-	dataLength = 0x38C0;
+	dataLength = 0x4000;
 	runDMA();
 	*sourceAddress = (int)(&ok_FreeSpace);
 	*targetAddress = (int)(&ok_Logo);
@@ -121,9 +120,6 @@ void okSetup(void)
 	
 	
 	
-	//ConsolePlatform = CheckPlatform();
-	//EmulatorPlatform = CheckEmulator();	
-	
 	
 				
 	
@@ -169,6 +165,8 @@ void okSetup(void)
 	raceStatus = 0xFF;
 	asm_SongA = 0x240E0001;
 	asm_SongB = 0x240E0001;
+	
+	SetFontColor(255,255,255,75,75,75);
 
 	g_sfxPause = 0; //Just for Amped Up (To fix some mute sfx when pausing the game)
 	HotSwapGP = 0;
@@ -259,12 +257,12 @@ void startRace()
 			}
 			case BTL_CTF:
 			{
-				PlaceFlags(BattleFlag, FlagModels, RedMushroom, MushroomModels, 1);
+				PlaceFlags((uint)&BattleFlag_Red_GFX, FlagModels, (uint)&BattleMushroom_Red_GFX, MushroomModels, 1);
 				break;
 			}
 			case BTL_SOCCER:
 			{
-				PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);  //lol
+				//PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);  //lol
 			}
 		}
 	}
@@ -435,7 +433,7 @@ void ExecuteItemHook(Player* Car)
 			{
 				int PlayerID = (*(uint*)&Car - (uint)&g_PlayerStructTable) / 0xDD8;
 				
-				if (GlobalController[PlayerID]->ButtonPressed & BTN_Z)				
+				//if (GlobalController[PlayerID]->ButtonPressed & BTN_Z)				
 				{
 					if (CheckExecuteItem(PlayerID))
 					{
@@ -494,16 +492,51 @@ void CheckBattleCDown()
 }
 
 
+short HighCamAngle, HighCamDistance = 35;
+void QuickCamCode(Camera* LocalCamera, Player* LocalPlayer)
+{
+	//return;
+	CurrentPathID[0] = 0;
+	return;
+	LocalPlayer->status = LocalPlayer->status|(0x000A);
+	objectPosition[0] = 0;
+	objectPosition[1] = 0;
+	objectPosition[2] = HighCamDistance;
+
+	MakeAlignVector(objectPosition, HighCamAngle);
+
+	if (GlobalController[0]->ButtonHeld & BTN_DLEFT)
+	{
+		HighCamAngle+=DEG1;
+	}
+	if (GlobalController[0]->ButtonHeld & BTN_DRIGHT)
+	{
+		HighCamAngle-=DEG1;
+	}
+	if (GlobalController[0]->ButtonHeld & BTN_DUP)
+	{
+		HighCamDistance--;
+	}
+	if (GlobalController[0]->ButtonHeld & BTN_DDOWN)
+	{
+		HighCamDistance++;
+	}
+
+	for (int ThisVector = 0; ThisVector < 3; ThisVector++)
+	{
+		LocalCamera->camera_pos[ThisVector] = LocalPlayer->position[ThisVector] + objectPosition[ThisVector];	
+		LocalCamera->lookat_pos[ThisVector] = LocalPlayer->position[ThisVector];			            
+	}
+	LocalCamera->camera_pos[1] += 20;
+}
 void gameCode(void)
 {	
-	
+	CurrentPathID[0] = 0;
 	#if OverKartBuild
 	{
 		ApplyCheats();
 	}
 	#endif
-
-	
 
 	#if(DEBUGBUILD)
 	{
@@ -515,7 +548,10 @@ void gameCode(void)
 	}
 	#endif
 
-		
+	if (GlobalController[0]->ButtonHeld & BTN_CLEFT)
+	{
+		GlobalPlayer[0].flag = 0xC000;
+	}
 
 	CheckIFrames();
 	
@@ -557,14 +593,17 @@ void gameCode(void)
 			case BTL_CTF:
 			{							
 				CaptureFlag();
+				DisplayScore();
 				break;
 			}
 			case BTL_SOCCER:
 			{
 				CaptureBalls();
+				DisplayScore();
 				break;
 			}
 		}
+		CheckBattleCDown();
 	}
 
 	if (MapModeCheck || (SaveGame.GameSettings.GameMode == 3))
@@ -668,6 +707,7 @@ void gameCode(void)
 			GlobalShortD += 1;
 		}
 
+
 		
 	}
 	if (g_startingIndicator == 3)
@@ -730,9 +770,6 @@ void resetMap()
 //
 
 
-uint Target = 0x80600000;
-uint Source = 0x01600000;
-uint DataLen = 0x1000;
 
 ushort PiracyCountdown = 0;
 
@@ -762,8 +799,9 @@ void allRun()
 		CullDL_Parameters = 0x00000140;
 	}
 
+	BattleGametype = SaveGame.BattleSettings.GameMode;
 
-	GlobalIntD = 0;
+
 	ClockCycle[0] = osGetCount();
 	CycleCount[0] = (ClockCycle[0] - OldCycle[0]);
 	OldCycle[0] = ClockCycle[0];
@@ -930,6 +968,7 @@ void allRun()
 		}
 		case 10:
 		{			
+			#if OverKartBuild
 			if (SaveGame.TENNES == true)
 			{
 				SaveGame.TENNES = false;
@@ -938,6 +977,7 @@ void allRun()
 				KBGChange = 1;
 				SetFadeOutTaData();
 			}
+			#endif
 			if (MenuChanged != 10)
 			{	
 				//MenuToggle = 0;
@@ -1254,7 +1294,7 @@ void PrintMenuFunction()
 			if (SaveGame.Initial == 0)
 			{	
 
-				/*
+				
 				DrawBox(102,130,120,38, 0, 0, 0, 200);
 				
 				if (SaveGame.RenderSettings.CullMode == 0)
@@ -1286,7 +1326,7 @@ void PrintMenuFunction()
 				KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
 				KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);
 
-				*/
+				
 			}
 			
 			

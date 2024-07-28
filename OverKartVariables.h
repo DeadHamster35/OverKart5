@@ -14,10 +14,6 @@
 #define IM_BALANCE	2
 #define IM_NONE		3
 
-#define BTL_BATTLE 	0
-#define BTL_CTF		1
-#define	BTL_SOCCER	2
-
 
 extern SaveData SaveGame;
 extern OKMenu   GameOKMenu;

@@ -118,7 +118,7 @@ OKMenu GameOKMenu;
 __attribute__((aligned(16)))
 uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 __attribute__((aligned(16)))
-int battleLimits[] = {1,2};
+int battleLimits[] = {2,2};
 __attribute__((aligned(16)))
 int battleChar[][3] = {{7,3,6}, {3,2}};
 

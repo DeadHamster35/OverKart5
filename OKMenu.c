@@ -768,6 +768,17 @@ void TitleMenuHandler(short PlayerIndex)
      //OptionsMenu(175,2,1);
 }
 
+void title2()
+{
+     return;
+     gDPPipeSync(GraphPtrOffset++);
+	gDPSetCycleType(GraphPtrOffset++, G_CYC_FILL);
+     gDPSetColorImage(GraphPtrOffset++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320,
+					 K0_TO_PHYS(g_CfbPtrs[g_DispFrame]));
+     gDPSetFillColor(GraphPtrOffset++, GPACK_RGBA5551(255,0,0,1)<<16 | GPACK_RGBA5551(255,0,0,1));
+     gDPFillRectangle(GraphPtrOffset++, 0, 0, 319, 239);
+}
+
 void titleMenu()
 {
      
@@ -778,8 +789,14 @@ void titleMenu()
      }
 
      
+     gMatrixCount = 0;
+     
 
      
+     loadFont();
+     printString(10,200,VersionString);
+
+
      #if OverKartBuild
 
           
@@ -840,6 +857,8 @@ void titleMenu()
 
      //gSPDisplayList(GraphPtrOffset++,0x0A000000);		
      
+     loadFont();
+     printString(10,200,VersionString);
      return;
 
           

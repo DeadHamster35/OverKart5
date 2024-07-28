@@ -3,14 +3,14 @@
 
 
 
-.open "ROM\Battle.z64", "ROM\BASE.z64", 0
-//.definelabel PAYLOAD_ROM, 		filesize("ROM\Battle.z64")
-.definelabel PAYLOAD_ROM, 0x3C00000
+.open "ROM\V7Set.z64", "ROM\BASE.z64", 0
+.definelabel ROM_SIZE, 		filesize("ROM\V7Set.z64")
+.definelabel PAYLOAD_ROM, 0xF00000
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
 .definelabel DMA_MAX_LENGTH,       org(EndRAMData) - org(StartRAMData)
-.definelabel ok_ModelDataRawSize,     filesize("data\ModelData\Binary\ModelData.raw")
+.definelabel ok_ModelDataRawSize,     0x6000
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
 .definelabel OKBuild, 1
@@ -20,6 +20,11 @@
 .include "..\library\GameVariables\NTSC\StatsOffsets.asm"
 .include "..\library\OKHeader.asm"
 .include "..\library\GameVariables\NTSC\OKAssembly.asm"
+
+
+
+
+
 
 .if OKBuild
 
@@ -355,9 +360,11 @@ EndRAMData:
      .align 0x10
      RAMCheckEnd:
 
+     
      LogoROM:
-     .import "data\\ModelData\\Logo\\Logo.bin" ;; 0xD388
+     .import "data\\Logo.bin" ;; 0xD388
      .align 0x10
+     
      BackgroundLogo:
      .import "data\\SplashLogo\\BackgroundSource.bin"
      .align 0x10
@@ -371,11 +378,6 @@ EndRAMData:
      .import "Data\\PiracyWarning.MIO0"
      .align 0x10
      PirateEnd:
-
-     ModelDataStart:
-     .import "data\\ModelData\\Binary\\ModelData.bin"
-     .align 0x10
-     ModelDataEnd:
 
 
      
@@ -426,9 +428,9 @@ EndRAMData:
 
 
     
-.include "CustomMenu\MenuBuild.asm"
+//.include "CustomMenu\MenuBuild.asm"
 
-.org 0xD00000
+.org ROM_SIZE
 .align 0x10
 .include "..\Library\LIBRARYBUILD3.asm"
 
@@ -438,9 +440,11 @@ EndRAMData:
 .headersize 0
 .org 0x20
 //.ascii "TARMAC 64     031824"
-.ascii "OVERKART64 V6 062824"
+//.ascii "OVERKART64 V6 070624"
+.ascii "MK64 BETAPAK6 071524"
 
-.org 0x3FFFFF1
-.ascii "64MEGFUCKREPROS"
-
+//.org 0x3EFFFF1
+//.ascii "63MEGFUCKREPROS"
+.org 0x12FFFFC
+.ascii "BETA"
 .close
