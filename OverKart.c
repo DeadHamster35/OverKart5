@@ -39,7 +39,7 @@ void loadLogo()
 	*targetAddress = (int)(&ok_Logo);
 	runMIO();
 
-	g_NintendoLogoOffset = 0x08005A70;
+	g_NintendoLogoOffset = 0x080052A0;
 	g_NintendoLogoBorder = 0x256B9478;
 	
 }
@@ -246,6 +246,7 @@ void startRace()
 	g_loadedcourseFlag = 0xF0;
 
 	InitialCustomParticleBuffer();
+
 	if (g_gameMode == GAMEMODE_BATTLE)
 	{
 		switch (SaveGame.BattleSettings.GameMode)
@@ -266,7 +267,6 @@ void startRace()
 			}
 		}
 	}
-	
 	
 	if ((SaveGame.GameSettings.StatsMode == 1) || (g_gameMode == GAMEMODE_TT))
 	{
@@ -495,8 +495,6 @@ void CheckBattleCDown()
 short HighCamAngle, HighCamDistance = 35;
 void QuickCamCode(Camera* LocalCamera, Player* LocalPlayer)
 {
-	//return;
-	CurrentPathID[0] = 0;
 	return;
 	LocalPlayer->status = LocalPlayer->status|(0x000A);
 	objectPosition[0] = 0;
@@ -531,12 +529,12 @@ void QuickCamCode(Camera* LocalCamera, Player* LocalPlayer)
 }
 void gameCode(void)
 {	
-	CurrentPathID[0] = 0;
 	#if OverKartBuild
 	{
 		ApplyCheats();
 	}
 	#endif
+
 
 	#if(DEBUGBUILD)
 	{
@@ -610,10 +608,22 @@ void gameCode(void)
 	{
 		practiceHack();		
 	}
-	if (SaveGame.GameSettings.FlycamMode == 1)
+	
+	if (g_gameMode != GAMEMODE_BATTLE)
 	{
-		RunFlyCam();
+		if (SaveGame.GameSettings.FlycamMode == 1)
+		{
+			RunFlyCam();
+		}
 	}
+	else
+	{
+		if (SaveGame.BattleSettings.FlycamMode == 1)
+		{
+			RunFlyCam();
+		}
+	}
+	
 	
 	SurfaceExplorerMode = SaveGame.GameSettings.ExploreMode;
 
@@ -718,7 +728,6 @@ void gameCode(void)
 			DisplayCoinSprite();			
 		}
 		
-		
 	}
 	
 	if (g_startingIndicator == 5)
@@ -764,13 +773,6 @@ void resetMap()
 }
 
 
-
-//
-//
-//
-
-
-
 ushort PiracyCountdown = 0;
 
 void allRun()
@@ -788,6 +790,8 @@ void allRun()
 	//SaveGame.RenderSettings.Platform = 1;
 	//SaveGame.RenderSettings.CullMode = 1;
 	//Emulator ForceHack
+
+	
 	if (SaveGame.RenderSettings.CullMode == 1)
 	{
 		//Emulator
@@ -976,6 +980,7 @@ void allRun()
 				KBGNumberNext = 98;
 				KBGChange = 1;
 				SetFadeOutTaData();
+				break;
 			}
 			#endif
 			if (MenuChanged != 10)
@@ -998,36 +1003,26 @@ void allRun()
 				MenuAngle[2] = -20;
 				MenuAngle[3] = 0;
 
-				*sourceAddress = (int)(&StartLogo);
-				*targetAddress = (int)(&ok_FreeSpace);
-				dataLength = (int)&StartEnd - (int)&StartLogo;
-				runDMA();
-				*sourceAddress = (int)(&ok_FreeSpace);
-				*targetAddress = (int)(&ok_Storage);
-				StartLogoRAM = (int)(&ok_Storage);
-				GlobalAddressA = runMIO();
-
-				*sourceAddress = (int)(&BackDrop);
-				*targetAddress = (int)(&ok_FreeSpace);
-				dataLength = (int)&BackDropEnd - (int)&BackDrop;
-				runDMA();
-				*sourceAddress = (int)(&ok_FreeSpace);
-				*targetAddress = GlobalAddressA;
-				BackdropRAM = GlobalAddressA;
-				GlobalAddressA = runMIO();
-				
 				*sourceAddress = (int)(&Splash3D);
 				*targetAddress = (int)(&ok_FreeSpace);
 				dataLength = (int)&Splash3DEnd - (int)&Splash3D;
 				runDMA();
 				*sourceAddress = (int)(&ok_FreeSpace);
-				*targetAddress = GlobalAddressA;
-				Splash3DRAM = GlobalAddressA;
+				*targetAddress = (int)(&ok_Storage);
+				Splash3DRAM = *targetAddress;
 				GlobalAddressA = runMIO();
 				
-				SetSegment(0xA, Splash3DRAM);
+				SetSegment(0x8, Splash3DRAM);
+
+				*sourceAddress = (int)(&MenuIconsROM);
+				*targetAddress = (int)(&ok_FreeSpace);
+				dataLength = (int)&MenuIconsEnd - (int)&MenuIconsROM;
+				runDMA();
+				*sourceAddress = (int)(&ok_FreeSpace);
+				*targetAddress = GlobalAddressA;
+				MenuIconsRAM = GlobalAddressA;
+				GlobalAddressA = runMIO();
 				
-				GlobalUIntB = (uint)GlobalAddressA;
 				#endif
 
 				
@@ -1035,9 +1030,9 @@ void allRun()
 
 
 
-				if ((SaveGame.SaveVersion != 7) && (SaveGame.SaveVersion != 99))
+				if ((SaveGame.SaveVersion != 8) && (SaveGame.SaveVersion != 99))
 				{
-					SaveGame.SaveVersion = 7;	
+					SaveGame.SaveVersion = 8;	
 					SaveGame.Initial = 0;
 					for (int This = 0; This < 8; This++)
 					{
@@ -1067,6 +1062,7 @@ void allRun()
 
 				scrollLock = false;
 				g_startingIndicator = 0;
+				break;
 			}
 			break;
 		}
@@ -1291,45 +1287,43 @@ void PrintMenuFunction()
 			
 			
 			
-			if (SaveGame.Initial == 0)
-			{	
-
-				
-				DrawBox(102,130,120,38, 0, 0, 0, 200);
-				
-				if (SaveGame.RenderSettings.CullMode == 0)
-				{
-					PrintBigText(128, 131, 0.6f, "LLE MODE" );
-				}
-				else
-				{
-					PrintBigText(128, 131, 0.6f, "HLE MODE" );
-				}
-				if (SaveGame.RenderSettings.Platform == 0)
-				{
-					PrintBigText(115, 149, 0.6f, "N64 CONSOLE" );
-				}
-				else
-				{
-					PrintBigText(128, 149, 0.6f, "EMULATOR" );
-				}
-					
-				
-				if (TitleSwitch == 0)
-				{
-					GlobalIntA = 140;
-				}
-				else
-				{
-					GlobalIntA = 158;
-				}
-				KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
-				KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);
-
-				
+			DrawBox(102,150,120,38, 0, 0, 0, 200);
+			
+			if (SaveGame.RenderSettings.CullMode == 0)
+			{
+				PrintBigText(128, 151, 0.6f, "LLE MODE" );
 			}
+			else
+			{
+				PrintBigText(128, 151, 0.6f, "HLE MODE" );
+			}
+			if (SaveGame.RenderSettings.Platform == 0)
+			{
+				PrintBigText(115, 169, 0.6f, "N64 CONSOLE" );
+			}
+			else
+			{
+				PrintBigText(128, 169, 0.6f, "EMULATOR" );
+			}
+				
 			
+			if (TitleSwitch == 0)
+			{
+				GlobalIntA = 160;
+			}
+			else
+			{
+				GlobalIntA = 178;
+			}
+			KWSprite(235,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_r);
+			KWSprite(95,GlobalIntA,16,16,(ushort*)&lit_arrowsprite_l);
+
+				
 			
+		
+			
+     		KWTexture2DRGBA32PT(160,70,0,0.95f,(uchar*)MenuIconsRAM,(void*)(&V256x12832B), 256, 128, 256, 4);
+     
 			
 			
 			break;

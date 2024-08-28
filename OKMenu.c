@@ -798,34 +798,28 @@ void titleMenu()
 
 
      #if OverKartBuild
-
-          
-          
+      
+     if (MenuChanged != 10)
+     {
+          return;
+     }
      gMatrixCount = 0;
-
-
      
      
-     KWTexture2DRGBA32BL(64,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);          
-     KWTexture2DRGBA32BL(256,64,0,1.0,(uchar*)(BackdropRAM),(void*)(&V256x12832B),256,128,256,4);
-     
-     
-     
-     
-     //InitRDP();
-     //SetViewport((Screen*)&g_Screen1);                
-     //gSPClearGeometryMode(GraphPtrOffset++, 0xFFFFFFFF);
-     //gSPSetGeometryMode(GraphPtrOffset++, G_CLIPPING |G_SHADE |G_SHADING_SMOOTH);
-     //ClearZBuffer2((Screen*)&g_Screen1);
+     InitRDP();
+     SetViewport((Screen*)&g_Screen1);                
+     gSPClearGeometryMode(GraphPtrOffset++, 0xFFFFFFFF);
+     gSPSetGeometryMode(GraphPtrOffset++, G_CLIPPING |G_SHADE |G_SHADING_SMOOTH);
+     ClearZBuffer2((Screen*)&g_Screen1);
 
      
      
-     guPerspective(&gDynamicP->projection1,&PerspectiveValue, 45.0, 320.0f/240.0f, 45.0f, 17500.0f, 1.0f);
+     guPerspective(&gDynamicP->projection1,&PerspectiveValue, 80.0f, 320.0f/240.0f, 1.0f, 15000.0f, 1.0f);
      gSPPerspNormalize(GraphPtrOffset++, PerspectiveValue);
      GULookAt(&gDynamicP->viewing,
-          0, 0,0,
-          0,100,0,
-          0,0,1);
+          0,0,0,
+          0,0,-7500,
+          0,1,0);
 
 
 
@@ -839,26 +833,13 @@ void titleMenu()
      //Segmented Address of title screen 3D logo is 0x0A000000
      gSPSetGeometryMode(GraphPtrOffset++,G_CULL_BACK | G_ZBUFFER | G_SHADING_SMOOTH | G_SHADE);
      
-     
-     gSPDisplayList(GraphPtrOffset++,&Draw_CI_RoadStripe_T);		
-     gSPDisplayList(GraphPtrOffset++,&Draw_Road_M);		
-     gDPSetTextureLUT(GraphPtrOffset++, G_TT_NONE);
-
-     gSPDisplayList(GraphPtrOffset++,&Draw_wall_T);		
-     gSPDisplayList(GraphPtrOffset++,&Draw_Cliff_M);		
-     gSPDisplayList(GraphPtrOffset++,&Draw_grass_T);		
-     gSPDisplayList(GraphPtrOffset++,&Draw_Grass_M);
-     
-     gSPDisplayList(GraphPtrOffset++,&Draw_MushroomHouseRed_T);		
-     gSPDisplayList(GraphPtrOffset++,&Draw_Mushrooms_M);	
-
-     gSPDisplayList(GraphPtrOffset++,&Draw_water_T);		
-     gSPDisplayList(GraphPtrOffset++,&Draw_Water_M);		
-
-     //gSPDisplayList(GraphPtrOffset++,0x0A000000);		
+     gSPDisplayList(GraphPtrOffset++,0x08000000);		
      
      loadFont();
      printString(10,200,VersionString);
+
+
+
      return;
 
           
@@ -1829,53 +1810,49 @@ void DataMenuController(OSContPad *pad, u16 i, u16 NewButton)
 int TitleSwitch;
 void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
-     
-     if (SaveGame.Initial == 0)
+     if 
+     ( 
+          ((BTN_DLEFT == (GlobalController[i]->ButtonPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->ButtonPressed & BTN_DRIGHT))) ||
+          ((BTN_DLEFT == (GlobalController[i]->AnalogPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->AnalogPressed & BTN_DRIGHT)))
+     )
      {
-          if 
-          ( 
-               ((BTN_DLEFT == (GlobalController[i]->ButtonPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->ButtonPressed & BTN_DRIGHT))) ||
-               ((BTN_DLEFT == (GlobalController[i]->AnalogPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->AnalogPressed & BTN_DRIGHT)))
-          )
+          if (TitleSwitch == 0)
           {
-               if (TitleSwitch == 0)
+               if (SaveGame.RenderSettings.CullMode == 1)
                {
-                    if (SaveGame.RenderSettings.CullMode == 1)
-                    {
-                         SaveGame.RenderSettings.CullMode = 0;
-                    }
-                    else
-                    {
-                         SaveGame.RenderSettings.CullMode = 1;
-                    }
+                    SaveGame.RenderSettings.CullMode = 0;
                }
                else
                {
-                    if (SaveGame.RenderSettings.Platform == 1)
-                    {
-                         SaveGame.RenderSettings.Platform = 0;
-                    }
-                    else
-                    {
-                         SaveGame.RenderSettings.Platform = 1;
-                    }
+                    SaveGame.RenderSettings.CullMode = 1;
                }
           }
-          if 
-          ( 
-               ((BTN_DDOWN == (GlobalController[i]->ButtonPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->ButtonPressed & BTN_DUP))) ||
-               ((BTN_DDOWN == (GlobalController[i]->AnalogPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->AnalogPressed & BTN_DUP)))
-          )
+          else
           {
-               
-               if (TitleSwitch == 0)
+               if (SaveGame.RenderSettings.Platform == 1)
                {
-                    TitleSwitch = 1;
+                    SaveGame.RenderSettings.Platform = 0;
                }
                else
                {
-                    TitleSwitch = 0;
+                    SaveGame.RenderSettings.Platform = 1;
                }
+          }
+     }
+     if 
+     ( 
+          ((BTN_DDOWN == (GlobalController[i]->ButtonPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->ButtonPressed & BTN_DUP))) ||
+          ((BTN_DDOWN == (GlobalController[i]->AnalogPressed & BTN_DDOWN)) || (BTN_DUP == (GlobalController[i]->AnalogPressed & BTN_DUP)))
+     )
+     {
+          
+          if (TitleSwitch == 0)
+          {
+               TitleSwitch = 1;
+          }
+          else
+          {
+               TitleSwitch = 0;
           }
      }
      
@@ -1888,8 +1865,16 @@ void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
           SetFadeOutTaData();
      }
      #endif
+     
+     if ( (GlobalController[4]->ButtonPressed & BTN_A) || (GlobalController[4]->ButtonPressed & BTN_START) )
+     {
+          KBGNumber = 11;
+          KBGNumberNext = 11;
+          KBGChange = 1;
+          SetFadeOutTaData();
+     }
 
-     TitleController(pad,i,newbutton);
+     
      
 };
 

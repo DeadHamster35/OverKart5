@@ -723,6 +723,12 @@ void RunFlyCam()
 
 	if (FlyCamToggle > 0)
 	{
+		GlobalScreen[0]->posx = 160;
+		GlobalScreen[0]->posy = 120;
+		GlobalScreen[0]->width = 320;
+		GlobalScreen[0]->height = 240;
+		GlobalScreen[0]->screen_aspect = 320.0f/ 240.0f;
+
 		if ((GlobalController[0]->ButtonHeld & BTN_L) == BTN_L)
 		{
 			loadFont();

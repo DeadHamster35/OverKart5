@@ -3,9 +3,9 @@
 
 
 
-.open "ROM\V7Set.z64", "ROM\BASE.z64", 0
-.definelabel ROM_SIZE, 		filesize("ROM\V7Set.z64")
-.definelabel PAYLOAD_ROM, 0xF00000
+.open "ROM\Battle.z64", "ROM\BASE.z64", 0
+.definelabel ROM_SIZE, 		filesize("ROM\Battle.z64")
+.definelabel PAYLOAD_ROM, 0x1200000
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -174,6 +174,10 @@ NOP
 /// UI Elements 
 ///
 
+//Disable R Mario Raceway Time
+.org 0x0A8970
+NOP
+
 //Disable Map Select Texture
 .org 0x095F40
 LI $a3, 1
@@ -337,14 +341,12 @@ EndRAMData:
      .endif
 
      Splash3D:
-     .import "data\\SplashLogo\\model\\SplashLogo.bin"
+     .import "data\\SplashLogo\\TitleMenu.bin"
      .align 0x10
      Splash3DEnd:
-     BackDrop:
-     .import "data\\SplashLogo\\backdrop.bin"
-     .align 0x10
-     BackDropEnd:
-
+     MenuIconsROM:
+     .import "data\\SplashLogo\\OKLogo.bin"
+     MenuIconsEnd:
      
      
      .definelabel OverwriteCrash, 1
@@ -362,18 +364,9 @@ EndRAMData:
 
      
      LogoROM:
-     .import "data\\Logo.bin" ;; 0xD388
+     .import "data\\KimuraBless.bin" ;; 0xD388
      .align 0x10
      
-     BackgroundLogo:
-     .import "data\\SplashLogo\\BackgroundSource.bin"
-     .align 0x10
-     BackgroundEnd:
-
-     StartLogo:
-     .import "data\\SplashLogo\\output\\PressStart.png.RAW.MIO0"
-     .align 0x10
-     StartEnd:
      Pirate:
      .import "Data\\PiracyWarning.MIO0"
      .align 0x10
@@ -440,11 +433,9 @@ EndRAMData:
 .headersize 0
 .org 0x20
 //.ascii "TARMAC 64     031824"
-//.ascii "OVERKART64 V6 070624"
-.ascii "MK64 BETAPAK6 071524"
+.ascii "OVERKART64 V6 070624"
 
-//.org 0x3EFFFF1
-//.ascii "63MEGFUCKREPROS"
-.org 0x12FFFFC
-.ascii "BETA"
+
+.org 0x3EFFFF1
+.ascii "63MEGFUCKREPROS"
 .close

@@ -8,6 +8,6 @@
 #define DebugMode       0
 #define ProtectMode     1
 #define DEBUGBUILD      0
-#define VersionString "07062024"
+#define VersionString "08212024"
 
 #endif

@@ -101,7 +101,7 @@ short baseTurn, addTurn = 0;
 
 
 int SaveStateCourseID;
-int pageLimit[] = {8,9,6,5,2};  // GAME - RENDER - MAP - CUP EDITOR  -  BATTLE
+int pageLimit[] = {8,9,6,5,3};  // GAME - RENDER - MAP - CUP EDITOR  -  BATTLE
 
 __attribute__((aligned(16)))
 OKPanel RacePanel, BattlePanel, RenderPanel, MapPanel;
@@ -118,7 +118,7 @@ OKMenu GameOKMenu;
 __attribute__((aligned(16)))
 uint StartLogoRAM, BackdropRAM, Splash3DRAM, MenuIconsRAM;
 __attribute__((aligned(16)))
-int battleLimits[] = {2,2};
+int battleLimits[] = {2,2,2};
 __attribute__((aligned(16)))
 int battleChar[][3] = {{7,3,6}, {3,2}};
 
@@ -177,9 +177,9 @@ int gameChar[][4] = {
 
 
 __attribute__((aligned(16)))
-char *battleOptions[] = {"Game Mode", "Mirror Mode"};
+char *battleOptions[] = {"Game Mode", "Mirror Mode", "Flycam"};
 __attribute__((aligned(16)))
-char *battleParameters[][3] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}};
+char *battleParameters[][3] = {{"Default", "CTF", "Soccer"}, {"Off" , "On"}, {"Off" , "On"}};
 
 
 __attribute__((aligned(16)))
