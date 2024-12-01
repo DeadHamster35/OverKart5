@@ -8,7 +8,7 @@ typedef struct RaceOptions{
 } RaceOptions;
 
 typedef struct BattleOptions{
-     char GameMode, MirrorMode, FlycamMode, PAD2, PAD3, PAD4, PAD5, PAD6;
+     char GameMode, MirrorMode, TeamBattle, Flycam, PAD3, PAD4, PAD5, PAD6;
 } BattleOptions;
 
 

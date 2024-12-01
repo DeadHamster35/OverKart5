@@ -793,10 +793,6 @@ void titleMenu()
      
 
      
-     loadFont();
-     printString(10,200,VersionString);
-
-
      #if OverKartBuild
       
      if (MenuChanged != 10)
@@ -834,94 +830,15 @@ void titleMenu()
      gSPSetGeometryMode(GraphPtrOffset++,G_CULL_BACK | G_ZBUFFER | G_SHADING_SMOOTH | G_SHADE);
      
      gSPDisplayList(GraphPtrOffset++,0x08000000);		
+
+
+          
+
+     #endif
      
      loadFont();
      printString(10,200,VersionString);
 
-
-
-     return;
-
-          
-          /*
-          if ((GlobalController[0]->ButtonHeld & BTN_L) != BTN_L)
-          {
-               MenuAngle[0]++;
-               
-               MenuAngle[1]++;
-               if (MenuAngle[1] > 79)
-               {
-                    MenuAngle[1] = 0;
-               }
-
-               if (MenuAngle[1] < 20)
-               {
-                    MenuAngle[2]++;
-                    MenuAngle[3]--;
-               }
-               else if (MenuAngle[1] < 40)
-               {
-                    MenuAngle[2]++;
-                    MenuAngle[3]++;
-               }
-               else if (MenuAngle[1] < 60)
-               {
-                    MenuAngle[2]--;
-                    MenuAngle[3]++;
-               }
-               else
-               {
-                    MenuAngle[2]--;
-                    MenuAngle[3]--;
-               }
-
-               g_mpressstartID = 0;
-               g_mflagID = 0;
-               g_NintendoLogoOffset = 0x0A000008;
-
-               
-
-               if (!MenuToggle)
-               {               
-                    objectPosition[0] = 0;
-                    objectPosition[1] = 15;
-                    objectPosition[2] = -120;
-               }
-               else
-               {
-
-                    objectPosition[0] = 0;
-                    objectPosition[1] = -20;
-                    objectPosition[2] = -120;
-               }
-
-               gSPDisplayList(GraphPtrOffset++, 0x0D0076F8)
-
-               objectAngle[0] = 0;
-               objectAngle[1] = (MenuAngle[2] * DEG1 / -5);
-               objectAngle[2] = (MenuAngle[3] * DEG1 / 5);
-               DrawGeometryScale(objectPosition, objectAngle, 0x0A000010, 0.35);
-
-
-               if (!MenuToggle)
-               {      
-                    objectPosition[1] -= 20;      
-                    objectPosition[2] -= 50;
-               }
-               else
-               {
-                    objectPosition[1] -= 35;
-                    objectPosition[2] -= 55;
-               }
-               objectAngle[1] = 0;
-               objectAngle[2] = MenuAngle[0] * -1 * DEG1;
-               DrawGeometryScale(objectPosition, objectAngle, 0x0A000020, 0.45);
-               
-          }
-
-          */
-
-     #endif
 
 
 
@@ -1807,9 +1724,28 @@ void DataMenuController(OSContPad *pad, u16 i, u16 NewButton)
      }
 }
 
-int TitleSwitch;
+short     TitleSwitch, TitleCheck;
+int       TitleFrame;
+
 void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
 {
+
+     if (TitleCheck != 0)
+     {
+          if (TitleFrame + 2 <= GlobalFrameCount)
+          {
+               KBGNumber = TitleCheck;
+               KBGNumberNext = TitleCheck;
+               TitleCheck = 0;
+               TitleFrame = 0;
+               SetFadeOutB();
+               KBGChange = 1;                         
+               return;
+          }
+     }
+     
+
+     
      if 
      ( 
           ((BTN_DLEFT == (GlobalController[i]->ButtonPressed & BTN_DLEFT)) || (BTN_DRIGHT == (GlobalController[i]->ButtonPressed & BTN_DRIGHT))) ||
@@ -1859,22 +1795,22 @@ void TitleMenuSwitch(OSContPad *pad,u16 i, u16 newbutton)
      #if OverKartBuild     
      if (CheckCheat())
      {
-          KBGNumber = 99;
-          KBGNumberNext = 99;
-          KBGChange = 1;
-          SetFadeOutTaData();
+          playSound(0x4900801A);
+          TitleCheck = 99;       
+          TitleFrame = GlobalFrameCount;   
+          
      }
      #endif
      
      if ( (GlobalController[4]->ButtonPressed & BTN_A) || (GlobalController[4]->ButtonPressed & BTN_START) )
      {
-          KBGNumber = 11;
-          KBGNumberNext = 11;
-          KBGChange = 1;
-          SetFadeOutTaData();
+
+          NaSeqFadeout(0x19);
+          playSound(0x4900801A);
+          TitleCheck = 11;
+          TitleFrame = GlobalFrameCount;
      }
 
-     
      
 };
 

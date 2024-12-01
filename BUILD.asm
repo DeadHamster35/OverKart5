@@ -5,7 +5,7 @@
 
 .open "ROM\Battle.z64", "ROM\BASE.z64", 0
 .definelabel ROM_SIZE, 		filesize("ROM\Battle.z64")
-.definelabel PAYLOAD_ROM, 0x1200000
+.definelabel PAYLOAD_ROM, 0x1400000
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -32,7 +32,14 @@
      .org 0x124BF4
      JAL ResultsCheck
 
-
+    .org 0x0024EC
+    NOP
+    .org 0x002694
+    NOP
+    .org 0x0028F0
+    NOP
+    .org 0x10EA20
+    NOP
      .org 0x0FA178
      JAL CameraCheckFunc
      .org 0x0FA194
@@ -433,7 +440,7 @@ EndRAMData:
 .headersize 0
 .org 0x20
 //.ascii "TARMAC 64     031824"
-.ascii "OVERKART64 V6 070624"
+.ascii "OVERKART64 V6 101324"
 
 
 .org 0x3EFFFF1

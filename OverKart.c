@@ -230,9 +230,11 @@ bool checkEndGame()
 	}
 	
 }
+
+
+
 void startRace()
 {
-	
 	
 	
 
@@ -244,29 +246,9 @@ void startRace()
 
 	setZoomLevel(1); // (All races start zoomed out)
 	g_loadedcourseFlag = 0xF0;
-
 	InitialCustomParticleBuffer();
-
-	if (g_gameMode == GAMEMODE_BATTLE)
-	{
-		switch (SaveGame.BattleSettings.GameMode)
-		{
-			case BTL_BATTLE:
-			{
-				SlayerInit();
-				break;
-			}
-			case BTL_CTF:
-			{
-				PlaceFlags((uint)&BattleFlag_Red_GFX, FlagModels, (uint)&BattleMushroom_Red_GFX, MushroomModels, 1);
-				break;
-			}
-			case BTL_SOCCER:
-			{
-				//PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);  //lol
-			}
-		}
-	}
+    
+	
 	
 	if ((SaveGame.GameSettings.StatsMode == 1) || (g_gameMode == GAMEMODE_TT))
 	{
@@ -527,6 +509,35 @@ void QuickCamCode(Camera* LocalCamera, Player* LocalPlayer)
 	}
 	LocalCamera->camera_pos[1] += 20;
 }
+
+
+void SetBattle()
+{
+	if (g_gameMode == GAMEMODE_BATTLE)
+	{
+		TeamMode = SaveGame.BattleSettings.TeamBattle;
+		
+		switch (SaveGame.BattleSettings.GameMode)
+		{
+			case BTL_BATTLE:
+			{
+				SlayerInit();
+				SetBalloonTeams();
+				break;
+			}
+			case BTL_CTF:
+			{
+				PlaceFlags((uint)&BattleFlag_Red_GFX, FlagModels, (uint)&BattleMushroom_Red_GFX, MushroomModels, 1);
+				SetBalloonTeams();
+				break;
+			}
+			case BTL_SOCCER:
+			{
+				//PlaceBalls(SoccerBall, RedMushroom, MushroomModels, 1);  //lol
+			}
+		}
+	}
+}
 void gameCode(void)
 {	
 	#if OverKartBuild
@@ -538,18 +549,32 @@ void gameCode(void)
 
 	#if(DEBUGBUILD)
 	{
-		if (scrollLock)
+		loadFont();
+		printStringNumber(0,10,"Path",g_playerPathPointTable[0]);
+		if (GlobalController[0]->ButtonHeld & BTN_DLEFT)
 		{
-			loadFont();
-			printStringNumber(0,10,"",HotSwapID);
+			OKObjectArray[0].ObjectData.angle[0] += DEG1;
 		}
+		if (GlobalController[0]->ButtonHeld & BTN_DRIGHT)
+		{
+			OKObjectArray[0].ObjectData.angle[1] -= DEG1;
+		}
+
+		if (GlobalController[0]->ButtonHeld & BTN_DUP)
+		{
+			OKObjectArray[0].ObjectData.angle[2] += DEG1;
+		}
+		if (GlobalController[0]->ButtonHeld & BTN_DDOWN)
+		{
+			OKObjectArray[0].ObjectData.angle[0] = 0;
+			OKObjectArray[0].ObjectData.angle[1] = 0;
+			OKObjectArray[0].ObjectData.angle[2] = 0;
+		}
+
+		
 	}
 	#endif
 
-	if (GlobalController[0]->ButtonHeld & BTN_CLEFT)
-	{
-		GlobalPlayer[0].flag = 0xC000;
-	}
 
 	CheckIFrames();
 	
@@ -591,13 +616,13 @@ void gameCode(void)
 			case BTL_CTF:
 			{							
 				CaptureFlag();
-				DisplayScore();
+				DisplayGameScore();
 				break;
 			}
 			case BTL_SOCCER:
 			{
 				CaptureBalls();
-				DisplayScore();
+				DisplayGameScore();
 				break;
 			}
 		}
@@ -616,9 +641,11 @@ void gameCode(void)
 			RunFlyCam();
 		}
 	}
-	else
+
+	
+	if (g_gameMode == GAMEMODE_BATTLE)
 	{
-		if (SaveGame.BattleSettings.FlycamMode == 1)
+		if (SaveGame.BattleSettings.Flycam == 1)
 		{
 			RunFlyCam();
 		}
@@ -674,6 +701,7 @@ void gameCode(void)
 
 		if (raceStatus != 1)
 		{
+			SetBattle();
 			raceStatus = 1;
 			startRace();
 			hsLabel = -1;
@@ -686,7 +714,11 @@ void gameCode(void)
 	}
 	if (g_startingIndicator == 2)
 	{
-		raceStatus = 2;
+		if (raceStatus != 2)
+		{
+			raceStatus = 2;			
+		}
+		
 		scrollLock = true;
 		
 		if (GlobalShortD < 60)
@@ -775,15 +807,11 @@ void resetMap()
 
 ushort PiracyCountdown = 0;
 
+
+
 void allRun()
 {
 
-	MakeRandom();
-
-	if (GlobalController[4]->ButtonPressed != 0)
-	{
-		MakeRandom();
-	}
 
 	
 	//Emulator Only ForceHack
@@ -864,8 +892,13 @@ void allRun()
 		
 	}
 
+
+	//still doesn't work
+	//lol whatever honestly
 	
 	SetWeather3D(OverKartHeader.SkyType == 3);
+
+
 	SetWaterType((char)OverKartHeader.WaterType);
 	
 	if (SYSTEM_Region == 0x01)
@@ -1071,6 +1104,7 @@ void allRun()
 		{
 			if (MenuChanged != 11)
 			{
+				NaSeqStart(2);
 				menuScreenB = 3; //resets mode selection to start screen.
 				LastMenuID = MenuChanged;
 				MenuChanged = 11;
@@ -1206,34 +1240,6 @@ void PrintMenuFunction()
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
-
-	#if(DEBUGBUILD)
-	{
-		if ( ((GlobalController[0]->ButtonPressed & BTN_L) == BTN_L) && ((GlobalController[0]->ButtonPressed & BTN_START) == BTN_START) )
-		{
-			
-			//StartGame
-			KBGNumber = 11;
-			g_cupSelect = 0;
-			g_courseSelect = 0;
-			g_courseID = 0;
-			*(short*)(0x8018EDF0) = 0;
-			g_raceClass = 1;
-			g_playerCount = 1;
-			g_gameMode = 1;
-			g_startingIndicator = 0;
-			g_menuMultiplayerSelection = 1;
-			GlobalPlayer[0].kart = 0;
-			HotSwapID = 1;
-			courseValue = 0;
-			
-			g_NewSequenceMode = 5;
-
-			
-		}
-		
-	}
-	#endif
 
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
