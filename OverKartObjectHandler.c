@@ -309,7 +309,6 @@ void Draw3DRacer(uint ModelAddress, uint Player)
 }
 
 
-
 void DisplayObject(void *Car, Object *InputObject)
 {
 	
@@ -317,7 +316,7 @@ void DisplayObject(void *Car, Object *InputObject)
 	{
 		case (47):
 		{
-			
+            
 			GlobalAddressB = (long)RedCoin_GFX;
 			objectPosition[0] = InputObject->position[0];
 			objectPosition[1] = InputObject->position[1];
@@ -330,7 +329,7 @@ void DisplayObject(void *Car, Object *InputObject)
 			objectAngle[2] = InputObject->angle[2];
 
 
-			DrawGeometryScale(objectPosition,objectAngle,GlobalAddressB, 0.10f);
+			DrawRedCoin(objectPosition,objectAngle,GlobalAddressB, 0.10f);
 			break;
 		}
 		case 48:

@@ -2,7 +2,7 @@
 #include "OKInclude.h"
 
 
-uint SetLimit = 2;
+uint SetLimit = 5;
 
 void loadPosition()
 {
@@ -783,10 +783,10 @@ void titleMenu()
 {
      
 
-     if(titleDemo > 4)
-     {
-          titleDemo = 4;   //This is a timer that runs at the title screen. Locking at 4 Prevents the demo courses from being displayed.
-     }
+    if(titleDemo > 4)
+    {
+        titleDemo = 4;   //This is a timer that runs at the title screen. Locking at 4 Prevents the demo courses from being displayed.
+    }
 
      
      gMatrixCount = 0;
@@ -984,6 +984,10 @@ void PlayerSelectMenu(short StatsMode, short PlayerIndex)
                               *(int*)(long)&PlayerShowStats = 0;
                               MenuBackup = 1;
                               break;
+                         }
+                         default:
+                         {
+                            break;
                          }
                     }
                }

@@ -3,9 +3,9 @@
 
 
 
-.open "ROM\Battle.z64", "ROM\BASE.z64", 0
-.definelabel ROM_SIZE, 		filesize("ROM\Battle.z64")
-.definelabel PAYLOAD_ROM, 0x1400000
+.open "ROM\stock.z64", "ROM\BASE.z64", 0
+.definelabel ROM_SIZE, 		filesize("ROM\stock.z64")
+.definelabel PAYLOAD_ROM, 0xD00000
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -13,7 +13,7 @@
 .definelabel ok_ModelDataRawSize,     0x6000
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
-.definelabel OKBuild, 1
+.definelabel OKBuild, 0
 .definelabel CFLG_LapCounter, 1
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
@@ -32,14 +32,8 @@
      .org 0x124BF4
      JAL ResultsCheck
 
-    .org 0x0024EC
-    NOP
-    .org 0x002694
-    NOP
-    .org 0x0028F0
-    NOP
-    .org 0x10EA20
-    NOP
+
+
      .org 0x0FA178
      JAL CameraCheckFunc
      .org 0x0FA194
@@ -154,6 +148,10 @@
 
 
 
+
+//Additional ClearFramebuffer Check for Initial_Draw_Common
+.org 0x10EA20
+JAL ClearFramebufferCheck
 
 //jump past minimum speed requirements
 .org 0x0090CC
@@ -427,8 +425,6 @@ EndRAMData:
 ///
 
 
-    
-//.include "CustomMenu\MenuBuild.asm"
 
 .org ROM_SIZE
 .align 0x10
@@ -439,10 +435,27 @@ EndRAMData:
 
 .headersize 0
 .org 0x20
-//.ascii "TARMAC 64     031824"
-.ascii "OVERKART64 V6 101324"
+
+.if OKBuild
+
+.ascii "OVERKART64 V6 12032024"
+
+.else
+
+.ascii "TARMAC 64     031824"
+
+.endif
 
 
+
+
+.if OKBuild
 .org 0x3EFFFF1
 .ascii "63MEGFUCKREPROS"
+.else
+.org 0x10FFFFC
+.word 0
+.endif
+
+
 .close

@@ -549,29 +549,10 @@ void gameCode(void)
 
 	#if(DEBUGBUILD)
 	{
-		loadFont();
-		printStringNumber(0,10,"Path",g_playerPathPointTable[0]);
 		if (GlobalController[0]->ButtonHeld & BTN_DLEFT)
 		{
-			OKObjectArray[0].ObjectData.angle[0] += DEG1;
+			*GlobalLap[0] = 2;
 		}
-		if (GlobalController[0]->ButtonHeld & BTN_DRIGHT)
-		{
-			OKObjectArray[0].ObjectData.angle[1] -= DEG1;
-		}
-
-		if (GlobalController[0]->ButtonHeld & BTN_DUP)
-		{
-			OKObjectArray[0].ObjectData.angle[2] += DEG1;
-		}
-		if (GlobalController[0]->ButtonHeld & BTN_DDOWN)
-		{
-			OKObjectArray[0].ObjectData.angle[0] = 0;
-			OKObjectArray[0].ObjectData.angle[1] = 0;
-			OKObjectArray[0].ObjectData.angle[2] = 0;
-		}
-
-		
 	}
 	#endif
 
@@ -1240,7 +1221,7 @@ void PrintMenuFunction()
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
-
+    
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
 	{
@@ -1327,9 +1308,9 @@ void PrintMenuFunction()
 				
 			
 		
-			
+			#if OverKartBuild
      		KWTexture2DRGBA32PT(160,70,0,0.95f,(uchar*)MenuIconsRAM,(void*)(&V256x12832B), 256, 128, 256, 4);
-     
+            #endif
 			
 			
 			break;
@@ -1378,4 +1359,13 @@ void ScreenDrawHook(void)
 	
 	DoObjBlock(0);
 	PrintMenuFunction();
+}
+
+
+void ClearFramebufferCheck()
+{
+    if (g_ClearCFBFlag)
+    {
+        g_ClearFramebuffer();
+    }
 }
