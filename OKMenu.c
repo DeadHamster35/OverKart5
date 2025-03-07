@@ -1342,86 +1342,83 @@ char GameMenuIndex = 0;
 #define CCMode 2
 void DrawGameSelect()
 {
+    
+    DrawBox(65,18,190,25,0,0,0,175);
+    PrintBigText(90,16, 1.0f,"GAME SETUP");
+    
+    if (ROptionPressed > 0)
+    {
+        KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM + 0x1000, (void*)&V64x32, 64, 32, 64, 32);
+    }
+    else
+    {
+        KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM, (void*)&V64x32, 64, 32, 64, 32);
+    }
      
-     DrawBox(65,18,190,25,0,0,0,175);
-     PrintBigText(90,16, 1.0f,"GAME SETUP");
-     
-     if (ROptionPressed > 0)
-     {
-          KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM + 0x1000, (void*)&V64x32, 64, 32, 64, 32);
-     }
-     else
-     {
-          KWTexture2DRGBA(70, 200, 0, 1.0f, (uchar*)MenuIconsRAM, (void*)&V64x32, 64, 32, 64, 32);
-     }
-     
-
-     #ifndef CFLG_LapCounter
 
 
-
-          //Player Count
-          //Game Mode
-          //CC Mode
-
-
-          DrawBox(25,70,130,28,0,0,0,175);
-          DrawBox(25,105,130,28,0,0,0,175);
-          DrawBox(25,140,130,28,0,0,0,175);
-
-          PrintBigText(38, 75, 0.6f, "Player Count");
-          PrintBigText(53, 110, 0.6f, "Game Mode");
-          PrintBigText(38, 145, 0.6f, "Engine Speed");
-          
-
-          
-          DrawBox(160,50,140,130,0,0,0,175);
+    /*
+    //Player Count
+    //Game Mode
+    //CC Mode
 
 
-          
-          //Draw MenuIcon
-          switch (GameMenuIndex)
-          {
-               case PSMode:
-               {
-                    //Player Select Controller Icons
-                    GlobalAddressA  = (MenuIconsRAM + MenuGFX_Controller_Offset);         
-                    break;
-               }
-          }
+    DrawBox(25,70,130,28,0,0,0,175);
+    DrawBox(25,105,130,28,0,0,0,175);
+    DrawBox(25,140,130,28,0,0,0,175);
 
-          switch (g_playerCount)
-          {
-               case 1:
-               {
-                    KWTexture2DRGBA32PT(230,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);                         
-                    break;
-               }
-               case 2:
-               {
-                    KWTexture2DRGBA32PT(215,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    KWTexture2DRGBA32PT(245,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    break;
-               }
-               case 3:
-               {
-                    
-                    KWTexture2DRGBA32PT(215,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    KWTexture2DRGBA32PT(245,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    KWTexture2DRGBA32PT(230,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    break;
-               }
-               case 4:
-               {
-                    KWTexture2DRGBA32PT(215,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    KWTexture2DRGBA32PT(245,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    KWTexture2DRGBA32PT(215,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    KWTexture2DRGBA32PT(245,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
-                    break;
-               }
-          }
-     #endif     
+    PrintBigText(38, 75, 0.6f, "Player Count");
+    PrintBigText(53, 110, 0.6f, "Game Mode");
+    PrintBigText(38, 145, 0.6f, "Engine Speed");
+    
 
+    
+    DrawBox(160,50,140,130,0,0,0,175);
+
+
+    
+    //Draw MenuIcon
+    switch (GameMenuIndex)
+    {
+        case PSMode:
+        {
+            //Player Select Controller Icons
+            GlobalAddressA  = (MenuIconsRAM + MenuGFX_Controller_Offset);         
+            break;
+        }
+    }
+
+    switch (g_playerCount)
+    {
+        case 1:
+        {
+            KWTexture2DRGBA32PT(230,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);                         
+            break;
+        }
+        case 2:
+        {
+            KWTexture2DRGBA32PT(215,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            KWTexture2DRGBA32PT(245,110,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            break;
+        }
+        case 3:
+        {
+            
+            KWTexture2DRGBA32PT(215,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            KWTexture2DRGBA32PT(245,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            KWTexture2DRGBA32PT(230,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            break;
+        }
+        case 4:
+        {
+            KWTexture2DRGBA32PT(215,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            KWTexture2DRGBA32PT(245,90,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            KWTexture2DRGBA32PT(215,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            KWTexture2DRGBA32PT(245,130,0,1.0,(uchar*)GlobalAddressA,(void*)(&V6432B),64,64,64,16);
+            break;
+        }
+    }
+    */
      
 }
 void DrawMapSelect()

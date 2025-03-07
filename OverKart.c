@@ -12,17 +12,6 @@ short MapModeCheck = 0;
 uint ROptionPressed = 0;
 
 
-void DebugLog(uint Data)
-{
-	if (PrintCount >= 99)
-	{
-		PrintCount = 0;	
-	}
-	PrintLog[PrintCount] = Data;
-	PrintCount++;
-
-}
-
 void loadLogo()
 {
 
@@ -247,7 +236,7 @@ void startRace()
 	setZoomLevel(1); // (All races start zoomed out)
 	g_loadedcourseFlag = 0xF0;
 	InitialCustomParticleBuffer();
-    
+    SetLapIndex();
 	
 	
 	if ((SaveGame.GameSettings.StatsMode == 1) || (g_gameMode == GAMEMODE_TT))
@@ -555,7 +544,19 @@ void gameCode(void)
 		}
 	}
 	#endif
+    
+    loadFont();
+    printStringNumber(10,40,"",GlobalScreen[0]->camera_point);
+    printStringNumber(10,50,"",CurrentPathID[0]);
+    printStringNumber(10,60,"",*GlobalPath[0]);
+    uint* PathOffsets = (uint*)&pathOffset; 
+    Marker* PathData = (Marker*)(GetRealAddress(PathOffsets[CurrentPathID[0]]));
+    printStringNumber(50,60,"", PathData[*GlobalPath[0]].Group);
 
+    printStringNumber(10,70,"",OverKartHeader.PathTrigger[0]);
+    printStringNumber(30,70,"",OverKartHeader.PathTrigger[1]);
+    printStringNumber(50,70,"",OverKartHeader.PathTrigger[2]);
+    printStringNumber(70,70,"",OverKartHeader.PathTrigger[3]);
 
 	CheckIFrames();
 	
@@ -1221,6 +1222,7 @@ void PrintMenuFunction()
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
+    
     
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)

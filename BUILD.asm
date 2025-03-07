@@ -1,8 +1,6 @@
 .n64
 
 
-
-
 .open "ROM\stock.z64", "ROM\BASE.z64", 0
 .definelabel ROM_SIZE, 		filesize("ROM\stock.z64")
 .definelabel PAYLOAD_ROM, 0xD00000
@@ -14,7 +12,6 @@
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
 .definelabel OKBuild, 0
-.definelabel CFLG_LapCounter, 1
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
 .include "..\library\GameVariables\NTSC\StatsOffsets.asm"

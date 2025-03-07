@@ -1,7 +1,6 @@
 #ifndef BuildH
 #define BuildH
 
-#define CFLG_LapCounter      1
 #define CFLG_PlayerSelect   1
 #define OverKartBuild   0
 
