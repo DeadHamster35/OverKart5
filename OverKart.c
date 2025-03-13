@@ -1231,8 +1231,7 @@ void PrintMenuFunction()
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
-    loadFont();
-    printStringUnsignedHex(0,10,"",(uint)&ok_CourseTable);
+    
     
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)
