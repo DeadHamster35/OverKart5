@@ -433,32 +433,52 @@ void ExecuteItemHook(Player* Car)
 
 void CheckBattleCDown()
 {
+	if (g_gameMode == GAMEMODE_BATTLE)
+    {
+        switch (SaveGame.BattleSettings.GameMode)
+        {
+            case BTL_BATTLE:
+            {
+                for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+                {
+                    if (GlobalController[ThisPlayer]->ButtonPressed & BTN_CDOWN)				
+                    {
+                        ExecuteItem((Player*)&GlobalPlayer[ThisPlayer]);
+                    }
+                }
+                break;
+            }
+            case BTL_CTF:
+            {
+                for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+                {
+                    if (GlobalController[ThisPlayer]->ButtonPressed & BTN_CDOWN)				
+                    {
+                        DropFlag(ThisPlayer);
+                    }
+                }
+                break;
+            }
+            case BTL_SOCCER:
+            {
+                for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+                {
+                }
+                break;
+            }
+        }
+    }
+    else
+    {
+        for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
+        {
+            if (GlobalController[ThisPlayer]->ButtonPressed & BTN_CDOWN)				
+            {
+                ExecuteItem((Player*)&GlobalPlayer[ThisPlayer]);
+            }
+        }
+    }
 	
-	switch (SaveGame.BattleSettings.GameMode)
-	{
-		case BTL_BATTLE:
-		{
-			break;
-		}
-		case BTL_CTF:
-		{
-			for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
-			{
-				if (GlobalController[ThisPlayer]->ButtonPressed & BTN_CDOWN)				
-				{
-					DropFlag(ThisPlayer);
-				}
-			}
-			break;
-		}
-		case BTL_SOCCER:
-		{
-			for (int ThisPlayer = 0; ThisPlayer < g_playerCount; ThisPlayer++)
-			{
-			}
-			break;
-		}
-	}
 	
 }
 
@@ -535,7 +555,7 @@ void gameCode(void)
 	}
 	#endif
 
-
+    
 	#if(DEBUGBUILD)
 	{
 		if (GlobalController[0]->ButtonHeld & BTN_DLEFT)
@@ -545,18 +565,6 @@ void gameCode(void)
 	}
 	#endif
     
-    loadFont();
-    printStringNumber(10,40,"",GlobalScreen[0]->camera_point);
-    printStringNumber(10,50,"",CurrentPathID[0]);
-    printStringNumber(10,60,"",*GlobalPath[0]);
-    uint* PathOffsets = (uint*)&pathOffset; 
-    Marker* PathData = (Marker*)(GetRealAddress(PathOffsets[CurrentPathID[0]]));
-    printStringNumber(50,60,"", PathData[*GlobalPath[0]].Group);
-
-    printStringNumber(10,70,"",OverKartHeader.PathTrigger[0]);
-    printStringNumber(30,70,"",OverKartHeader.PathTrigger[1]);
-    printStringNumber(50,70,"",OverKartHeader.PathTrigger[2]);
-    printStringNumber(70,70,"",OverKartHeader.PathTrigger[3]);
 
 	CheckIFrames();
 	
@@ -586,7 +594,8 @@ void gameCode(void)
 		StaticTempo(2);
 	}
 	
-	
+	CheckBattleCDown();
+
 	if (g_gameMode == GAMEMODE_BATTLE)
 	{
 		switch(SaveGame.BattleSettings.GameMode)
@@ -608,7 +617,7 @@ void gameCode(void)
 				break;
 			}
 		}
-		CheckBattleCDown();
+		
 	}
 
 	if (MapModeCheck || (SaveGame.GameSettings.GameMode == 3))
@@ -1222,7 +1231,8 @@ void PrintMenuFunction()
 	CycleCount[1] = (ClockCycle[1] - OldCycle[1]);     
 	OldCycle[1] = ClockCycle[1];
 
-    
+    loadFont();
+    printStringUnsignedHex(0,10,"",(uint)&ok_CourseTable);
     
 
 	if(SaveGame.RenderSettings.DisplayFPS == 1)

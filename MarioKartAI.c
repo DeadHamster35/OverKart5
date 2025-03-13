@@ -176,51 +176,52 @@ void SetAIDifficulty(int Difficulty)
 
 void aiSetup()
 {
-     switch (SaveGame.GameSettings.AIMode)
+    switch (SaveGame.GameSettings.AIMode)
 	{
-          case 0:
-          {
-               return;
-               break;
-          }
-          case 1:
-          {
-               player2OK = 0X01;
-               player3OK = 0x01;
-               player4OK = 0x01;
-               break;
-          }
-          case 2:
-          {
-               player3OK = 0x01;
-               player4OK = 0x01;
-               break;
-          }
-          case 3:
-          {
-               player4OK = 0x01;
-               break;
-          }
+        case 0:
+        {
+            return;
+            break;
+        }
+        case 1:
+        {
+            player2OK = 0X01;
+            player3OK = 0x01;
+            player4OK = 0x01;
+            break;
+        }
+        case 2:
+        {
+            player3OK = 0x01;
+            player4OK = 0x01;
+            break;
+        }
+        case 3:
+        {
+            player4OK = 0x01;
+            break;
+        }
 		
 	}
-     if ((g_startingIndicator >= 3) && (g_startingIndicator < 7))
-     {
-          for (int ThisPlayer = SaveGame.GameSettings.AIMode; ThisPlayer < 4; ThisPlayer++)
-          {
-               if (*GlobalLap[ThisPlayer] < 3)
-               {
-                    GlobalPlayer[ThisPlayer].flag = 0x9000;
-               }
-          }
+    if ((g_startingIndicator >= 3) && (g_startingIndicator < 7))
+    {
+        for (int ThisPlayer = SaveGame.GameSettings.AIMode; ThisPlayer < 4; ThisPlayer++)
+        {
+            if (*GlobalLap[ThisPlayer] < 3)
+            {
+                GlobalPlayer[ThisPlayer].flag |= EXISTS;
+                GlobalPlayer[ThisPlayer].flag |= IS_CPU_PLAYER;
+            }
+        }
 
-          
-          
-          
-          g_EnemyTargetPlayer = 0;
-          
-          
-          
-     }
-     
+        
+        
+        
+        g_EnemyTargetPlayer = 0;
+        
+        
+        
+    }
+    
 }
 

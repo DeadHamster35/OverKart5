@@ -3,7 +3,7 @@
 
 .open "ROM\stock.z64", "ROM\BASE.z64", 0
 .definelabel ROM_SIZE, 		filesize("ROM\stock.z64")
-.definelabel PAYLOAD_ROM, 0xD00000
+.definelabel PAYLOAD_ROM, ROM_SIZE
 .definelabel PAYLOAD_RAM, 		0x80400000
 .definelabel RAM_END,           org(EndRAMData)
 
@@ -293,6 +293,7 @@ JAL MapSelectSwitch
 
 .headersize PAYLOAD_RAM - PAYLOAD_ROM
 .org PAYLOAD_RAM
+.align 0x1000
 StartRAMData:
      
      .align 0x10
@@ -423,7 +424,7 @@ EndRAMData:
 
 
 
-.org ROM_SIZE
+//.org ROM_SIZE
 .align 0x10
 .include "..\Library\LIBRARYBUILD3.asm"
 
@@ -435,11 +436,11 @@ EndRAMData:
 
 .if OKBuild
 
-.ascii "OVERKART64 V6 12032024"
+.ascii "OVERKART64 V6 031225"
 
 .else
 
-.ascii "TARMAC 64     031824"
+.ascii "TARMAC 64     031225"
 
 .endif
 
@@ -449,9 +450,6 @@ EndRAMData:
 .if OKBuild
 .org 0x3EFFFF1
 .ascii "63MEGFUCKREPROS"
-.else
-.org 0x10FFFFC
-.word 0
 .endif
 
 
