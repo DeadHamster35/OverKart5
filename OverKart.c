@@ -1193,13 +1193,13 @@ void allRun()
 				MenuIndex = 0;
 				resetMap();
 				setAlwaysAdvance();				
-				HotSwapID = 0;
-				copyCourseTable(0);
-				setPreviews();
-				previewRefresh();
-				setBanners();
-				hsLabel = -1;
-				courseValue = -1;
+                HotSwapID = 0;
+                copyCourseTable(0);
+                setPreviews();
+                previewRefresh();
+                setBanners();
+                hsLabel = -1;
+                courseValue = -1;
 
 				scrollLock = false;
 				g_startingIndicator = 0;
