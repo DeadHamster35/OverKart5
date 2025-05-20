@@ -439,8 +439,8 @@ EndRAMData:
 .ascii "OVERKART64 V6 031225"
 
 .else
-
-.ascii "TARMAC 64     031225"
+.ascii "SPRINGEXTRAVAGANZA25"
+//.ascii "TARMAC 64     031225"
 
 .endif
 

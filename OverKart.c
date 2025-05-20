@@ -564,7 +564,6 @@ void gameCode(void)
 		}
 	}
 	#endif
-    
 
 	CheckIFrames();
 	
@@ -883,9 +882,7 @@ void allRun()
 		
 	}
 
-
-	//still doesn't work
-	//lol whatever honestly
+    asm_CupCount = 5;
 	
 	SetWeather3D(OverKartHeader.SkyType == 3);
 
