@@ -11,7 +11,7 @@
 .definelabel ok_ModelDataRawSize,     0x6000
 .definelabel itemChanceHi,    hi(org(ok_ItemTable))
 .definelabel itemChanceLo,    lo(org(ok_ItemTable))
-.definelabel OKBuild, 0
+.definelabel OKBuild, 1
 
 .include "..\library\GameVariables\NTSC\GameOffsets.asm"
 .include "..\library\GameVariables\NTSC\StatsOffsets.asm"
@@ -75,7 +75,12 @@
      NOP
      .org 0x110128
      JAL KartCheckFuncA
-     NOP
+     
+     .org 0x125548
+     jal KartCheckFuncA
+
+     .org 0x125580
+     jal KartCheckFuncA2
 
      .org 0x10F254
      JAL KartCheckFuncA2
@@ -445,12 +450,6 @@ EndRAMData:
 .endif
 
 
-
-
-.if OKBuild
-.org 0x3EFFFF1
-.ascii "63MEGFUCKREPROS"
-.endif
 
 
 .close

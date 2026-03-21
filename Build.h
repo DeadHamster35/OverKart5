@@ -2,7 +2,7 @@
 #define BuildH
 
 #define CFLG_PlayerSelect   1
-#define OverKartBuild   0
+#define OverKartBuild   1
 
 #define DebugMode       0
 #define ProtectMode     1

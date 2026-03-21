@@ -551,7 +551,7 @@ void gameCode(void)
 {	
 	#if OverKartBuild
 	{
-		ApplyCheats();
+		//ApplyCheats();
 	}
 	#endif
 
@@ -668,7 +668,6 @@ void gameCode(void)
 			
 			LavaFloorRecoil();
 			CheckPaths();
-			
 		}	
 	}
 	
@@ -803,7 +802,7 @@ void allRun()
 {
 
 
-	
+    
 	//Emulator Only ForceHack
 	//SaveGame.RenderSettings.Platform = 1;
 	//SaveGame.RenderSettings.CullMode = 1;
@@ -858,7 +857,7 @@ void allRun()
 	}
 	else
 	{
-		gBackgroundFlag = 0;
+		//gBackgroundFlag = 0;
 	}
 	
 

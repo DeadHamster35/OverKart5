@@ -383,6 +383,19 @@ void moveCamera(int inputDistance)
 	GlobalCamera[0]->lookat_pos[2] = (float)(GlobalCamera[0]->lookat_pos[2] + inputDistance * cosF(FlyCamRadian));
 }
 
+
+
+
+void strafeCamera(int inputDistance)
+{
+	FlyCamRadian = ((((float)FlyCamDirection / 65535) * 360) + 90) * 0.0174533;
+
+	GlobalCamera[0]->camera_pos[0] = (float)(GlobalCamera[0]->camera_pos[0] + inputDistance * sinF(FlyCamRadian));
+	GlobalCamera[0]->camera_pos[2] = (float)(GlobalCamera[0]->camera_pos[2] + inputDistance * cosF(FlyCamRadian));
+
+	GlobalCamera[0]->lookat_pos[0] = (float)(GlobalCamera[0]->lookat_pos[0] + inputDistance * sinF(FlyCamRadian));
+	GlobalCamera[0]->lookat_pos[2] = (float)(GlobalCamera[0]->lookat_pos[2] + inputDistance * cosF(FlyCamRadian));
+}
 void moveCameraTilt(int inputDistance, int tilt)
 {
 	FlyCamRadian = (((float)FlyCamDirection / 65535) * 360) * 0.0174533 + tilt;
@@ -808,11 +821,11 @@ void RunFlyCam()
 			}
 			if ((GlobalController[0]->AnalogHeld & BTN_DRIGHT) == BTN_DRIGHT)
 			{
-				rotateCamera((float)(FlyCamSpeed * 0.5 * (float)((float)GlobalController[0]->AnalogX / 100)));
+				rotateCamera((float)(FlyCamSpeed * 0.15 * (float)((float)GlobalController[0]->AnalogX / 100)));
 			}
 			else if ((GlobalController[0]->AnalogHeld & BTN_DLEFT) == BTN_DLEFT)
 			{
-				rotateCamera((float)(FlyCamSpeed * 0.5 * (float)((float)GlobalController[0]->AnalogX / 100)));
+				rotateCamera((float)(FlyCamSpeed * 0.15 * (float)((float)GlobalController[0]->AnalogX / 100)));
 			}
 			
 			if (FlyCamPilot == 1)
@@ -829,11 +842,15 @@ void RunFlyCam()
 				{
 					moveCamera(-2 * FlyCamSpeed);
 				}
+                if ((GlobalController[0]->ButtonHeld & BTN_R) == BTN_R)
+				{
+					strafeCamera(2 * FlyCamSpeed);
+				}
 			}				
 			if (((GlobalController[0]->AnalogHeld & BTN_DDOWN) == BTN_DDOWN) || ((GlobalController[0]->AnalogHeld & BTN_DUP) == BTN_DUP))
 			{					
-				GlobalCamera[0]->lookat_pos[1] += (float)(FlyCamSpeed * 1 * (float)((float)GlobalController[0]->AnalogY / 100));
-				GlobalCamera[0]->camera_pos[1] += (float)(FlyCamSpeed * 1 * (float)((float)GlobalController[0]->AnalogY / 100));
+				GlobalCamera[0]->lookat_pos[1] += (float)(FlyCamSpeed * 0.4 * (float)((float)GlobalController[0]->AnalogY / 100));
+				GlobalCamera[0]->camera_pos[1] += (float)(FlyCamSpeed * 0.4 * (float)((float)GlobalController[0]->AnalogY / 100));
 			}
 
 		}
